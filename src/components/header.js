@@ -36,7 +36,7 @@ const Header = props => {
 
   return (
     <Nav>
-      <Title>Header</Title>
+      <Title>BAYMAX</Title>
       <Right>
         {auth.logged && (
           <Button gradient onClick={() => handleLogout()}>
