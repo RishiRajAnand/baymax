@@ -7,7 +7,7 @@ const { Option } = Select;
 
 const layout = {
     labelCol: { span: 4 },
-    wrapperCol: { span: 9 },
+    wrapperCol: { span: 12 },
 };
 // eslint-disable-next-line
 const validateMessages = {
@@ -35,27 +35,30 @@ const PhonePrefixSelector = (
 );
 
 const Registration = ({ location, history }) => {
-    const [status, isLoading, setRequest] = useRegistration();
+    const [response, isLoading, setRequest] = useRegistration();
 
     useEffect(() => {
-        if (status) {
+        if (response.recieptId !== null && response.recieptId !== undefined) {
             notification["success"]({
                 message: 'SUCCESS',
                 description: 'The patient has been registered successfully',
                 duration: 3
             });
-            history.push( { pathname: '/home/billing' });
+            history.push({ pathname: '/home/billing', search: '?patientId=' + response.patientId + '&receiptId=' + response.recieptId + '&context=registration' });
         }
-    }, [status, history]);
+    }, [response, history]);
 
     const onFinish = formData => {
+
         const form = formData.user;
         const body = {
-            "patientId": form.name,
             "patientName": form.name,
             "age": form.age,
             "contactNum": form.phone,
+            "altContactNum": form.alternatecontact,
             "street": form.address,
+            "state": form.state,
+            "country": form.country,
             "visitType": form.visit
         };
         setRequest(body);
@@ -86,8 +89,31 @@ const Registration = ({ location, history }) => {
                 <Form.Item name={['user', 'phone']} label="Phone Number" rules={[{ required: true, message: 'Please input your phone number!' }]}>
                     <Input addonBefore={PhonePrefixSelector} style={{ width: '100%' }} />
                 </Form.Item>
+                <Form.Item name={['user', 'alternatecontact']} label="Alternate Contact Number">
+                    <Input addonBefore={PhonePrefixSelector} style={{ width: '100%' }} />
+                </Form.Item>
                 <Form.Item name={['user', 'address']} label="Address">
                     <Input.TextArea />
+                </Form.Item>
+                <Form.Item name={['user', 'state']} label="State">
+                    <Select
+                        defaultValue="bihar"
+                        placeholder="Select State"
+                        allowClear>
+                        <Option value="bihar">Bihar</Option>
+                        <Option value="up">UP</Option>
+                        <Option value="Karnataka">Karnataka</Option>
+                        <Option value="Jharkhand">Jharkhand</Option>
+                    </Select>
+                </Form.Item>
+                <Form.Item name={['user', 'country']} label="Country">
+                    <Select
+                        defaultValue="india"
+                        placeholder="Select Country"
+                        allowClear>
+                        <Option value="india">India</Option>
+                        <Option value="us">US</Option>
+                    </Select>
                 </Form.Item>
                 <Form.Item name={['user', 'visit']} label="Visit Type" >
                     <Select placeholder="Select Visit type">
@@ -97,7 +123,7 @@ const Registration = ({ location, history }) => {
                     </Select>
                 </Form.Item>
                 <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" size='large' htmlType="submit">
                         Submit
         </Button>
                 </Form.Item>

@@ -12,7 +12,7 @@ const Nav = styled.div`
   display: flex;
   align-items: center;
   padding: 0 20px;
-  background: #f8f9fa;
+  background: #001529;
   position: ${props => (props.fixed ? 'fixed' : 'relative')};
 `;
 
@@ -23,7 +23,7 @@ const Right = styled.nav`
 
 const Title = styled.h1`
   margin: 0;
-  color: #000;
+  color: white;
   font-weight: 600;
 `;
 

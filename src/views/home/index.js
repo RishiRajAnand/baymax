@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Tag } from 'antd';
 import { Route, Link } from "react-router-dom";
 import {
   MenuUnfoldOutlined,
@@ -14,9 +14,12 @@ import Billing from '../billing';
 import Registration from '../registration';
 import PatientSearch from '../patientSearch';
 import AddDoctor from '../admin/addDoctor';
+import AddMedicine from '../medicine/addMedicine';
+import AddTest from '../medicine/addTest';
 import Appointment from '../appointment';
 import DoctorAppointment from '../doctorAppointment';
 import Prescription from '../prescription';
+import HomeScreen from './homescreen';
 
 const { Header, Sider, Content, Footer } = Layout;
 const { SubMenu } = Menu;
@@ -56,17 +59,12 @@ class Home extends React.Component {
             </SubMenu>
             <SubMenu key="Admin" icon={<UserOutlined />} title="Admin">
               <Menu.Item key="Add Doctors"><Link to={`${path}/addDoctor`}>Add Doctors</Link></Menu.Item>
+              <Menu.Item key="Add Medicines"><Link to={`${path}/addMedicine`}>Add Medicines</Link></Menu.Item>
+              <Menu.Item key="Add Test"><Link to={`${path}/addTest`}>Add Tests</Link></Menu.Item>
               <Menu.Item key="Add Departments">Add Departments</Menu.Item>
-              <Menu.Item key="Add Medicines">Add Medicines</Menu.Item>
               <Menu.Item key="Add Employees">Add Employees</Menu.Item>
               <Menu.Item key="Add Services">Add Services</Menu.Item>
             </SubMenu>
-            <Menu.Item key="Pharmacy" icon={<VideoCameraOutlined />}>
-              Pharmacy
-            </Menu.Item>
-            <Menu.Item key="Canteen" icon={<UploadOutlined />}>
-              Canteen
-            </Menu.Item>
             <Menu.Item key="Billing" icon={<UploadOutlined />}>
               <Link to={`${path}/billing`}>Billing</Link>
             </Menu.Item>
@@ -75,6 +73,12 @@ class Home extends React.Component {
             </Menu.Item>
             <Menu.Item key="Prescription" icon={<UploadOutlined />}>
               <Link to={`${path}/prescription`}>Prescription</Link>
+            </Menu.Item>
+            <Menu.Item key="Pharmacy" icon={<VideoCameraOutlined />}>
+              Pharmacy
+            </Menu.Item>
+            <Menu.Item key="Canteen" icon={<UploadOutlined />}>
+              Canteen
             </Menu.Item>
           </Menu>
         </Sider>
@@ -94,6 +98,8 @@ class Home extends React.Component {
               minHeight: 280,
             }}
           >
+            <Route exact path="/home" component={HomeScreen} />
+            {/* <Route path={`${path}/billing`} component={Billing} /> */}
             <Route path={`${path}/billing`} component={Billing} />
             <Route path={`${path}/registration`} component={Registration} />
             <Route path={`${path}/patientSearch`} component={PatientSearch} />
@@ -101,6 +107,8 @@ class Home extends React.Component {
             <Route path={`${path}/appointment`} component={Appointment} />
             <Route path={`${path}/doctorAppointment`} component={DoctorAppointment} />
             <Route path={`${path}/prescription`} component={Prescription} />
+            <Route path={`${path}/addMedicine`} component={AddMedicine} />
+            <Route path={`${path}/addTest`} component={AddTest} />
           </Content>
           <Footer style={{ textAlign: 'center' }}>BayMax ©2018 Created by Rishiraj</Footer>
         </Layout>

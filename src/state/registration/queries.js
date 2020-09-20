@@ -9,3 +9,12 @@ export const registration = (body) => {
       return err;
     }); 
 };
+
+export const doctorsRegistration = (body) => {
+  return axios
+    .post(`${api.url}/doctorService/createNewDoctorsRecord`, body)
+    .then(res => res.data)
+    .catch(err => {
+      return err;
+    }); 
+};

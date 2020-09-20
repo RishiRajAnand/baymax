@@ -1,11 +1,15 @@
-import React from 'react';
-import { Divider, Descriptions, DatePicker, Badge, Form, Input, Button, Space, Select, InputNumber, AutoComplete } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Divider, Descriptions, DatePicker, Badge, Form, Input, Button, Space, Select,Row, Col, InputNumber, AutoComplete, notification } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
+import queryString from 'query-string';
 import '../prescription/prescription.css';
-
-const onFinish = values => {
-    console.log('Received values of form:', values);
-};
+import usePatientSearch from '../../state/patientSearch/hooks/usePatientSearch';
+import useMedicineSearch from '../../state/addMedicine/hooks/useSearchMedicine';
+import useSearchTest from '../../state/addMedicine/hooks/useSearchTest';
+import PrescribeMedicine from './prescribeMedicine';
+import PatientDetails from '../patientDetails';
+import useBookAppointment from '../../state/appointment/hooks/useBookAppointment';
+import useSavePrescription from '../../state/prescription/hooks/useSavePrescription';
 
 const { Option } = Select;
 
@@ -44,48 +48,107 @@ const renderItem = (title: string, count: number) => {
     };
 };
 
-const options = [
-    {
-        label: renderTitle('Anti Diabetic'),
-        options: [renderItem('Glycomet 500 SR Tablet', 100), renderItem('Nefrosave Tablet', 500)],
-    },
-    {
-        label: renderTitle('Cardiac'),
-        options: [renderItem('Cardace 2.5 Tablet', 100), renderItem('Envas 5 Tablet', 200)],
-    },
-    {
-        label: renderTitle('Heparins'),
-        options: [renderItem('Thrombophob Ointment', 1)],
-    },
-];
-const optionsTests = [
-    { value: 'Blood Test' },
-    { value: 'Urine Test' },
-    { value: 'Dengue Test' },
-];
 
-const Prescription = () => {
+
+const Prescription = ({ location, history }) => {
+    let options = [];
+    const optionsTests = [];
+    // const [result, setResult] = useState([]);
+    const [form] = Form.useForm();
+    const [medicineForm] = Form.useForm();
+    const [medicines, isLoadings, setMedicineSearch] = useMedicineSearch();
+    const [status, isLoading1, setSavePrescription] = useSavePrescription();
+    const [tests, isLoading, setTestSearch] = useSearchTest();
+    // const [tests, isLoading, setTestSearch] = usePre();
+    const queryParams = queryString.parse(location.search);
+    useEffect(() => {
+        if (status) {
+            notification["success"]({
+                message: 'SUCCESS',
+                description: 'The patient prescription has been generated successfully',
+                duration: 3
+            });
+        }
+    }, [status]);
+    const onFinish = values => {
+        console.log('Received values of form:', values);
+        console.log('Dawaiyaan', form.getFieldsValue());
+        console.log('tests:', medicineForm.getFieldsValue());
+        const body = {
+            appointmentDto: {
+                appointmentId: queryParams.appointmentId,
+                patientId: queryParams.patientId,
+                doctorId: queryParams.doctorId
+            },
+            prescribedMedsDtoList: null,
+            prescribedTestingDtoList: null
+        };
+        const medicineList = medicineForm.getFieldsValue().users;
+        const testList = form.getFieldsValue().users;
+        if (medicineList.length > 0) {
+            body.prescribedMedsDtoList = medicineList.map(medicine => {
+                return { medName: medicine.medicineName, days: medicine.numberOfDays };
+            });
+        }
+
+        if (testList.length > 0) {
+            body.prescribedTestingDtoList = testList.map(test => {
+                return {
+                    testDesc: test.testName,
+                    dateOfBooking: test.date
+                };
+            });
+        }
+        setSavePrescription(body);
+    };
+    const handleSearch = (value) => {
+        setMedicineSearch();
+    };
+
+    const handleTestSearch = (value) => {
+        setTestSearch();
+    };
+
+    if (tests.length > 0) {
+        tests.forEach(test => {
+            optionsTests.push({ value: test.testName });
+        });
+    }
+
+    if (medicines.length > 0) {
+        var map = new Map();
+
+        medicines.forEach(medicine => {
+            if (map.has(medicine.medicineType)) {
+                map.set(medicine.medicineType, [...map.get(medicine.medicineType), medicine.medicineName]);
+            } else {
+                map.set(medicine.medicineType, [medicine.medicineName])
+            }
+        });
+        console.log(map);
+        for (let [key, value] of map) {
+            console.log(key + " = " + value);
+            options.push({
+                label: renderTitle(key),
+                options: value.map(val => renderItem(val, 100)),
+            });
+        }
+
+    }
     return (
         <>
-            <Divider>Patient Details</Divider>
-            <Descriptions bordered>
-                <Descriptions.Item label="Name">Rishi</Descriptions.Item>
-                <Descriptions.Item label="Visit Type">General</Descriptions.Item>
-                <Descriptions.Item label="Age">27</Descriptions.Item>
-                <Descriptions.Item label="Admission date">2018-04-24 18:00:00</Descriptions.Item>
-                <Descriptions.Item label="Status" span={3}>
-                    <Badge status="warning" text="pending" />
-                </Descriptions.Item>
-            </Descriptions>
+            <PatientDetails patientId={queryParams.patientId} />
             <br></br>
 
             <Divider>Prescribe Medicines</Divider>
-            <Form name="dynamic_form_nest_item" onFinish={onFinish} autoComplete="off">
+            {/* <PrescribeMedicine /> */}
+
+            <Form name="dynamic_form_nest_item" form={medicineForm} onFinish={onFinish} autoComplete="off">
                 <Form.List name="users">
                     {(fields, { add, remove }) => {
                         return (
                             <div>
-                                {fields.map(field => (
+                                {fields.map((field, index) => (
                                     <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align="start">
                                         <Form.Item
                                             {...field}
@@ -94,6 +157,7 @@ const Prescription = () => {
                                             rules={[{ required: true, message: 'Missing Medicine name' }]}
                                         >
                                             <AutoComplete
+                                                onSearch={handleSearch}
                                                 dropdownClassName="certain-category-search-dropdown"
                                                 dropdownMatchSelectWidth={500}
                                                 style={{ width: 250 }}
@@ -149,15 +213,16 @@ const Prescription = () => {
                     }}
                 </Form.List>
 
-                <Form.Item>
+                {/* <Form.Item>
                     <Button type="primary" htmlType="submit">
                         Submit
         </Button>
-                </Form.Item>
+                </Form.Item> */}
             </Form>
+
             <br></br>
             <Divider>Prescribe Tests</Divider>
-            <Form name="dynamic_form_nest_item2" onFinish={onFinish} autoComplete="off">
+            <Form name="dynamic_form_nest_item2" form={form} onFinish={onFinish} autoComplete="off">
                 <Form.List name="users">
                     {(fields, { add, remove }) => {
                         return (
@@ -171,6 +236,7 @@ const Prescription = () => {
                                             rules={[{ required: true, message: 'Missing test name' }]}
                                         >
                                             <AutoComplete
+                                                onSearch={handleTestSearch}
                                                 style={{ width: 200 }}
                                                 options={optionsTests}
                                                 placeholder="Type test name"
@@ -205,7 +271,7 @@ const Prescription = () => {
                                         block
                                     >
                                         <PlusOutlined /> Add Tests
-                </Button>
+                                   </Button>
                                 </Form.Item>
                             </div>
                         );
@@ -213,9 +279,14 @@ const Prescription = () => {
                 </Form.List>
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit">
-                        Submit
-                    </Button>
+                    <Row>
+                        <Col span={12} offset={11}>
+                            <Button size="large" type="primary" htmlType="submit">
+                                Submit
+                         </Button>
+                        </Col>
+                    </Row>
+
                 </Form.Item>
             </Form>
         </>);

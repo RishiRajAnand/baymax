@@ -9,14 +9,19 @@ const PatientSearch = () => {
 
     const [visible, setVisible] = useState(false);
     const [name, setName] = useState([]);
+    const [showPatient, setShowPatient] = useState("all");
     const [patients, isLoading, setRequest] = usePatientSearch();
+    // const [patient, isLoading1, setPatientSearchbyId] = usePatientSearchbyId();
     let data = [];
 
     useEffect(() => {
-        if (patients.length === 0) {
+        if (showPatient === "all") {
             setRequest();
         }
-    }, [patients]);
+    }, [showPatient]);
+
+    function onPatientSearch(searchValue) {
+    }
 
     if (patients.length > 0) {
         patients.forEach((patient, index) => {
@@ -133,7 +138,7 @@ const PatientSearch = () => {
                 placeholder="Search by Patient Name / ID"
                 enterButton="Search"
                 size="large"
-                onSearch={value => console.log(value)}
+                onSearch={onPatientSearch}
             />
             <Table columns={columns} dataSource={data} />
             <Modal

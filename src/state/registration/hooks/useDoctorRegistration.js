@@ -1,30 +1,30 @@
 import { useState } from 'react';
-import { registration } from '../queries';
+import { doctorsRegistration } from '../queries';
 // import { listProducts } from '../actions';
 
-const useRegistration = () => {
+const useDoctorRegistration = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [responseObj, setResponseObj] = useState({});
+  const [status, setStatus] = useState(false);
 
   const request = async (body) => {
     setIsLoading(true);
 
-    const response = await registration(body);
+    const response = await doctorsRegistration(body);
 
     if (response) {
-      if (response.recieptId !== null) {
-        setResponseObj(response);
+      if (response.status === "SUCCESS") {
+        setStatus(true);
       }
       // dispatch(listProducts(response));
     } else {
       // const err = [];
-      setResponseObj(null);
+      setStatus(false);
       // dispatch(listProducts(err));
     }
     setIsLoading(false);
   };
 
-  return [responseObj, isLoading, request];
+  return [status, isLoading, request];
 };
 
-export default useRegistration;
+export default useDoctorRegistration;
