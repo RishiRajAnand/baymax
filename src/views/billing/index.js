@@ -1,12 +1,11 @@
-import React, { useRef, useState } from 'react';
-import { Form, Input, Button, InputNumber, Radio, Divider, Descriptions, Select, Badge, Table, Row, Col } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Button, Col, Descriptions, Divider, Form, Input, InputNumber, Radio, Row, Select, Table } from 'antd';
 import queryString from 'query-string';
-import PatientDetails from '../patientDetails';
-import BillSearch from './components/billSearch';
-import { BillPrint } from './components/billPrint';
+import React, { useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import useBillSearch from '../../state/billing/hooks/useBillSearch';
+import PatientDetails from '../patientDetails';
+import { BillPrint } from './components/billPrint';
+import BillSearch from './components/billSearch';
 
 const { Search } = Input;
 const { Option } = Select;

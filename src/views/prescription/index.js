@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Divider, Descriptions, DatePicker, Badge, Form, Input, Button, Space, Select,Row, Col, InputNumber, AutoComplete, notification } from 'antd';
-import { MinusCircleOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
+import { DownloadOutlined, MinusCircleOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
+import { AutoComplete, Button, Col, DatePicker, Divider, Form, Input, InputNumber, notification, Row, Select, Space } from 'antd';
 import queryString from 'query-string';
-import '../prescription/prescription.css';
-import usePatientSearch from '../../state/patientSearch/hooks/usePatientSearch';
+import React, { useEffect, useState } from 'react';
 import useMedicineSearch from '../../state/addMedicine/hooks/useSearchMedicine';
 import useSearchTest from '../../state/addMedicine/hooks/useSearchTest';
-import PrescribeMedicine from './prescribeMedicine';
-import PatientDetails from '../patientDetails';
-import useBookAppointment from '../../state/appointment/hooks/useBookAppointment';
 import useSavePrescription from '../../state/prescription/hooks/useSavePrescription';
+import PatientDetails from '../patientDetails';
+import '../prescription/prescription.css';
 
 const { Option } = Select;
 
@@ -53,7 +50,7 @@ const renderItem = (title: string, count: number) => {
 const Prescription = ({ location, history }) => {
     let options = [];
     const optionsTests = [];
-    // const [result, setResult] = useState([]);
+    const [submitted, setSubmitted] = useState(false);
     const [form] = Form.useForm();
     const [medicineForm] = Form.useForm();
     const [medicines, isLoadings, setMedicineSearch] = useMedicineSearch();
@@ -100,6 +97,7 @@ const Prescription = ({ location, history }) => {
             });
         }
         setSavePrescription(body);
+        setSubmitted(true);
     };
     const handleSearch = (value) => {
         setMedicineSearch();
@@ -133,7 +131,11 @@ const Prescription = ({ location, history }) => {
                 options: value.map(val => renderItem(val, 100)),
             });
         }
-
+    }
+    let formActions = <Button size="large" type="primary" htmlType="submit">Submit</Button>;
+    if (submitted) {
+        formActions = (<><Button type="primary" shape="round" icon={<DownloadOutlined />} size='large'>Print</Button>
+            <Button style={{marginLeft : '10px'}} type="primary" shape="round" size='large' onClick={value => history.push({ pathname: '/home/doctorAppointment'})}>Go to My Appoinments</Button></>);
     }
     return (
         <>
@@ -281,9 +283,7 @@ const Prescription = ({ location, history }) => {
                 <Form.Item>
                     <Row>
                         <Col span={12} offset={11}>
-                            <Button size="large" type="primary" htmlType="submit">
-                                Submit
-                         </Button>
+                            {formActions}
                         </Col>
                     </Row>
 

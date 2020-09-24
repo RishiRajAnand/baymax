@@ -1,25 +1,25 @@
+import { MedicineBoxOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { Layout, Menu } from 'antd';
 import React from 'react';
-import { Layout, Menu, Tag } from 'antd';
-import { Route, Link } from "react-router-dom";
-import {
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-  UploadOutlined,
-} from '@ant-design/icons';
-
-import '../home/home.css';
-import Billing from '../billing';
-import Registration from '../registration';
-import PatientSearch from '../patientSearch';
+import { Link, Route } from "react-router-dom";
 import AddDoctor from '../admin/addDoctor';
+import Appointment from '../appointment';
+import Billing from '../billing';
+import Canteen from '../canteen';
+import CanteenStock from '../canteen/canteenStock';
+import DoctorAppointment from '../doctorAppointment';
+import '../home/home.css';
 import AddMedicine from '../medicine/addMedicine';
 import AddTest from '../medicine/addTest';
-import Appointment from '../appointment';
-import DoctorAppointment from '../doctorAppointment';
+import PackageManagement from '../package';
+import PatientSearch from '../patientSearch';
+import Pharmacy from '../pharmacy';
 import Prescription from '../prescription';
+import Registration from '../registration';
 import HomeScreen from './homescreen';
+import AddNewMedicine from '../pharmacy/addNewMedicine';
+import ManageMedicines from '../pharmacy/manageMedicine';
+
 
 const { Header, Sider, Content, Footer } = Layout;
 const { SubMenu } = Menu;
@@ -65,6 +65,10 @@ class Home extends React.Component {
               <Menu.Item key="Add Employees">Add Employees</Menu.Item>
               <Menu.Item key="Add Services">Add Services</Menu.Item>
             </SubMenu>
+            <SubMenu key="Pharmacy Management" icon={<MedicineBoxOutlined />} title="Pharmacy">
+              <Menu.Item key="Add New Medicine"><Link to={`${path}/addNewMedicine`}>New Medicine</Link></Menu.Item>
+              <Menu.Item key="Manage Medicines"><Link to={`${path}/manageMedicines`}>Manage Medicine</Link></Menu.Item>
+            </SubMenu>
             <Menu.Item key="Billing" icon={<UploadOutlined />}>
               <Link to={`${path}/billing`}>Billing</Link>
             </Menu.Item>
@@ -74,12 +78,29 @@ class Home extends React.Component {
             <Menu.Item key="Prescription" icon={<UploadOutlined />}>
               <Link to={`${path}/prescription`}>Prescription</Link>
             </Menu.Item>
-            <Menu.Item key="Pharmacy" icon={<VideoCameraOutlined />}>
-              Pharmacy
+            <SubMenu key="Upcoming Features" icon={<UserOutlined />} title="Upcoming">
+              <Menu.Item key="Canteen" icon={<UploadOutlined />}>
+                <Link to={`${path}/canteen`}>Canteen</Link>
+              </Menu.Item>
+              <Menu.Item key="Pharmacy" icon={<VideoCameraOutlined />}>
+                <Link to={`${path}/pharmacy`}>Pharmacy</Link>
+              </Menu.Item>
+              <Menu.Item key="Package Management" icon={<UploadOutlined />}>
+                <Link to={`${path}/packages`}>Packages</Link>
+              </Menu.Item>
+              <Menu.Item key="Reimbursements" icon={<UploadOutlined />}>
+                Reimbursements
             </Menu.Item>
-            <Menu.Item key="Canteen" icon={<UploadOutlined />}>
-              Canteen
+              <Menu.Item key="Insurance" icon={<UploadOutlined />}>
+                Insurance
             </Menu.Item>
+              <Menu.Item key="Certificate creation" icon={<UploadOutlined />}>
+                Certificate creation
+            </Menu.Item>
+              <Menu.Item key="Referrals" icon={<UploadOutlined />}>
+                Referrals
+            </Menu.Item>
+            </SubMenu>
           </Menu>
         </Sider>
         <Layout className="site-layout">
@@ -96,10 +117,11 @@ class Home extends React.Component {
               margin: '24px 16px',
               padding: 24,
               minHeight: 280,
+              overflow: 'auto',
+              height: '100vh',
             }}
           >
             <Route exact path="/home" component={HomeScreen} />
-            {/* <Route path={`${path}/billing`} component={Billing} /> */}
             <Route path={`${path}/billing`} component={Billing} />
             <Route path={`${path}/registration`} component={Registration} />
             <Route path={`${path}/patientSearch`} component={PatientSearch} />
@@ -109,8 +131,14 @@ class Home extends React.Component {
             <Route path={`${path}/prescription`} component={Prescription} />
             <Route path={`${path}/addMedicine`} component={AddMedicine} />
             <Route path={`${path}/addTest`} component={AddTest} />
+            <Route path={`${path}/packages`} component={PackageManagement} />
+            <Route path={`${path}/canteen`} component={Canteen} />
+            <Route path={`${path}/canteenStock`} component={CanteenStock} />
+            <Route path={`${path}/pharmacy`} component={Pharmacy} />
+            <Route path={`${path}/addNewMedicine`} component={AddNewMedicine} />
+            <Route path={`${path}/manageMedicines`} component={ManageMedicines} />
           </Content>
-          <Footer style={{ textAlign: 'center' }}>BayMax ©2018 Created by Rishiraj</Footer>
+          <Footer style={{ textAlign: 'center' }}>BayMax ©2020 Created by Rishiraj</Footer>
         </Layout>
       </Layout>
     );

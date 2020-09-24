@@ -1,19 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import { Button, Calendar, Card, Col, Divider, notification, Row, Select } from 'antd';
 import moment from 'moment';
-import { Calendar, Select, Row, Col, Button, Card, Divider, Descriptions, Badge, notification } from 'antd';
-import useGetAllDoctors from '../../state/patientSearch/hooks/useGetAllDoctors';
-import '../appointment/appointment.css';
-import useGetAllDoctorByDepartment from '../../state/patientSearch/hooks/useGetAllDoctorByDepartment';
-import { departments } from '../../utils/departmentList';
-import PatientDetails from '../patientDetails';
 import queryString from 'query-string';
+import React, { useEffect, useState } from 'react';
 import useBookAppointment from '../../state/appointment/hooks/useBookAppointment';
-
+import useGetAllDoctorByDepartment from '../../state/patientSearch/hooks/useGetAllDoctorByDepartment';
+import useGetAllDoctors from '../../state/patientSearch/hooks/useGetAllDoctors';
+import usePatientSearchbyId from '../../state/patientSearch/hooks/usePatientSearchbyId';
+import { departments } from '../../utils/departmentList';
+import '../appointment/appointment.css';
+import PatientDetails from '../patientDetails';
 const { Option } = Select;
 
-function onPanelChange(value, mode) {
-    console.log(value, mode);
-}
 function disabledDate(current) {
     // Can not select days before today and today
     return current && current < moment().endOf('day');
@@ -27,13 +24,17 @@ const Appointment = ({ location, history }) => {
     const map = new Map();
     const queryParams = queryString.parse(location.search);
     const [selectedDepartment, setSelectedDepartment] = useState("all");
+    const [selectedDate, setSelectedDate] = useState(0);
     const [selectedDoctor, setSelectedDoctor] = useState("");
     const [doctors, isLoading, setRequest] = useGetAllDoctors();
+    const [patientDetails, isLoading2, setPatientSearchById] = usePatientSearchbyId();
     const [doctorBydepartment, isLoadings, callDoctorByDepartment] = useGetAllDoctorByDepartment();
     const [status, isLoading1, setBookAppointment] = useBookAppointment();
     useEffect(() => {
         if (selectedDepartment === "all") {
             setRequest();
+            setPatientSearchById(queryParams.patientId)
+
         } else {
             callDoctorByDepartment(selectedDepartment);
         }
@@ -64,8 +65,10 @@ const Appointment = ({ location, history }) => {
         }
     }
     function handleChange(value) {
-        console.log(`selected ${value}`);
         setSelectedDepartment(value);
+    }
+    function onDateSelect(value) {
+        setSelectedDate(value);
     }
 
     function handleChangeOfDoctor(value) {
@@ -78,8 +81,9 @@ const Appointment = ({ location, history }) => {
             "diseaseDesc": "test desc",
             "advise": "test",
             "patientId": queryParams.patientId,
-            "patientName": queryParams.patientId,
+            "patientName": patientDetails.patientName,
             "doctorId": selectedDoctor,
+            "appointmentDate": selectedDate.toDate(),
             "height": 6,
             "weight": 80,
             "Bp": "120/80"
@@ -111,7 +115,7 @@ const Appointment = ({ location, history }) => {
             <Row>
                 <Col span={8}>
                     <div className="site-calendar-demo-card">
-                        <Calendar fullscreen={false} onPanelChange={onPanelChange} disabledDate={disabledDate} />
+                        <Calendar fullscreen={false} onSelect={onDateSelect} disabledDate={disabledDate} />
                     </div>
                 </Col>
                 <Col span={8}>

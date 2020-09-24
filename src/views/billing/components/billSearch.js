@@ -10,8 +10,6 @@ const BillSearch = (props) => {
         props.onSearch(value, filterValue);
     }
     return (
-        <Row>
-            <Col span={6}>
                 <Input.Group compact>
                     <Select defaultValue={defaultSearch} onSelect={setfilterValue}>
                         <Option value="patientId">Patient Id</Option>
@@ -19,10 +17,6 @@ const BillSearch = (props) => {
                         <Option value="receiptId">Receipt Id</Option>
                     </Select>
                     <Input.Search onSearch={onSearch} style={{ width: '70%' }} placeholder="Search by" />
-                </Input.Group>
-            </Col>
-            <Col span={6}>
-            </Col>
-        </Row>);
+                </Input.Group>);
 };
 export default BillSearch;

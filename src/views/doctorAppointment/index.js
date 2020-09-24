@@ -37,6 +37,7 @@ function DoctorAppointment({ location, history }) {
                 key: appointment.appointmentId,
                 patientName: appointment.patientName,
                 appointmentId: appointment.appointmentId,
+                time: new Date(appointment.appointmentDate).toDateString(),
                 doctorId: appointment.doctorId,
                 patientId: appointment.patientId,
                 status: ['registered']

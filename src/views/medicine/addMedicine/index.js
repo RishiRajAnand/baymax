@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, InputNumber, Table, notification } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import useAddMedicine from '../../../state/addMedicine/hooks/useAddMedicine';
+import { UserOutlined } from '@ant-design/icons';
+import { Button, Form, Input, InputNumber, notification, Table } from 'antd';
+import React, { useEffect } from 'react';
 import Spinner from '../../../components/spinner';
+import useAddMedicine from '../../../state/addMedicine/hooks/useAddMedicine';
 import useMedicineSearch from '../../../state/addMedicine/hooks/useSearchMedicine';
 
 const AddMedicine = () => {
@@ -59,23 +59,7 @@ const AddMedicine = () => {
                     text: 'Painkillers',
                     value: 'painkiller',
                 },
-                // {
-                //   text: 'Submenu',
-                //   value: 'Submenu',
-                //   children: [
-                //     {
-                //       text: 'Green',
-                //       value: 'Green',
-                //     },
-                //     {
-                //       text: 'Black',
-                //       value: 'Black',
-                //     },
-                //   ],
-                // },
             ],
-            // specify the condition of filtering result
-            // here is that finding the name started with `value`
             onFilter: (value, record) => record.medicineType.indexOf(value) === 0,
             sorter: (a, b) => a.medicineType.length - b.medicineType.length,
             sortDirections: ['descend'],
