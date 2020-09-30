@@ -38,11 +38,6 @@ const columns = [
         key: 'sellingPrice',
     },
     {
-        title: 'Quantity',
-        dataIndex: 'quantity',
-        key: 'quantity',
-    },
-    {
         title: 'Generic name',
         dataIndex: 'genericName',
         key: 'genericName',
@@ -58,6 +53,7 @@ const columns = [
         render: (text, record) => (
             <Space size="middle">
                 <a>Place Order</a>
+                <a>Stock</a>
                 <a>Edit</a>
                 <a>Delete</a>
             </Space>
@@ -72,7 +68,6 @@ const data = [
         category: '',
         purchasePrice: '',
         sellingPrice: '',
-        quantity: '',
         genericName: '',
         expiryDate: '',
     },
@@ -82,7 +77,6 @@ const data = [
         category: '',
         purchasePrice: '',
         sellingPrice: '',
-        quantity: '',
         genericName: '',
         expiryDate: '',
 
@@ -93,7 +87,6 @@ const data = [
         category: '',
         purchasePrice: '',
         sellingPrice: '',
-        quantity: '',
         genericName: '',
         expiryDate: '',
 

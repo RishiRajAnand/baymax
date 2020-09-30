@@ -28,7 +28,7 @@ const medicineUnits = medicineDistributionUnits.map(medicineDistributionUnit => 
 const AddNewMedicine = () => {
     let index = 0;
     const [name, setName] = useState("");
-    const [items, setItems] = useState(['Meals', 'Drinks', 'Snacks', 'Chinese', 'South Indian']);
+    const [items, setItems] = useState(['Aspirin', 'Tablets', 'Syrup']);
 
     const onFinish = formData => {
         const form = formData.user;
@@ -136,6 +136,11 @@ const AddNewMedicine = () => {
                             </Upload>
                         </Form.Item>
                     </Col>
+                    <Col span={12}>
+                        <Form.Item name={['user', 'triggerValue']} label="Trigger Value" rules={[{ type: 'number', min: 0, max: 5000 }]}>
+                            <InputNumber style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
                 </Row>
                 <Divider orientation="left">Purchase Details</Divider>
                 <Row gutter={24}>
@@ -156,14 +161,14 @@ const AddNewMedicine = () => {
                     </Col>
                     <Col span={12}>
                         <Form.Item name={['user', 'supplierName']} label="Supplier Name">
-                        <Select
+                            <Select
                                 showSearch
-                                placeholder="Select Distribution Unit" style={{ width: '100%' }}
+                                placeholder="Select Suppliers Name" style={{ width: '100%' }}
                                 optionFilterProp="children"
                                 filterOption={(input, option) =>
                                     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                 }>
-                                
+
                             </Select>
                         </Form.Item>
                     </Col>

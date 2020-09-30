@@ -135,7 +135,7 @@ const Prescription = ({ location, history }) => {
     let formActions = <Button size="large" type="primary" htmlType="submit">Submit</Button>;
     if (submitted) {
         formActions = (<><Button type="primary" shape="round" icon={<DownloadOutlined />} size='large'>Print</Button>
-            <Button style={{marginLeft : '10px'}} type="primary" shape="round" size='large' onClick={value => history.push({ pathname: '/home/doctorAppointment'})}>Go to My Appoinments</Button></>);
+            <Button style={{ marginLeft: '10px' }} type="primary" shape="round" size='large' onClick={value => history.push({ pathname: '/home/doctorAppointment' })}>Go to My Appoinments</Button></>);
     }
     return (
         <>
@@ -190,6 +190,13 @@ const Prescription = ({ location, history }) => {
                                             rules={[{ required: true, message: 'Missing Number of days' }]}
                                         >
                                             <InputNumber />
+                                        </Form.Item>
+                                        <Form.Item
+                                            {...field}
+                                            name={[field.name, 'comments']}
+                                            fieldKey={[field.fieldKey, 'comments']}
+                                        >
+                                            <Input placeholder="Comments" />
                                         </Form.Item>
                                         <MinusCircleOutlined
                                             onClick={() => {
@@ -255,7 +262,13 @@ const Prescription = ({ location, history }) => {
                                         >
                                             <DatePicker />
                                         </Form.Item>
-
+                                        <Form.Item
+                                            {...field}
+                                            name={[field.name, 'comments']}
+                                            fieldKey={[field.fieldKey, 'comments']}
+                                        >
+                                            <Input placeholder="Comments" />
+                                        </Form.Item>
                                         <MinusCircleOutlined
                                             onClick={() => {
                                                 remove(field.name);

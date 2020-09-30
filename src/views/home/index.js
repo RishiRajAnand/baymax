@@ -19,6 +19,13 @@ import Registration from '../registration';
 import HomeScreen from './homescreen';
 import AddNewMedicine from '../pharmacy/addNewMedicine';
 import ManageMedicines from '../pharmacy/manageMedicine';
+import PurchaseOrder from '../pharmacy/purchaseOrderList';
+import NewPurchaseOrder from '../pharmacy/newPurchaseOrder';
+import IndentPreparation from '../pharmacy/indentPreparations';
+import IndentList from '../pharmacy/indentPreparations/indentList';
+import Certificates from '../certificates';
+import Package from '../package';
+import NewPackage from '../package/newPackage';
 
 
 const { Header, Sider, Content, Footer } = Layout;
@@ -66,7 +73,11 @@ class Home extends React.Component {
               <Menu.Item key="Add Services">Add Services</Menu.Item>
             </SubMenu>
             <SubMenu key="Pharmacy Management" icon={<MedicineBoxOutlined />} title="Pharmacy">
+              <Menu.Item key="Indent Preparation"><Link to={`${path}/indentPreparation`}>Indent Preparation</Link></Menu.Item>
+              <Menu.Item key="Indent List"><Link to={`${path}/indentList`}>Indent List</Link></Menu.Item>
               <Menu.Item key="Add New Medicine"><Link to={`${path}/addNewMedicine`}>New Medicine</Link></Menu.Item>
+              <Menu.Item key="Purchase Order List"><Link to={`${path}/purchaseOrder`}>Purchase List</Link></Menu.Item>
+              <Menu.Item key="New Purchase Order"><Link to={`${path}/newPurchaseOrder`}>New Purchase Order</Link></Menu.Item>
               <Menu.Item key="Manage Medicines"><Link to={`${path}/manageMedicines`}>Manage Medicine</Link></Menu.Item>
             </SubMenu>
             <Menu.Item key="Billing" icon={<UploadOutlined />}>
@@ -78,15 +89,18 @@ class Home extends React.Component {
             <Menu.Item key="Prescription" icon={<UploadOutlined />}>
               <Link to={`${path}/prescription`}>Prescription</Link>
             </Menu.Item>
+            <Menu.Item key="Certificates" icon={<UploadOutlined />}>
+              <Link to={`${path}/certificates`}>Certificates</Link>
+            </Menu.Item>
+            <Menu.Item key="Package Management" icon={<UploadOutlined />}>
+              <Link to={`${path}/package`}>Packages</Link>
+            </Menu.Item>
             <SubMenu key="Upcoming Features" icon={<UserOutlined />} title="Upcoming">
               <Menu.Item key="Canteen" icon={<UploadOutlined />}>
                 <Link to={`${path}/canteen`}>Canteen</Link>
               </Menu.Item>
               <Menu.Item key="Pharmacy" icon={<VideoCameraOutlined />}>
                 <Link to={`${path}/pharmacy`}>Pharmacy</Link>
-              </Menu.Item>
-              <Menu.Item key="Package Management" icon={<UploadOutlined />}>
-                <Link to={`${path}/packages`}>Packages</Link>
               </Menu.Item>
               <Menu.Item key="Reimbursements" icon={<UploadOutlined />}>
                 Reimbursements
@@ -137,6 +151,13 @@ class Home extends React.Component {
             <Route path={`${path}/pharmacy`} component={Pharmacy} />
             <Route path={`${path}/addNewMedicine`} component={AddNewMedicine} />
             <Route path={`${path}/manageMedicines`} component={ManageMedicines} />
+            <Route path={`${path}/purchaseOrder`} component={PurchaseOrder} />
+            <Route path={`${path}/newPurchaseOrder`} component={NewPurchaseOrder} />
+            <Route path={`${path}/indentPreparation`} component={IndentPreparation} />
+            <Route path={`${path}/indentList`} component={IndentList} />
+            <Route path={`${path}/certificates`} component={Certificates} />
+            <Route path={`${path}/package`} component={Package} />
+            <Route path={`${path}/newPackage`} component={NewPackage} />
           </Content>
           <Footer style={{ textAlign: 'center' }}>BayMax ©2020 Created by Rishiraj</Footer>
         </Layout>

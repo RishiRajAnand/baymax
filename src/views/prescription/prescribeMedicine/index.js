@@ -50,7 +50,7 @@ const PrescribeMedicine = () => {
     let options = [];
     // const [result, setResult] = useState([]);
     const [medicines, isLoadings, setMedicineSearch] = useMedicineSearch();
-    
+
     const handleSearch = (value) => {
         setMedicineSearch();
     };
@@ -123,6 +123,13 @@ const PrescribeMedicine = () => {
                                             rules={[{ required: true, message: 'Missing Number of days' }]}
                                         >
                                             <InputNumber />
+                                        </Form.Item>
+                                        <Form.Item
+                                            {...field}
+                                            name={[field.name, 'comments']}
+                                            fieldKey={[field.fieldKey, 'comments']}
+                                        >
+                                            <Input placeholder="Comments"/>
                                         </Form.Item>
                                         <MinusCircleOutlined
                                             onClick={() => {
