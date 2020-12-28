@@ -1,6 +1,10 @@
 import { MinusCircleOutlined, OrderedListOutlined, PlusOutlined } from '@ant-design/icons';
-import { AutoComplete, Button, Col, DatePicker, Divider, Form, Input, InputNumber, Row, Select, Space, Switch } from 'antd';
-import React, { useState } from 'react';
+import { AutoComplete, Button, Col, DatePicker, Divider, Form, Input, InputNumber, notification, Row, Select, Space, Switch } from 'antd';
+import React, { useState, useEffect } from 'react';
+import useGetAllSuppliers from '../../../state/pharmacy/hooks/useGetAllSupplier';
+import useGetAllPharmacyMedicines from '../../../state/pharmacy/hooks/useGetAllPharmacyMedicines';
+import useSavePurchaseOrder from '../../../state/pharmacy/hooks/useSavePurchaseOrder';
+import UseGetAllPurchaseOrder from '../../../state/pharmacy/hooks/UseGetAllPurchaseOrders';
 const { Option } = Select;
 const { TextArea } = Input;
 const layout = {
@@ -23,24 +27,73 @@ const validateMessages = {
     },
 };
 
-const NewPurchaseOrder = () => {
+const NewPurchaseOrder = ({ location, history }) => {
     let options = [];
+    const supplierOptions = [
+        { value: 'light', label: 'Light' },
+        { value: 'bamboo', label: 'Bamboo' },
+    ];
     let index = 0;
+    const [purchaseDetailsForm] = Form.useForm();
+    const [productListForm] = Form.useForm();
     const [name, setName] = useState("");
     const [items, setItems] = useState(['ABC pharma', 'Medimex store']);
-
-    const onFinish = formData => {
-        const form = formData.user;
-        const body = {
-            "empId": "test123",
-            "doctorName": form.name,
-            "department": form.department,
-            "experience": form.experience,
-            "speciality": form.speciality,
-            "highestQualification": form.highestQualification,
-            "consulationCharge": form.consulationCharge,
-            "designation": form.designation
+    const [suppliers, isLoadings, setSupplierSearch] = useGetAllSuppliers();
+    const [medicines, isLoading, setMedicineSearch] = useGetAllPharmacyMedicines();
+    const [status, setSavePurchaseOrder] = useSavePurchaseOrder();
+    // const [purchaseOrderList, isLoading1, setPurchaseOrderListFetch] = UseGetAllPurchaseOrder();
+    useEffect(() => {
+        setMedicineSearch();
+        setSupplierSearch();
+        if (status) {
+            notification["success"]({
+                message: 'SUCCESS',
+                description: 'Purchase order created successfully',
+                duration: 3
+            });
         }
+    }, []);
+
+    if (suppliers.length > 0) {
+        suppliers.forEach(supplier => {
+            supplierOptions.push({ value: supplier.supplierName, label: supplier.supplierName });
+        });
+    }
+    if (medicines.length > 0) {
+        medicines.forEach(medicine => {
+            options.push({ value: medicine.medicineName, label: medicine.medicineName });
+        });
+    }
+    const onFinish = formData => {
+        const purchaseDetails = purchaseDetailsForm.getFieldsValue().user;
+
+        const body = {
+            purchaseInvoiceDto: {
+                supplierId: "",
+                orderDate: "",
+                invoiceNumber: "",
+                totalAmount: formData.user.totalAmount,
+
+            },
+            purchaseProductList: [],
+        };
+        const form = formData.user;
+        const productList = productListForm.getFieldsValue().users;
+        if (productList != null && productList.length > 0) {
+            productList.forEach(product => {
+                body.purchaseProductList.push({
+                    productId: product.productId,
+                    quantity: product.quantity,
+                    unit: product.unit,
+                    purchaseCost: product.purchaseCost,
+                    batchNumber: product.batchNumber,
+                    expDate: product.batchNumber,
+                    discount: product.discount,
+                    tax: product.tax
+                });
+            });
+        }
+        setSavePurchaseOrder(body);
     };
     function onNameChange(event) {
         // console.log("sas", event.target.value);
@@ -52,15 +105,23 @@ const NewPurchaseOrder = () => {
     }
 
     const onSearchProduct = (value) => {
+        // setMedicineSearch();
+    }
 
+    const onSearchSupplier = (value) => {
+        // setSupplierSearch();
     }
 
     return (
         <>
-            <Button type="dashed" style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Purchase list</Button>
-            <Button type="dashed" style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Medicine list</Button>
+            <Button onClick={() => {
+                history.push({ pathname: '/home/purchaseOrderList' });
+            }} type="dashed" style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Purchase list</Button>
+            <Button onClick={() => {
+                history.push({ pathname: '/home/manageMedicines' });
+            }} type="dashed" style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Medicine list</Button>
             <br /><br /><br />
-            <Form {...layout} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
+            <Form form={purchaseDetailsForm}  {...layout} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
                 <Row gutter={24}>
                     <Col span={12}>
                         <Form.Item name={['user', 'rol']} label="ROL">
@@ -71,7 +132,15 @@ const NewPurchaseOrder = () => {
                 <Row gutter={24}>
                     <Col span={12}>
                         <Form.Item name={['user', 'supplierName']} label="Suppliers Name" rules={[{ required: true }]}>
-                            <Input />
+                            <AutoComplete
+                                onSearch={onSearchSupplier}
+                                dropdownClassName="certain-category-search-dropdown"
+                                dropdownMatchSelectWidth={500}
+                                style={{ width: '100%' }}
+                                options={supplierOptions}
+                            >
+                                <Input.Search size="default" placeholder="Supplier name" />
+                            </AutoComplete>
                         </Form.Item>
                     </Col>
                     <Col span={12}>
@@ -85,7 +154,7 @@ const NewPurchaseOrder = () => {
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item name={['user', 'StoreName']} label="Store Name">
+                        <Form.Item name={['user', 'storeName']} label="Store Name">
                             <Select
                                 style={{ width: '100%' }}
                                 placeholder="Select Store"
@@ -111,7 +180,7 @@ const NewPurchaseOrder = () => {
                             </Select>
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    {/* <Col span={12}>
                         <Form.Item name={['user', 'salesStartDate']} label="Sales Start Date">
                             <DatePicker style={{ width: '100%' }} />
                         </Form.Item>
@@ -120,11 +189,11 @@ const NewPurchaseOrder = () => {
                         <Form.Item name={['user', 'salesEndDate']} label="Sales End Date">
                             <DatePicker style={{ width: '100%' }} />
                         </Form.Item>
-                    </Col>
+                    </Col> */}
                 </Row>
             </Form>
 
-            <Form name="dynamic_form_nest_item" onFinish={onFinish} autoComplete="off">
+            <Form form={productListForm} name="dynamic_form_nest_item" onFinish={onFinish} autoComplete="off">
                 <Form.List name="users">
                     {(fields, { add, remove }) => {
                         return (
@@ -149,54 +218,58 @@ const NewPurchaseOrder = () => {
                                         </Form.Item>
                                         <Form.Item
                                             {...field}
-                                            name={[field.name, 'stockQty']}
-                                            fieldKey={[field.fieldKey, 'stockQty']}
+                                            name={[field.name, 'batchNumber']}
+                                            fieldKey={[field.fieldKey, 'batchNumber']}
                                         >
-                                            <InputNumber style={{ minWidth: 125 }} placeholder="Stock qty" />
+                                            <Input style={{ minWidth: 150 }} placeholder="Batch No." />
                                         </Form.Item>
                                         <Form.Item
                                             {...field}
-                                            name={[field.name, 'soldQty']}
-                                            fieldKey={[field.fieldKey, 'soldQty']}
+                                            name={[field.name, 'quantity']}
+                                            fieldKey={[field.fieldKey, 'quantity']}
                                         >
-                                            <InputNumber style={{ minWidth: 125 }} placeholder="Sold qty" />
+                                            <InputNumber style={{ minWidth: 125 }} placeholder="Quantity" />
                                         </Form.Item>
                                         <Form.Item
                                             {...field}
-                                            name={[field.name, 'orderQty']}
-                                            fieldKey={[field.fieldKey, 'orderQtyLU']}
+                                            name={[field.name, 'unit']}
+                                            fieldKey={[field.fieldKey, 'unit']}
                                         >
-                                            <InputNumber style={{ minWidth: 125 }} placeholder="Order qty(LU)" />
+                                            <Select
+                                                placeholder="Unit"
+                                                allowClear>
+                                                <Option value="1-0-0">bottle</Option>
+                                                <Option value="1-1-0">box</Option>
+                                            </Select>
                                         </Form.Item>
                                         <Form.Item
                                             {...field}
-                                            name={[field.name, 'orderQty']}
-                                            fieldKey={[field.fieldKey, 'orderQtySU']}
+                                            name={[field.name, 'purchaseCost']}
+                                            fieldKey={[field.fieldKey, 'purchaseCost']}
                                         >
-                                            <InputNumber style={{ minWidth: 125 }} placeholder="Order qty (SU)" />
+                                            <InputNumber style={{ minWidth: 150 }} placeholder="Purchase Cost" />
                                         </Form.Item>
                                         <Form.Item
                                             {...field}
-                                            name={[field.name, 'luPrice']}
-                                            fieldKey={[field.fieldKey, 'luPrice']}
+                                            name={[field.name, 'expiryDate']}
+                                            fieldKey={[field.fieldKey, 'expiryDate']}
                                         >
-                                            <InputNumber style={{ minWidth: 125 }} placeholder="LU Price" />
+                                            <DatePicker />
                                         </Form.Item>
                                         <Form.Item
                                             {...field}
-                                            name={[field.name, 'suPrice']}
-                                            fieldKey={[field.fieldKey, 'suPrice']}
+                                            name={[field.name, 'discount']}
+                                            fieldKey={[field.fieldKey, 'discount']}
                                         >
-                                            <InputNumber style={{ minWidth: 125 }} placeholder="SU Price" />
+                                            <InputNumber style={{ minWidth: 125 }} placeholder="discount" />
                                         </Form.Item>
                                         <Form.Item
                                             {...field}
-                                            name={[field.name, 'amount']}
-                                            fieldKey={[field.fieldKey, 'amount']}
+                                            name={[field.name, 'tax']}
+                                            fieldKey={[field.fieldKey, 'tax']}
                                         >
-                                            <InputNumber style={{ minWidth: 225 }} placeholder="Amount" />
+                                            <InputNumber style={{ minWidth: 125 }} placeholder="tax" />
                                         </Form.Item>
-
                                         <MinusCircleOutlined
                                             onClick={() => {
                                                 remove(field.name);
@@ -222,11 +295,22 @@ const NewPurchaseOrder = () => {
                 </Form.List>
                 <Row gutter={24}>
                     <Col span={6}>
+                        <Form.Item name={['user', 'totalGST']} label="Total GST">
+                            <InputNumber style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name={['user', 'totalDiscount']} label="Total Discount">
+                            <InputNumber style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
                         <Form.Item name={['user', 'totalAmount']} label="Total Amount">
-                        <InputNumber style={{ width: '100%' }} />
+                            <InputNumber style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
                 </Row>
+
                 <Row>
                     <Col span={24} style={{ textAlign: 'right' }}>
                         <Form.Item>

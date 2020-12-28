@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PlusOutlined, OrderedListOutlined, UploadOutlined } from '@ant-design/icons';
 import { Form, Input, Row, Col, Divider, InputNumber, Button, Upload, Select, notification, DatePicker } from 'antd';
 import { medicineDistributionUnits } from './utils';
+import queryString from 'query-string';
+import useSavePharmacyMedicine from '../../../state/pharmacy/hooks/useSavePharmacyMedicine';
+import useGetPharmacyMedicineDetail from '../../../state/pharmacy/hooks/useGetMedicinedetail';
 const { Option } = Select;
 const { TextArea } = Input;
 const layout = {
@@ -25,23 +28,77 @@ const validateMessages = {
 };
 
 const medicineUnits = medicineDistributionUnits.map(medicineDistributionUnit => <Option key={medicineDistributionUnit}>{medicineDistributionUnit}</Option>);
-const AddNewMedicine = () => {
+const AddNewMedicine = ({ location, history }) => {
     let index = 0;
+    const [form] = Form.useForm();
     const [name, setName] = useState("");
     const [items, setItems] = useState(['Aspirin', 'Tablets', 'Syrup']);
+    const [status, setRequest] = useSavePharmacyMedicine();
+    const [medicineDetail, setRequest1] = useGetPharmacyMedicineDetail();
+    const queryParams = queryString.parse(location.search);
+    useEffect(() => {
+        if (status) {
+            notification["success"]({
+                message: 'SUCCESS',
+                description: 'Medicine added successfully',
+                duration: 3
+            });
+        }
+        if (queryParams.mode == "edit" && queryParams.medicineId != null) {
+            setRequest1(queryParams.medicineId);
+        }
+        form.setFieldsValue({
+            user: { medicineName: "dasas" }
+        });
+    }, [status]);
 
+    if (medicineDetail != null) {
+        form.setFieldsValue({
+            user: {
+                medicineId: medicineDetail.medicineId,
+                medicineName: medicineDetail.medicineName,
+                genericName: medicineDetail.genericName,
+                boxSize: medicineDetail.boxSize,
+                expDate: medicineDetail.expiryDate,
+                medicineShelf: medicineDetail.medicineShelf,
+                details: medicineDetail.details,
+                category: medicineDetail.category,
+                unit: medicineDetail.unit,
+                triggerValue: medicineDetail.triggerValue,
+                image: medicineDetail.image,
+                salePrice: medicineDetail.salePrice,
+                supplierPrice: medicineDetail.suppliersPrice,
+                tax: medicineDetail.tax,
+                supplierName: medicineDetail.supplierName,
+                availability: "Available"
+            }
+        });
+    }
     const onFinish = formData => {
         const form = formData.user;
+        console.log(form);
         const body = {
-            "empId": "test123",
-            "doctorName": form.name,
-            "department": form.department,
-            "experience": form.experience,
-            "speciality": form.speciality,
-            "highestQualification": form.highestQualification,
-            "consulationCharge": form.consulationCharge,
-            "designation": form.designation
+            medicineName: form.medicineName,
+            genericName: form.genericName,
+            boxSize: form.boxSize,
+            expDate: form.expiryDate,
+            medicineShelf: form.medicineShelf,
+            details: form.details,
+            category: form.category,
+            unit: form.unit,
+            triggerValue: form.triggerValue,
+            image: form.image,
+            salePrice: form.salePrice,
+            supplierPrice: form.suppliersPrice,
+            tax: form.tax,
+            supplierName: form.supplierName,
+            availability: "Available"
+        };
+
+        if (queryParams.mode == "edit" && queryParams.medicineId != null) {
+            body["medicineId"] = queryParams.medicineId;
         }
+        setRequest(body);
     };
     function onNameChange(event) {
         // console.log("sas", event.target.value);
@@ -53,11 +110,15 @@ const AddNewMedicine = () => {
     }
     return (
         <>
-            <Button type="dashed" icon={<PlusOutlined />}>Add Supplier</Button>
-            <Button type="dashed" style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Manage Medicine</Button>
+            <Button onClick={() => {
+                            history.push({ pathname: '/home/manageSuppliers'});
+                        }} type="dashed" icon={<PlusOutlined />}>Add Supplier</Button>
+            <Button type="dashed" onClick={() => {
+                            history.push({ pathname: '/home/manageMedicines'});
+                        }} style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Manage Medicine</Button>
             <Button type="dashed" style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Import Medicine</Button>
             <br /><br /><br />
-            <Form {...layout} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
+            <Form form={form} {...layout} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
                 <Row gutter={24}>
                     <Col span={12}>
                         <Form.Item name={['user', 'medicineName']} label="Medicine Name" rules={[{ required: true }]}>
@@ -137,29 +198,19 @@ const AddNewMedicine = () => {
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item name={['user', 'triggerValue']} label="Trigger Value" rules={[{ type: 'number', min: 0, max: 5000 }]}>
+                        <Form.Item name={['user', 'triggerValue']} label="Reorder value" rules={[{ type: 'number', min: 0, max: 5000 }]}>
+                            <InputNumber style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name={['user', 'salePrice']} label="Sale Price" rules={[{ required: true }]}>
                             <InputNumber style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
                 </Row>
                 <Divider orientation="left">Purchase Details</Divider>
                 <Row gutter={24}>
-                    <Col span={12}>
-                        <Form.Item name={['user', 'salePrice']} label="Sale Price" rules={[{ required: true }]}>
-                            <InputNumber style={{ width: '100%' }} />
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item name={['user', 'suppliersPrice']} label="Suppliers Price" rules={[{ required: true }]}>
-                            <InputNumber style={{ width: '100%' }} />
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item name={['user', 'tax']} label="Tax (%)">
-                            <InputNumber style={{ width: '100%' }} />
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
+                <Col span={12}>
                         <Form.Item name={['user', 'supplierName']} label="Supplier Name">
                             <Select
                                 showSearch
@@ -170,6 +221,34 @@ const AddNewMedicine = () => {
                                 }>
 
                             </Select>
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                    <Form.Item name={['user', 'purchaseQuantity']} label="Purchase quantity" rules={[{ type: 'number', min: 0, max: 5000 }]}>
+                            <InputNumber style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name={['user', 'purchaseUnit']} label="Purchase Unit">
+                            <Select
+                                showSearch
+                                placeholder="Select Distribution Unit" style={{ width: '100%' }}
+                                optionFilterProp="children"
+                                filterOption={(input, option) =>
+                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                }>
+                                {medicineUnits}
+                            </Select>
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name={['user', 'suppliersPrice']} label="Suppliers Price" rules={[{ required: true }]}>
+                            <InputNumber style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name={['user', 'tax']} label="Tax (%)">
+                            <InputNumber style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
                 </Row>

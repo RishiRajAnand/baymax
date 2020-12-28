@@ -9,6 +9,7 @@ import usePatientSearchbyId from '../../state/patientSearch/hooks/usePatientSear
 import { departments } from '../../utils/departmentList';
 import '../appointment/appointment.css';
 import PatientDetails from '../patientDetails';
+import timeSlot from '../../utils/timeSlot';
 const { Option } = Select;
 
 function disabledDate(current) {
@@ -20,6 +21,7 @@ const department = departments.map(department => <Option key={department}>{depar
 
 const Appointment = ({ location, history }) => {
     let doctorsList = [];
+    let timeSlots = [];
     // let selectedDoctor = "";
     const map = new Map();
     const queryParams = queryString.parse(location.search);
@@ -107,6 +109,8 @@ const Appointment = ({ location, history }) => {
             <p>With {map.get(selectedDoctor).doctorName}</p>
         </Card>);
     }
+
+    timeSlots = timeSlot(new Date(), 2, 4, 15).map(val => <Option key={val} >val</Option>);
     return (
         <>
             <PatientDetails patientId={queryParams.patientId} />
@@ -144,12 +148,13 @@ const Appointment = ({ location, history }) => {
                     </Select>
                     <br /><br /><br />
                     <Select placeholder="Select Time Slot" style={{ width: 300 }}>
-                        <Option value="jack">11:30 - 11:45</Option>
+                        {timeSlots}
+                        {/* <Option value="jack">11:30 - 11:45</Option>
                         <Option value="jack1">11:30 - 11:45</Option>
                         <Option value="jack2">11:30 - 11:45</Option>
                         <Option value="jack3">11:30 - 11:45</Option>
                         <Option value="jack4">11:30 - 11:45</Option>
-                        <Option value="jack5">11:30 - 11:45</Option>
+                        <Option value="jack5">11:30 - 11:45</Option> */}
                     </Select></Col>
                 <Col span={8}>
                     {appointmentCard}
