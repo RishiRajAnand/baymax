@@ -27,6 +27,7 @@ import IndentList from '../pharmacy/indentPreparations/indentList';
 import Certificates from '../certificates';
 import Package from '../package';
 import NewPackage from '../package/newPackage';
+import InProgress from '../inProgress';
 
 
 const { Header, Sider, Content, Footer } = Layout;
@@ -69,6 +70,7 @@ class Home extends React.Component {
               <Menu.Item key="Add Doctors"><Link to={`${path}/addDoctor`}>Add Doctors</Link></Menu.Item>
               <Menu.Item key="Add Medicines"><Link to={`${path}/addMedicine`}>Add Medicines</Link></Menu.Item>
               <Menu.Item key="Add Test"><Link to={`${path}/addTest`}>Add Tests</Link></Menu.Item>
+              <Menu.Item key="Service Catalogue"><Link to={`${path}/inProgress`}>Service Catalogue</Link></Menu.Item>
               {/* <Menu.Item key="Add Departments">Add Departments</Menu.Item>
               <Menu.Item key="Add Employees">Add Employees</Menu.Item>
               <Menu.Item key="Add Services">Add Services</Menu.Item> */}
@@ -161,6 +163,8 @@ class Home extends React.Component {
             <Route path={`${path}/package`} component={Package} />
             <Route path={`${path}/newPackage`} component={NewPackage} />
             <Route path={`${path}/manageSuppliers`} component={ManageSupplier} />
+            <Route path={`${path}/inProgress`} component={InProgress} />
+            
           </Content>
           <Footer style={{ textAlign: 'center' }}>BayMax ©2020 Created by Rishiraj</Footer>
         </Layout>

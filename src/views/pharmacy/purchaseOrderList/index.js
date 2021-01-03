@@ -1,44 +1,51 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { Table, Tag, Space } from 'antd';
+import { Table, Tag, Space, notification } from 'antd';
 import UseGetAllPurchaseOrder from '../../../state/pharmacy/hooks/UseGetAllPurchaseOrders';
+import useDeletePurchaseOrder from '../../../state/pharmacy/hooks/useDeletePurchaseOrder';
 
-const data = [
-    {
-        key: '1',
-        orderDate: '',
-        deliveryDate: '',
-        supplier: '',
-        store: '',
-        totalAmount: '',
-        status: ['paid']
-    },
-    {
-        key: '2',
-        orderDate: '',
-        deliveryDate: '',
-        supplier: '',
-        store: '',
-        totalAmount: '',
-        status: ['paid']
+// const data = [
+//     {
+//         key: '1',
+//         orderDate: '',
+//         deliveryDate: '',
+//         supplier: '',
+//         store: '',
+//         totalAmount: '',
+//         status: ['paid']
+//     },
+//     {
+//         key: '2',
+//         orderDate: '',
+//         deliveryDate: '',
+//         supplier: '',
+//         store: '',
+//         totalAmount: '',
+//         status: ['paid']
 
-    },
-    {
-        key: '3',
-        orderDate: '',
-        deliveryDate: '',
-        supplier: '',
-        store: '',
-        totalAmount: '',
-        status: ['paid']
+//     },
+//     {
+//         key: '3',
+//         orderDate: '',
+//         deliveryDate: '',
+//         supplier: '',
+//         store: '',
+//         totalAmount: '',
+//         status: ['paid']
 
-    },
-];
+//     },
+// ];
 
 const PurchaseOrder = ({ location, history }) => {
-    // const data = [];
+    let data = [];
     const columns = [
+        {
+            title: 'Invoice No.',
+            dataIndex: 'invoiceNumber',
+            key: 'orderDate',
+            render: text => <a>{text}</a>,
+        },
         {
             title: 'Order Date',
             dataIndex: 'orderDate',
@@ -87,11 +94,9 @@ const PurchaseOrder = ({ location, history }) => {
             render: (text, record) => (
                 <Space size="middle">
                     <a onClick={() => {
-                        history.push({ pathname: '/home/newPurchaseOrder', search: '?mode=edit' + '&purchaseOrderId=' + record.orderId });
+                        history.push({ pathname: '/home/newPurchaseOrder', search: '?mode=edit' + '&purchaseOrderId=' + record.purchaseOrderId });
                     }}>View</a>
-                    <a onClick={() => {
-                        history.push({ pathname: '/home/newPurchaseOrder', search: '?mode=edit' + '&purchaseOrderId=' + record.orderId });
-                    }}>Cancel</a>
+                    <a onClick={() => deletePurchaseOrder(record)}>Cancel</a>
                     {/* <a onClick={() => {
                         history.push({ pathname: '/home/newPurchaseOrder', search: '?patientId=' + record.patientId + '&doctorId=' + record.doctorId + '&appointmentId=' + record.appointmentId });
                     }}>edit</a> */}
@@ -100,21 +105,42 @@ const PurchaseOrder = ({ location, history }) => {
         },
     ];
     const [purchaseOrders, isLoading, setGetAllPurchaseOrder] = UseGetAllPurchaseOrder();
+    const [status, setDeletePurchaseOrder] = useDeletePurchaseOrder();
     useEffect(() => {
+        if (status) {
+            notification["success"]({
+                message: 'SUCCESS',
+                description: 'Purchase order created successfully',
+                duration: 3
+            });
+        }
         setGetAllPurchaseOrder();
     }, []);
 
+    function deletePurchaseOrder(record) {
+        const body = {
+            purchaseOrderId: record.purchaseOrderId,
+            supplierName: null,
+            orderDate: null,
+            storeName: null,
+            // totalAmount: null,
+            deliveryDate: null,
+            rol: null,
+            productDetails: null,
+        };
+        setDeletePurchaseOrder(body);
+    }
     if (purchaseOrders.length > 0) {
-        purchaseOrders.map((order, index) => {
+        data = purchaseOrders.map((order, index) => {
             return {
                 key: index,
-                orderDate: order.orderDate,
-                orderId: "bhugat",
+                purchaseOrderId: order.purchaseOrderId,
+                orderDate: (new Date(order.orderDate)).toDateString(),
                 deliveryDate: order.deliveryDate,
-                supplier: order.supplier,
+                supplier: order.supplierName,
                 store: order.storeName,
-                totalAmount: order.totalAmount,
-                status: ['paid']
+                // totalAmount: order.totalAmount,
+                status: ['order placed']
             };
         });
     }

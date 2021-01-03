@@ -1,10 +1,12 @@
 import { MinusCircleOutlined, OrderedListOutlined, PlusOutlined } from '@ant-design/icons';
 import { AutoComplete, Button, Col, DatePicker, Divider, Form, Input, InputNumber, notification, Row, Select, Space, Switch } from 'antd';
 import React, { useState, useEffect } from 'react';
+import queryString from 'query-string';
+import moment from 'moment';
 import useGetAllSuppliers from '../../../state/pharmacy/hooks/useGetAllSupplier';
 import useGetAllPharmacyMedicines from '../../../state/pharmacy/hooks/useGetAllPharmacyMedicines';
 import useSavePurchaseOrder from '../../../state/pharmacy/hooks/useSavePurchaseOrder';
-import UseGetAllPurchaseOrder from '../../../state/pharmacy/hooks/UseGetAllPurchaseOrders';
+import useGetPurchaseOrderDetails from '../../../state/pharmacy/hooks/useGetPurchaseOrderDetails';
 const { Option } = Select;
 const { TextArea } = Input;
 const layout = {
@@ -28,10 +30,11 @@ const validateMessages = {
 };
 
 const NewPurchaseOrder = ({ location, history }) => {
+    const medicineMap = new Map();
     let options = [];
     const supplierOptions = [
-        { value: 'light', label: 'Light' },
-        { value: 'bamboo', label: 'Bamboo' },
+        // { value: 'light', label: 'Light' },
+        // { value: 'bamboo', label: 'Bamboo' },
     ];
     let index = 0;
     const [purchaseDetailsForm] = Form.useForm();
@@ -39,8 +42,10 @@ const NewPurchaseOrder = ({ location, history }) => {
     const [name, setName] = useState("");
     const [items, setItems] = useState(['ABC pharma', 'Medimex store']);
     const [suppliers, isLoadings, setSupplierSearch] = useGetAllSuppliers();
+    const queryParams = queryString.parse(location.search);
     const [medicines, isLoading, setMedicineSearch] = useGetAllPharmacyMedicines();
     const [status, setSavePurchaseOrder] = useSavePurchaseOrder();
+    const [orderDetail, setGetPurchaseOrderDetails] = useGetPurchaseOrderDetails();
     // const [purchaseOrderList, isLoading1, setPurchaseOrderListFetch] = UseGetAllPurchaseOrder();
     useEffect(() => {
         setMedicineSearch();
@@ -52,8 +57,24 @@ const NewPurchaseOrder = ({ location, history }) => {
                 duration: 3
             });
         }
+        if (queryParams.mode == "edit" && queryParams.purchaseOrderId != null) {
+            setGetPurchaseOrderDetails(queryParams.purchaseOrderId);
+        }
     }, []);
 
+
+    if (orderDetail != null) {
+        console.log(orderDetail);
+        purchaseDetailsForm.setFieldsValue({
+            user: {
+                supplierName: orderDetail.supplierName,
+                // orderDate: moment(orderDetail.orderDate).toDate,
+                storeName: orderDetail.storeName,
+                // deliveryDate: orderDetail.deliveryDate,
+                rol: orderDetail.rol
+            }
+        });
+    }
     if (suppliers.length > 0) {
         suppliers.forEach(supplier => {
             supplierOptions.push({ value: supplier.supplierName, label: supplier.supplierName });
@@ -62,32 +83,50 @@ const NewPurchaseOrder = ({ location, history }) => {
     if (medicines.length > 0) {
         medicines.forEach(medicine => {
             options.push({ value: medicine.medicineName, label: medicine.medicineName });
+            medicineMap.set(medicine.medicineName, medicine);
+        });
+    }
+    if (queryParams.mode == "prefetch") {
+
+        productListForm.setFieldsValue({
+            users: [{
+                productName: queryParams.medicineName,
+                quantity: 1,
+                unit: "",
+                purchaseCost: "",
+                batchNumber: "",
+                expDate: "",
+                discount: "",
+                tax: ""
+            }]
         });
     }
     const onFinish = formData => {
         const purchaseDetails = purchaseDetailsForm.getFieldsValue().user;
 
         const body = {
-            purchaseInvoiceDto: {
-                supplierId: "",
-                orderDate: "",
-                invoiceNumber: "",
-                totalAmount: formData.user.totalAmount,
-
-            },
-            purchaseProductList: [],
+            purchaseOrderId: queryParams.purchaseOrderId,
+            supplierName: purchaseDetails.supplierName,
+            orderDate: purchaseDetails.orderDate,
+            storeName: purchaseDetails.storeName,
+            // totalAmount: formData.user.totalAmount,
+            deliveryDate: purchaseDetails.deliveryDate,
+            rol: purchaseDetails.rol,
+            productDetails: [],
         };
-        const form = formData.user;
         const productList = productListForm.getFieldsValue().users;
         if (productList != null && productList.length > 0) {
             productList.forEach(product => {
-                body.purchaseProductList.push({
-                    productId: product.productId,
+                const medicine = medicineMap.get(product.productName);
+                body.productDetails.push({
+                    productId: null,
+                    purchaseOrderId: queryParams.purchaseOrderId,
+                    medicineId: medicine.medicineId,
+                    productName: product.productName,
+                    batchNumber: product.batchNumber,
                     quantity: product.quantity,
                     unit: product.unit,
                     purchaseCost: product.purchaseCost,
-                    batchNumber: product.batchNumber,
-                    expDate: product.batchNumber,
                     discount: product.discount,
                     tax: product.tax
                 });
@@ -128,6 +167,17 @@ const NewPurchaseOrder = ({ location, history }) => {
                             <Switch />
                         </Form.Item>
                     </Col>
+                    <Col span={12}>
+                        <Form.Item name={['user', 'paid']} label="Status">
+                            <Select
+                                placeholder="Status"
+                                allowClear>
+                                <Option value="orderPlaced">Order Placed</Option>
+                                <Option value="delivered">Delivered</Option>
+                                <Option value="cancelled">Cancelled</Option>
+                            </Select>
+                        </Form.Item>
+                    </Col>
                 </Row>
                 <Row gutter={24}>
                     <Col span={12}>
@@ -146,6 +196,11 @@ const NewPurchaseOrder = ({ location, history }) => {
                     <Col span={12}>
                         <Form.Item name={['user', 'deliveryDate']} label="Delivery Date">
                             <DatePicker style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name={['user', 'invoiceN']} label="Invoice Number">
+                            <Input style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>

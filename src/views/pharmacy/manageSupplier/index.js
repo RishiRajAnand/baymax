@@ -1,5 +1,5 @@
 import { UserOutlined } from '@ant-design/icons';
-import { Button, Form, Input, InputNumber, notification, Table } from 'antd';
+import { Button, Form, Input, InputNumber, notification, Table, Space } from 'antd';
 import React, { useEffect } from 'react';
 import Spinner from '../../../components/spinner';
 import useAddMedicine from '../../../state/addMedicine/hooks/useAddMedicine';
@@ -11,8 +11,8 @@ const ManageSupplier = () => {
     const data = [];
     const [form] = Form.useForm();
     // const [, forceUpdate] = useState();
-    const [status, setRequest] = useAddSupplier();
-    const [medicines, isLoadings, setMedicineSearch] = useGetAllSuppliers();
+    const [status, isLoading, setRequest] = useAddSupplier();
+    const [suppliers, isLoadings, setMedicineSearch] = useGetAllSuppliers();
     // To disable submit button at the beginning.
     useEffect(() => {
         if (status) {
@@ -23,20 +23,26 @@ const ManageSupplier = () => {
             });
             setMedicineSearch();
         }
-        if (medicines.length === 0) {
+        if (suppliers.length === 0) {
             setMedicineSearch();
         }
         // forceUpdate({});
     }, [status]);
-    console.log("medicines list", medicines);
-    const onFinish = form => {
+    const onFinish = formData => {
         const body = {
-            "supplierName": form.name,
-            "email": form.email,
-            "phoneNumber": form.phone,
-            "address": form.address,
+            "supplierName": formData.name,
+            "email": formData.email,
+            "phoneNumber": formData.phone,
+            "address": formData.address,
         };
         setRequest(body);
+        form.setFieldsValue({
+            "name": "",
+            "email": "",
+            "phone": "",
+            "address": "",
+        });
+        
     };
     const columns = [
         {
@@ -56,16 +62,37 @@ const ManageSupplier = () => {
         {
             title: 'Address',
             dataIndex: 'address'
-        }
+        },
+        {
+            title: 'Action',
+            key: 'action',
+            render: (text, record) => (
+                <Space size="middle">
+                    <a onClick={()=> editSupplier(record)}>Edit</a>
+                    <a>Delete</a>
+                </Space>
+            ),
+        },
     ];
-    if (medicines.length > 0) {
-        medicines.forEach((medicine, index) => {
+
+    function editSupplier(record) {
+        form.setFieldsValue({
+            "name": record.supplierName,
+            "email": record.email,
+            "phone": record.phoneNumber,
+            "address": record.address,
+        });
+    }
+
+    if (suppliers.length > 0) {
+        suppliers.forEach((supplier, index) => {
             data.push({
                 key: index,
-                medicineName: medicine.medicineName,
-                price: medicine.price,
-                strength: medicine.strength,
-                medicineType: medicine.medicineType,
+                supplierId: supplier.supplierId,
+                supplierName: supplier.supplierName,
+                email: supplier.email,
+                phoneNumber: supplier.phoneNumber,
+                address: supplier.address,
             });
         });
     }
@@ -75,7 +102,7 @@ const ManageSupplier = () => {
     }
     return (
         <>
-            <Spinner show={isLoadings} />
+            <Spinner show={isLoading} />
             <Form form={form} name="horizontal_login" layout="inline" onFinish={onFinish}>
                 <Form.Item
                     name="name"

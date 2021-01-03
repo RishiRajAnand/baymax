@@ -1,4 +1,4 @@
-import { Button, Col, Descriptions, Divider, Form, Input, InputNumber, Radio, Row, Select, Table, Popconfirm, Modal } from 'antd';
+import { Button, Col, Descriptions, Divider, Form, Input, InputNumber, notification, Radio, Row, Select, Table, Popconfirm, Modal } from 'antd';
 import queryString from 'query-string';
 import React, { useRef, useState, useEffect, useContext } from 'react';
 import { useReactToPrint } from 'react-to-print';
@@ -8,7 +8,9 @@ import AddItem from './components/addItemModal';
 import { BillPrint } from './components/billPrint';
 import BillSearch from './components/billSearch';
 import FinalCharges from './components/finalCharges';
-
+import usePatientSearchbyId from '../../state/patientSearch/hooks/usePatientSearchbyId';
+import useSaveGenerateBill from '../../state/billing/hooks/useGenerateBill';
+import { saveGenerateBill } from '../../state/billing/queries';
 const { Search } = Input;
 const { Option } = Select;
 
@@ -120,7 +122,7 @@ const Billing = ({ location, history }) => {
       },
     },
     {
-      title: 'GST',
+      title: 'GST(CGST+SGST)',
       dataIndex: 'gst',
       sorter: {
         compare: (a, b) => a.gst - b.gst,
@@ -128,8 +130,10 @@ const Billing = ({ location, history }) => {
       },
     },
     {
-      title: 'Discount',
+      title: 'Discount(%)',
       dataIndex: 'discount',
+      editable: "true",
+      width: '10%',
       sorter: {
         compare: (a, b) => a.discount - b.discount,
         multiple: 2,
@@ -172,8 +176,11 @@ const Billing = ({ location, history }) => {
     const newData = [...data];
     const index = newData.findIndex((item) => row.key === item.key);
     const item = newData[index];
+    const finalCharges = getFinalCharges([row]);
+    row.total = finalCharges.discountedAmount + finalCharges.totalGST;
     newData.splice(index, 1, { ...item, ...row });
     setData(newData);
+    calculateTotalCharges(newData)
   };
 
   let showSearch = "";
@@ -205,8 +212,11 @@ const Billing = ({ location, history }) => {
     total: 100,
   }];
   const [showFilter, setShowFilter] = useState("patientId");
+  const [paymentMode, setPaymentMode] = useState("Cash");
   const [billResponse, isLoading, setBillSearch] = useBillSearch();
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [generateBillStatus,  setGenerateBillStatus] = useSaveGenerateBill();
+  const [patient, isLoading1, setRequest] = usePatientSearchbyId();
+  const [isModalVisible, setIsModalVisible] = useState(false);;
   const [billDetails, setBillDetails] = useState(defaultbillDetails);
   const [finalCharges, setFinalCharges] = useState(defaultFinalCharges);
   const [data, setData] = useState([]);
@@ -230,18 +240,60 @@ const Billing = ({ location, history }) => {
   useEffect(() => {
     calculateTotalCharges(mockData);
     setData(mockData);
+    if (queryParams.context === 'registration') {
+      const tempData = [
+        {
+          key: '1',
+          name: 'Registration',
+          quantity: 1,
+          amount: 300,
+          gst: 10,
+          discount: 0,
+          total: 310,
+        }];
+      setData(tempData);
+      calculateTotalCharges(tempData);
+      billDetails.billId = queryParams.receiptId;
+    } else if (queryParams.context === 'consulation') {
+      const tempData = [
+        {
+          key: '1',
+          name: 'Consulation ' + '(' + (queryParams.doctorName) + ')',
+          quantity: 1,
+          amount: queryParams.charges,
+          gst: 5,
+          discount: 0,
+          total: Number(queryParams.charges) + 5,
+        }];
+      setData(tempData);
+      calculateTotalCharges(tempData);
+      billDetails.billId = queryParams.receiptId;
+    } else {
+      showSearch = <BillSearch onSearch={onBillSearch} />;
+    }
+    setRequest(queryParams.patientId);
   }, []);
-
+  if (generateBillStatus == true) {
+    notification["success"]({
+        message: 'SUCCESS',
+        description: 'Bill Generated Successfully',
+        duration: 3
+    });
+}
   function getFinalCharges(dataList) {
     const finalCharges = {
       totalAmount: 0,
       totalGST: 0,
-      totalDiscount: 0
+      totalDiscount: 0,
+      discountedAmount: 0
     }
+
     dataList.forEach(data => {
-      finalCharges.totalAmount += data.amount;
-      finalCharges.totalDiscount += data.discount;
-      finalCharges.totalGST += data.gst;
+      const discountedAmount = Number.parseInt(data.amount) - ((Number.parseInt(data.discount) / 100) * Number.parseInt(data.amount));
+      finalCharges.totalAmount += Number.parseInt(data.amount);
+      finalCharges.totalDiscount += Number.parseInt(data.discount);
+      finalCharges.discountedAmount += discountedAmount;
+      finalCharges.totalGST += Number.parseInt(data.gst);
     });
     return finalCharges;
   }
@@ -288,40 +340,7 @@ const Billing = ({ location, history }) => {
     // setData([...data, ...tempData]);
   }
 
-  if (queryParams.context === 'registration') {
-    data = [
-      {
-        key: '1',
-        name: 'Registration',
-        quantity: 1,
-        amount: 300,
-        quantity: 1,
-        gst: 10,
-        discount: 0,
-        total: 300,
-      }];
-    billDetails.billId = queryParams.receiptId;
-    billDetails.totalAmount = 300;
-    billDetails.totalGST = 10;
-    billDetails.totalDiscount = 0;
-  } else if (queryParams.context === 'consulation') {
-    data = [
-      {
-        key: '1',
-        name: 'Consulation ' + '(' + (queryParams.doctorName) + ')',
-        quantity: 1,
-        amount: queryParams.charges,
-        gst: 5,
-        discount: 50,
-        total: queryParams.charges * 1,
-      }];
-    billDetails.billId = queryParams.receiptId;
-    billDetails.totalAmount = queryParams.charges * 1;
-    billDetails.totalGST = 10;
-    billDetails.totalDiscount = 50;
-  } else {
-    showSearch = <BillSearch onSearch={onBillSearch} />;
-  }
+
 
   function onChange(pagination, filters, sorter, extra) {
     console.log('params', pagination, filters, sorter, extra);
@@ -334,12 +353,12 @@ const Billing = ({ location, history }) => {
   function onItemAdded(itemFormValue) {
     const newData = {
       key: Math.random(),
-      name: itemFormValue.user.name,
-      quantity: itemFormValue.user.quantity,
-      amount: 100,
+      name: itemFormValue.name,
+      quantity: itemFormValue.quantity,
+      amount: itemFormValue.amount,
       gst: 10,
       discount: 0,
-      total: 100,
+      total: itemFormValue.quantity * itemFormValue.amount,
     }
     const tempDataList = [...data, newData];
 
@@ -355,9 +374,10 @@ const Billing = ({ location, history }) => {
 
   function calculateTotalCharges(tempDataList) {
     const finalCharges = getFinalCharges(tempDataList);
+    console.log(finalCharges);
     setFinalCharges({
-      totalAmount: finalCharges.totalAmount,
-      totalDiscount: finalCharges.totalDiscount,
+      totalAmount: finalCharges.discountedAmount + finalCharges.totalGST,
+      totalDiscount: (finalCharges.totalAmount - finalCharges.discountedAmount) / finalCharges.totalAmount * 100,
       totalGST: finalCharges.totalGST
     });
   }
@@ -369,6 +389,39 @@ const Billing = ({ location, history }) => {
     console.log("Discount changed", discountValue);
   }
 
+  function paymentMethod(e) {
+    setPaymentMode(e.target.value);
+  }
+
+  function generateBill() {
+    const body = {
+      billId: null,
+      billType: "",
+      createdAt: new Date(),
+      paymentStatus: "paid",
+      paymentMode: paymentMode,
+      patientId: queryParams.patientId,
+      totalCost: finalCharges.totalAmount,
+      billDetailList: []
+    };
+console.log(data);
+    data.forEach(item => {
+      const billItem = {
+        id: null,
+        itemName: item.name,
+        itemId: null,
+        billMapId: null,
+        cost: item.total,
+        concessionPercentage: item.discount,
+        mrp: item.amount,
+        concessionType: "discount"
+      };
+      body.billDetailList.push(billItem);
+    });
+
+    setGenerateBillStatus(body);
+  }
+
   return (
     <>
       <Modal title="Add Item" visible={isModalVisible} footer={null} onOk={handleOk} onCancel={handleCancel}>
@@ -377,7 +430,7 @@ const Billing = ({ location, history }) => {
       {showSearch}
       <PatientDetails patientId={queryParams.patientId} />
       <div style={{ display: 'none' }}>
-        <BillPrint ref={componentRef} itemList={data} />
+        <BillPrint ref={componentRef} itemList={data} finalCharges={finalCharges} patientDetails={patient} billId={queryParams.receiptId} patientId={queryParams.patientId} />
       </div>
       <Divider>Bill Details</Divider>
       <Descriptions>
@@ -398,25 +451,25 @@ const Billing = ({ location, history }) => {
 
       <FinalCharges finalCharges={finalCharges} onDiscountChange={onDiscountChange} />
       <Divider>Payment</Divider>
-      <Radio.Group>
-        <Radio value={1}>Cash</Radio>
-        <Radio value={2}>Card</Radio>
-        <Radio value={3}>UPI</Radio>
-        <Radio value={4}>Paytm</Radio>
+      <Radio.Group onChange={paymentMethod} value={paymentMode}>
+        <Radio value="Cash">Cash</Radio>
+        <Radio value="Card">Card</Radio>
+        <Radio value="UPI">UPI</Radio>
+        <Radio value="Paytm">Paytm</Radio>
       </Radio.Group>
       <br /><br /><br />
       <Row gutter={24}>
         <Col className="gutter-row" span={3}>
-          <Button type="primary">Pay</Button>
+          <Button style={{ width: '90%' }} type="primary" onClick={generateBill}>Generate Bill</Button>
         </Col>
-        <Col className="gutter-row" span={3}>
+        {/* <Col className="gutter-row" span={3}>
           <Button type="primary">Cancel</Button>
+        </Col> */}
+        <Col className="gutter-row" span={3}>
+          <Button style={{ width: '90%' }} type="primary" onClick={handlePrint}>Print</Button>
         </Col>
         <Col className="gutter-row" span={3}>
-          <Button type="primary" onClick={handlePrint}>Print</Button>
-        </Col>
-        <Col className="gutter-row" span={3}>
-          <Button type="primary" onClick={value => history.push({ pathname: '/home/appointment', search: '?patientId='.concat(queryParams.patientId) })}>Go To Appointment</Button>
+          <Button style={{ width: '90%' }} type="primary" onClick={value => history.push({ pathname: '/home/appointment', search: '?patientId='.concat(queryParams.patientId) })}>Go To Appointment</Button>
         </Col>
       </Row>
     </>

@@ -2,18 +2,27 @@ import React, { useRef } from 'react';
 import { Descriptions, Divider } from 'antd';
 import ReactToPrint from 'react-to-print';
 import '../components/billingPrint.css';
-import logo from '../../../assets/images/logo.png';
+import logo from '../../../assets/images/logo.jpg';
+import hospitalDetails from '../../../utils/constants';
+import Column from 'antd/lib/table/Column';
+import PatientDetails from '../../patientDetails';
+
 export class BillPrint extends React.Component {
     render() {
         const itemList = this.props.itemList;
-        let subtotal = 0;
+        const billId = this.props.billId;
+        const patientId = this.props.patientId;
+        const patientDetails = this.props.patientDetails;
+        const finalCharges = this.props.finalCharges;
+        const todaysDate = (new Date()).toDateString();
         const itemArray = itemList.map(item => {
-            subtotal = subtotal + item.amount;
             return (
                 <tr>
                     <td>{item.name}</td>
                     <td>{item.quantity}</td>
                     <td>{item.amount}</td>
+                    <td>{item.gst}</td>
+                    <td>{item.discount}</td>
                     <td>{item.total}</td>
                 </tr>)
         });
@@ -29,26 +38,33 @@ export class BillPrint extends React.Component {
                         No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China
                    </Descriptions.Item>
                 </Descriptions> */}
-                <div id="wrapper" style={{ marginTop: '30px' }}>
-                    <img style={{ width: "100px", margin: "0 auto" }} src={logo} />
+                <div id="wrapper" style={{ marginTop: '30px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                    <div>
+                        <img style={{ width: "400px", margin: "0 auto" }} src={logo} />
+                        <div style={{ marginLeft: '20px', fontSize: '12px', fontWeight: 'bold' }}>
+                            <p>{hospitalDetails.address}</p>
+                            <p>Contact: {hospitalDetails.contact}</p>
+                        </div>
+                    </div>
+                    <div style={{ width: '100%', height: '2px', background: 'grey', margin: '10px 0px' }}></div>
                     <table border="1" cellpadding="5" cellspacing="5" width="100%">
                         <tr>
                             <th>Name</th>
-                            <th>Rishiraj</th>
+                            <th>{patientDetails.patientName}</th>
                             <td>Age</td>
-                            <td>27</td>
+                            <td>{patientDetails.age}</td>
                         </tr>
                         <tr>
                             <td>PatientId</td>
-                            <td>R21212</td>
+                            <td>{patientId}</td>
                             <td>BillId</td>
-                            <td>R21212</td>
+                            <td>{billId}</td>
                         </tr>
                         <tr>
                             <td>Date</td>
-                            <td>14th Aug 2020</td>
+                            <td>{todaysDate}</td>
                             <td>Visit type</td>
-                            <td>General</td>
+                            <td>{patientDetails.visitType}</td>
                         </tr>
                     </table>
                     <br></br>
@@ -57,25 +73,32 @@ export class BillPrint extends React.Component {
                             <th>Item Name</th>
                             <th>Quantity</th>
                             <th>Amount</th>
+                            <th>GST(CGST + SGST)</th>
+                            <th>Discount(%)</th>
                             <th>Total</th>
                         </tr>
                         {itemArray}
                         <tr>
-                            <td colspan="2"></td>
+                            <td colspan="4"></td>
                             <td>Subtotal</td>
-                            <td>{subtotal}</td>
+                            <td>{finalCharges.totalAmount}</td>
                         </tr>
                         <tr>
-                            <td colspan="2"></td>
+                            <td colspan="4"></td>
                             <td>Discount</td>
-                            <td>0</td>
+                            <td>{finalCharges.totalDiscount}</td>
                         </tr>
                         <tr>
-                            <td colspan="2"></td>
+                            <td colspan="4"></td>
                             <td>Tax</td>
-                            <td>0</td>
+                            <td>{finalCharges.totalGST}</td>
                         </tr>
                     </table>
+                    <div style={{ marginTop: '50px', width: '100%', padding: '20px' }}>
+                        <div>Cashier Signature</div>
+                        <div style={{ float: 'right' }}>Director Signature</div>
+
+                    </div>
                 </div>
 
             </>

@@ -6,8 +6,8 @@ const PatientDetails = (prop) => {
     const [patient, isLoading, setRequest] = usePatientSearchbyId();
 
     useEffect(() => {
-        setRequest(prop.patientId)
-    }, []);
+        setRequest(prop.patientId);
+    }, [prop.patientId]);
 
     return (
         <>

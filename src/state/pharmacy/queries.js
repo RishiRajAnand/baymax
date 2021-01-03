@@ -21,7 +21,25 @@ export const saveSupplier = (body) => {
 
 export const savePurchaseOrder = (body) => {
     return axios
-        .post(`${api.url}/pharmacyController/savePurchaseOrder`, body)
+        .post(`${api.url}/pharmacyController/saveOrUpdatePurchaseOrder`, body)
+        .then(res => res.data)
+        .catch(err => {
+            return err;
+        });
+};
+
+export const deletePurchaseOrder = (body) => {
+    return axios
+        .delete(`${api.url}/pharmacyController/deletePurchaseOrder`, body)
+        .then(res => res.data)
+        .catch(err => {
+            return err;
+        });
+};
+
+export const getPurchaseOrderDetails = (purchaseOrderId) => {
+    return axios
+        .get(`${api.url}/pharmacyController/getPurchaseOrderDetails?purchaseOrderId=` + purchaseOrderId)
         .then(res => res.data)
         .catch(err => {
             return err;

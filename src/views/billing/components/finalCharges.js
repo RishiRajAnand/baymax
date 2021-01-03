@@ -15,7 +15,7 @@ const FinalCharges = (props) => {
             </Form.Item>
           </Col>
           <Col span={8} key={2}>
-            <Form.Item label="Total discount">
+            <Form.Item label="Total discount(%)">
               <InputNumber onChange={onDiscountChange} value={props.finalCharges.totalDiscount} />
             </Form.Item>
           </Col>

@@ -18,3 +18,12 @@ export const searchBillDetails = (id, filterType) => {
             return err.response;
         });
 };
+
+export const saveGenerateBill = (body) => {
+    return axios
+        .post(`${api.url}/HMServiceController/generateBill`, body)
+        .then(res => res.data)
+        .catch(err => {
+            return err;
+        });
+};

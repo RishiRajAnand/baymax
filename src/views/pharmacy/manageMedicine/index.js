@@ -6,12 +6,14 @@ import useGetAllPharmacyMedicines from '../../../state/pharmacy/hooks/useGetAllP
 // const data = [
 //     {
 //         key: '1',
-//         name: '',
+//         name: 'Paraceta',
 //         category: '',
 //         purchasePrice: '',
 //         sellingPrice: '',
 //         genericName: '',
 //         expiryDate: '',
+//         medicineId: '217',
+//         stock: 100
 //     },
 //     {
 //         key: '2',
@@ -21,6 +23,7 @@ import useGetAllPharmacyMedicines from '../../../state/pharmacy/hooks/useGetAllP
 //         sellingPrice: '',
 //         genericName: '',
 //         expiryDate: '',
+//         medicineId: '217'
 
 //     },
 //     {
@@ -31,6 +34,7 @@ import useGetAllPharmacyMedicines from '../../../state/pharmacy/hooks/useGetAllP
 //         sellingPrice: '',
 //         genericName: '',
 //         expiryDate: '',
+//         medicineId: '217'
 
 //     },
 // ];
@@ -83,12 +87,17 @@ const ManageMedicines = ({ location, history }) => {
             key: 'expiryDate',
         },
         {
+            title: 'Stock',
+            dataIndex: 'stock',
+            key: 'stock',
+        },
+        {
             title: 'Action',
             key: 'action',
             render: (text, record) => (
                 <Space size="middle">
                     <a onClick={() => {
-                        history.push({ pathname: '/home/newPurchaseOrder', search: '?patientId=' + record.patientId + '&doctorId=' + record.doctorId + '&appointmentId=' + record.appointmentId });
+                        history.push({ pathname: '/home/newPurchaseOrder', search: '?mode=prefetch' + '&medicineName=' + record.name });
                     }}>Place Order</a>
                     <a>Stock</a>
                     <a onClick={() => {

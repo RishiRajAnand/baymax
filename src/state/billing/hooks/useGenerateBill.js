@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { savePharmacyMedicine } from '../queries';
+import { saveGenerateBill } from '../queries';
 
-const useSavePharmacyMedicine = () => {
+const useSaveGenerateBill = () => {
   const [status, setStatus] = useState(false);
 
   const request = async (body) => {
-    const response = await savePharmacyMedicine(body);
+    const response = await saveGenerateBill(body);
 
     if (response === "success") {
       setStatus(true);
@@ -15,4 +15,4 @@ const useSavePharmacyMedicine = () => {
   return [status, request];
 };
 
-export default useSavePharmacyMedicine;
+export default useSaveGenerateBill;

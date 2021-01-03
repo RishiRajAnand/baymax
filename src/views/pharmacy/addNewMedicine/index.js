@@ -5,6 +5,7 @@ import { medicineDistributionUnits } from './utils';
 import queryString from 'query-string';
 import useSavePharmacyMedicine from '../../../state/pharmacy/hooks/useSavePharmacyMedicine';
 import useGetPharmacyMedicineDetail from '../../../state/pharmacy/hooks/useGetMedicinedetail';
+import { setNestedObjectValues } from 'formik';
 const { Option } = Select;
 const { TextArea } = Input;
 const layout = {
@@ -34,24 +35,24 @@ const AddNewMedicine = ({ location, history }) => {
     const [name, setName] = useState("");
     const [items, setItems] = useState(['Aspirin', 'Tablets', 'Syrup']);
     const [status, setRequest] = useSavePharmacyMedicine();
+    const [savedStatus, setSavedStatus] = useState(true);
     const [medicineDetail, setRequest1] = useGetPharmacyMedicineDetail();
     const queryParams = queryString.parse(location.search);
     useEffect(() => {
-        if (status) {
-            notification["success"]({
-                message: 'SUCCESS',
-                description: 'Medicine added successfully',
-                duration: 3
-            });
-        }
         if (queryParams.mode == "edit" && queryParams.medicineId != null) {
             setRequest1(queryParams.medicineId);
         }
-        form.setFieldsValue({
-            user: { medicineName: "dasas" }
+    }, []);
+    console.log("loadedddddddddddddddd", status);
+    if (savedStatus == false && status == true) {
+        notification["success"]({
+            message: 'SUCCESS',
+            description: 'Medicine added successfully',
+            duration: 3
         });
-    }, [status]);
-
+        clearForm();
+        setSavedStatus(true);
+    }
     if (medicineDetail != null) {
         form.setFieldsValue({
             user: {
@@ -81,23 +82,19 @@ const AddNewMedicine = ({ location, history }) => {
             medicineName: form.medicineName,
             genericName: form.genericName,
             boxSize: form.boxSize,
-            expDate: form.expiryDate,
-            medicineShelf: form.medicineShelf,
             details: form.details,
             category: form.category,
             unit: form.unit,
             triggerValue: form.triggerValue,
             image: form.image,
             salePrice: form.salePrice,
-            supplierPrice: form.suppliersPrice,
-            tax: form.tax,
-            supplierName: form.supplierName,
             availability: "Available"
         };
 
         if (queryParams.mode == "edit" && queryParams.medicineId != null) {
             body["medicineId"] = queryParams.medicineId;
         }
+        setSavedStatus(false);
         setRequest(body);
     };
     function onNameChange(event) {
@@ -108,14 +105,31 @@ const AddNewMedicine = ({ location, history }) => {
         setName('');
         setItems([...items, name || `New item ${index++}`]);
     }
+    function clearForm() {
+        form.setFieldsValue({
+            user: {
+                medicineId: null,
+                medicineName: "",
+                genericName: "",
+                boxSize: 0,
+                details: "",
+                category: "",
+                unit: "",
+                triggerValue: 0,
+                image: null,
+                salePrice: 0,
+                availability: "Available"
+            }
+        });
+    }
     return (
         <>
             <Button onClick={() => {
-                            history.push({ pathname: '/home/manageSuppliers'});
-                        }} type="dashed" icon={<PlusOutlined />}>Add Supplier</Button>
+                history.push({ pathname: '/home/manageSuppliers' });
+            }} type="dashed" icon={<PlusOutlined />}>Add Supplier</Button>
             <Button type="dashed" onClick={() => {
-                            history.push({ pathname: '/home/manageMedicines'});
-                        }} style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Manage Medicine</Button>
+                history.push({ pathname: '/home/manageMedicines' });
+            }} style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Manage Medicine</Button>
             <Button type="dashed" style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Import Medicine</Button>
             <br /><br /><br />
             <Form form={form} {...layout} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
@@ -135,16 +149,16 @@ const AddNewMedicine = ({ location, history }) => {
                             <InputNumber style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    {/* <Col span={12}>
                         <Form.Item name={['user', 'expiryDate']} label="Expiry Date">
                             <DatePicker style={{ width: '100%' }} />
                         </Form.Item>
-                    </Col>
-                    <Col span={12}>
+                    </Col> */}
+                    {/* <Col span={12}>
                         <Form.Item name={['user', 'medicineShelf']} label="Medicine Shelf">
                             <Input />
                         </Form.Item>
-                    </Col>
+                    </Col> */}
                     <Col span={12}>
                         <Form.Item name={['user', 'details']} label="Details">
                             <TextArea rows={2} />
@@ -208,7 +222,7 @@ const AddNewMedicine = ({ location, history }) => {
                         </Form.Item>
                     </Col>
                 </Row>
-                <Divider orientation="left">Purchase Details</Divider>
+                {/* <Divider orientation="left">Purchase Details</Divider>
                 <Row gutter={24}>
                 <Col span={12}>
                         <Form.Item name={['user', 'supplierName']} label="Supplier Name">
@@ -251,7 +265,7 @@ const AddNewMedicine = ({ location, history }) => {
                             <InputNumber style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
-                </Row>
+                </Row> */}
                 <Row>
                     <Col span={24} style={{ textAlign: 'right' }}>
                         <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>

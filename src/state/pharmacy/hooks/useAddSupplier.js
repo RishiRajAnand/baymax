@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { saveSupplier } from '../queries';
 
 const useAddSupplier = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState(false);
 
   const request = async (body) => {
+    setIsLoading(true);
     const response = await saveSupplier(body);
 
     if (response) {
@@ -17,9 +19,10 @@ const useAddSupplier = () => {
       setStatus(false);
       // dispatch(listProducts(err));
     }
+    setIsLoading(false);
   };
 
-  return [status, request];
+  return [status, isLoading, request];
 };
 
 export default useAddSupplier;

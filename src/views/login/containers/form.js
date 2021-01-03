@@ -5,11 +5,11 @@ import Button from '../../../components/button';
 import FormGroup from '../../../components/form/formGroup';
 import Input from '../../../components/form/input';
 import ErrorText from '../../../components/form/error';
-import logo from '../../../assets/images/logo.png';
+import logo from '../../../assets/images/logo.jpg';
 
 const LoginForm = props => (
   <>
-    <img style={{ width: "300px", margin: "0 auto" }} src={logo} />
+    <img style={{ width: "300px", marginBottom: '20px' }} src={logo} />
     <Formik initialValues={{ username: '', password: '' }} {...props}>
       {({ handleChange, handleBlur, values, handleSubmit, errors }) => (
         <FormGroup>
@@ -33,7 +33,7 @@ const LoginForm = props => (
             error={errors.password}
             value={values.password}
           />
-          <Button primary large onClick={handleSubmit} type="submit">
+          <Button primary large onClick={handleSubmit} style={{ background: 'skyblue', color: 'white' }} type="submit">
             Login
         </Button>
         </FormGroup>
