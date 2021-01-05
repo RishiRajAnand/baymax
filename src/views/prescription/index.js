@@ -82,13 +82,13 @@ const Prescription = ({ location, history }) => {
         };
         const medicineList = medicineForm.getFieldsValue().users;
         const testList = form.getFieldsValue().users;
-        if (medicineList.length > 0) {
+        if (medicineList != null && medicineList.length > 0) {
             body.prescribedMedsDtoList = medicineList.map(medicine => {
                 return { medName: medicine.medicineName, days: medicine.numberOfDays };
             });
         }
 
-        if (testList.length > 0) {
+        if (testList != null && testList.length > 0) {
             body.prescribedTestingDtoList = testList.map(test => {
                 return {
                     testDesc: test.testName,

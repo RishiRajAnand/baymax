@@ -16,9 +16,9 @@ const PatientDetails = (prop) => {
                 <Descriptions.Item label="Name">{patient.patientName}</Descriptions.Item>
                 <Descriptions.Item label="Visit Type">{patient.visitType}</Descriptions.Item>
                 <Descriptions.Item label="Age">{patient.age}</Descriptions.Item>
-                <Descriptions.Item label="Admission date">20th Sep 2020, 9:15 AM</Descriptions.Item>
+                {/* <Descriptions.Item label="Regoi date">20th Sep 2020, 9:15 AM</Descriptions.Item> */}
                 <Descriptions.Item label="Status" span={3}>
-                    <Badge status="warning" text="pending" />
+                    <Badge status="success" text="Active" />
                 </Descriptions.Item>
             </Descriptions>
         </>);

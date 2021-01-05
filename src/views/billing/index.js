@@ -180,13 +180,13 @@ const Billing = ({ location, history }) => {
     row.total = finalCharges.discountedAmount + finalCharges.totalGST;
     newData.splice(index, 1, { ...item, ...row });
     setData(newData);
-    calculateTotalCharges(newData)
+    calculateTotalCharges(newData);
   };
 
   let showSearch = "";
   const defaultbillDetails = {
-    billId: '1600581617320',
-    createdAt: new Date()
+    billId: '',
+    createdAt: (new Date()).toDateString() + ' ' + (new Date()).toLocaleTimeString()
   };
 
   const defaultFinalCharges = {
@@ -211,10 +211,14 @@ const Billing = ({ location, history }) => {
     discount: 0,
     total: 100,
   }];
+  let generateBillButton = <Col className="gutter-row" span={3}>
+    <Button style={{ width: '90%' }} type="primary" onClick={generateBill}>Generate Bill</Button>
+  </Col>;
+  let printButton = "";
   const [showFilter, setShowFilter] = useState("patientId");
   const [paymentMode, setPaymentMode] = useState("Cash");
   const [billResponse, isLoading, setBillSearch] = useBillSearch();
-  const [generateBillStatus,  setGenerateBillStatus] = useSaveGenerateBill();
+  const [generateBillStatus, setGenerateBillStatus] = useSaveGenerateBill();
   const [patient, isLoading1, setRequest] = usePatientSearchbyId();
   const [isModalVisible, setIsModalVisible] = useState(false);;
   const [billDetails, setBillDetails] = useState(defaultbillDetails);
@@ -253,7 +257,6 @@ const Billing = ({ location, history }) => {
         }];
       setData(tempData);
       calculateTotalCharges(tempData);
-      billDetails.billId = queryParams.receiptId;
     } else if (queryParams.context === 'consulation') {
       const tempData = [
         {
@@ -267,19 +270,30 @@ const Billing = ({ location, history }) => {
         }];
       setData(tempData);
       calculateTotalCharges(tempData);
-      billDetails.billId = queryParams.receiptId;
     } else {
       showSearch = <BillSearch onSearch={onBillSearch} />;
     }
     setRequest(queryParams.patientId);
-  }, []);
-  if (generateBillStatus == true) {
-    notification["success"]({
+
+    if (generateBillStatus.response == "success") {
+      notification["success"]({
         message: 'SUCCESS',
-        description: 'Bill Generated Successfully',
+        description: 'Bill Generated Successfully with id ' + generateBillStatus.billId,
         duration: 3
-    });
-}
+      });
+      setBillDetails({
+        billId: generateBillStatus.billId,
+        createdAt: (new Date()).toDateString()
+
+      });
+    }
+  }, [generateBillStatus]);
+  if (generateBillStatus.response == "success") {
+    generateBillButton = "";
+    printButton = <Col className="gutter-row" span={3}>
+      <Button style={{ width: '90%' }} type="primary" onClick={handlePrint}>Print</Button>
+    </Col>;
+  }
   function getFinalCharges(dataList) {
     const finalCharges = {
       totalAmount: 0,
@@ -404,7 +418,6 @@ const Billing = ({ location, history }) => {
       totalCost: finalCharges.totalAmount,
       billDetailList: []
     };
-console.log(data);
     data.forEach(item => {
       const billItem = {
         id: null,
@@ -430,13 +443,14 @@ console.log(data);
       {showSearch}
       <PatientDetails patientId={queryParams.patientId} />
       <div style={{ display: 'none' }}>
-        <BillPrint ref={componentRef} itemList={data} finalCharges={finalCharges} patientDetails={patient} billId={queryParams.receiptId} patientId={queryParams.patientId} />
+        <BillPrint ref={componentRef} itemList={data} finalCharges={finalCharges} patientDetails={patient} billId={billDetails.billId} patientId={queryParams.patientId} />
+
       </div>
       <Divider>Bill Details</Divider>
       <Descriptions>
-        <Descriptions.Item label="Bill Id">{queryParams.receiptId}</Descriptions.Item>
+        <Descriptions.Item label="Bill Id">{billDetails.billId}</Descriptions.Item>
         {/* <Descriptions.Item label="Receipt Id">{queryParams.receiptId}</Descriptions.Item> */}
-        <Descriptions.Item label="Date and time">2018-04-24 18:00:00</Descriptions.Item>
+        <Descriptions.Item label="Date and time">{billDetails.createdAt}</Descriptions.Item>
       </Descriptions>
       <Button
         onClick={showModal}
@@ -459,15 +473,12 @@ console.log(data);
       </Radio.Group>
       <br /><br /><br />
       <Row gutter={24}>
-        <Col className="gutter-row" span={3}>
-          <Button style={{ width: '90%' }} type="primary" onClick={generateBill}>Generate Bill</Button>
-        </Col>
+        {generateBillButton}
         {/* <Col className="gutter-row" span={3}>
           <Button type="primary">Cancel</Button>
         </Col> */}
-        <Col className="gutter-row" span={3}>
-          <Button style={{ width: '90%' }} type="primary" onClick={handlePrint}>Print</Button>
-        </Col>
+        {printButton}
+
         <Col className="gutter-row" span={3}>
           <Button style={{ width: '90%' }} type="primary" onClick={value => history.push({ pathname: '/home/appointment', search: '?patientId='.concat(queryParams.patientId) })}>Go To Appointment</Button>
         </Col>

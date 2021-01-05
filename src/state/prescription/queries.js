@@ -9,3 +9,12 @@ export const savePrescription = (body) => {
             return err;
         });
 };
+
+export const getPrescriptionByAppointmentId = (appointmentId) => {
+    return axios
+        .get(`${api.url}/doctorService/getPrescriptionDetails?appointmentId=` + appointmentId)
+        .then(res => res.data)
+        .catch(err => {
+            return err;
+        });
+};

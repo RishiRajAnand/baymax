@@ -2,17 +2,20 @@ import { useState } from 'react';
 import { saveGenerateBill } from '../queries';
 
 const useSaveGenerateBill = () => {
-  const [status, setStatus] = useState(false);
+  const [responseObj, setResponseObj] = useState({});
 
   const request = async (body) => {
     const response = await saveGenerateBill(body);
-
-    if (response === "success") {
-      setStatus(true);
-    } 
+    if (response) {
+      if (response.response == "success") {
+        setResponseObj(response);
+      }
+    } else {
+      setResponseObj(null);
+    }
   };
 
-  return [status, request];
+  return [responseObj, request];
 };
 
 export default useSaveGenerateBill;

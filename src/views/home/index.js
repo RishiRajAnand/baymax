@@ -28,6 +28,8 @@ import Certificates from '../certificates';
 import Package from '../package';
 import NewPackage from '../package/newPackage';
 import InProgress from '../inProgress';
+import viewPrescription from '../prescription/viewPrescription';
+import ViewPrescription from '../prescription/viewPrescription';
 
 
 const { Header, Sider, Content, Footer } = Layout;
@@ -164,6 +166,7 @@ class Home extends React.Component {
             <Route path={`${path}/newPackage`} component={NewPackage} />
             <Route path={`${path}/manageSuppliers`} component={ManageSupplier} />
             <Route path={`${path}/inProgress`} component={InProgress} />
+            <Route path={`${path}/viewPrescription`} component={ViewPrescription} />
             
           </Content>
           <Footer style={{ textAlign: 'center' }}>BayMax ©2020 Created by Rishiraj</Footer>

@@ -48,7 +48,12 @@ const Appointment = ({ location, history }) => {
     useEffect(() => {
         if (selectedDepartment === "all") {
             setRequest();
-            setPatientSearchById(queryParams.patientId)
+            if (queryParams.patientId != null) {
+                setPatientSearchById(queryParams.patientId);
+            } else {
+                setPatientSearchById(patientDetails.patientId);
+            }
+
 
         } else {
             callDoctorByDepartment(selectedDepartment);
@@ -96,7 +101,7 @@ const Appointment = ({ location, history }) => {
             "patientId": patientDetails.patientId,
             "patientName": patientDetails.patientName,
             "doctorId": selectedDoctor,
-            "appointmentDate": selectedDate.getMilliseconds(),
+            "appointmentDate": selectedDate.getTime(),
             "height": 6,
             "weight": 80,
             "Bp": "120/80"
@@ -119,7 +124,8 @@ const Appointment = ({ location, history }) => {
     } else {
         console.log("dsadsad" + selectedDoctor);
         MainButton = <Button type="primary" size="large" onClick={() => {
-            history.push({ pathname: '/home/billing', search: '?patientId='.concat(queryParams.patientId) + '&doctorName=' + map.get(selectedDoctor).doctorName + '&charges=' + map.get(selectedDoctor).consulationCharge + '&context=consulation' })
+            console.log(patientDetails.patientId,);
+            history.push({ pathname: '/home/billing', search: '?patientId='.concat(patientDetails.patientId) + '&doctorName=' + map.get(selectedDoctor).doctorName + '&charges=' + map.get(selectedDoctor).consulationCharge + '&context=consulation' })
         }}>Go To Billing</Button>;
         appointmentDetails = {
             patientName: patientDetails.patientName,

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, DatePicker, Button, TimePicker, Select, Space } from 'antd';
+import { Table, Tag, DatePicker, Button, TimePicker, Select, Space, Input } from 'antd';
 import usePatientSearch from '../../state/patientSearch/hooks/usePatientSearch';
 import useGetAllDoctors from '../../state/patientSearch/hooks/useGetAllDoctors';
 import useGetAppointmentByDoctorId from '../../state/appointment/hooks/useGetAppointmentsByDoctorId';
+import useGetAppointmentByPatientId from '../../state/appointment/hooks/useGetAppointmentByPatientId';
 const { Option } = Select;
-
+const { Search } = Input;
 function PickerWithType({ type, onChange }) {
     if (type === 'time') return <TimePicker onChange={onChange} />;
     if (type === 'date') return <DatePicker onChange={onChange} />;
@@ -14,6 +15,7 @@ function PickerWithType({ type, onChange }) {
 function DoctorAppointment({ location, history }) {
     let doctorsList = [];
     const [type, setType] = useState('time');
+    const [patientAppointments, isLoading2, setAppointmentByPatientId] = useGetAppointmentByPatientId();
     const [selectedDoctor, setSelectedDoctor] = useState("initial");
     const [doctors, isLoading, setRequest] = useGetAllDoctors();
     const [appointments, isLoading1, setAppointmentByDoctorId] = useGetAppointmentByDoctorId();
@@ -44,6 +46,19 @@ function DoctorAppointment({ location, history }) {
             };
         });
     }
+    // if (patientAppointments.length > 0) {
+    //     data = patientAppointments.map(appointment => {
+    //         return {
+    //             key: appointment.appointmentId,
+    //             patientName: appointment.patientName,
+    //             appointmentId: appointment.appointmentId,
+    //             time: new Date(appointment.appointmentDate).toDateString(),
+    //             doctorId: appointment.doctorId,
+    //             patientId: appointment.patientId,
+    //             status: ['registered']
+    //         };
+    //     });
+    // }
 
     function handleChangeOfDoctor(value) {
         setSelectedDoctor(value);
@@ -92,10 +107,18 @@ function DoctorAppointment({ location, history }) {
                     }}>
                         Proceed
                 </Button>
+                <Button type="primary" onClick={() => {
+                        history.push({ pathname: '/home/viewPrescription', search: '?patientId=' + record.patientId + '&doctorId=' + record.doctorId + '&appointmentId=' + record.appointmentId });
+                    }}>
+                        View
+                </Button>
                 </Space>
             ),
-        },
+        }
     ];
+    const onPatientSearch = value => {
+        setAppointmentByPatientId(value);
+    };
     return (
         <>
             <Space>
@@ -118,7 +141,16 @@ function DoctorAppointment({ location, history }) {
                     <Option value="year">Year</Option>
                 </Select>
                 <PickerWithType type={type} onChange={value => console.log(value)} />
+                <Search
+                    placeholder="Search Patient By Id"
+                    allowClear
+                    enterButton="Search"
+                    size="medium"
+                    style={{ width: '100%', marginLeft: '200px' }}
+                    onSearch={onPatientSearch}
+                />
             </Space>
+            <br />
             <Table columns={columns} dataSource={data} />
         </>
     );
