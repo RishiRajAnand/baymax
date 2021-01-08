@@ -17,7 +17,7 @@ function DoctorAppointment({ location, history }) {
     const [type, setType] = useState('time');
     const [patientAppointments, isLoading2, setAppointmentByPatientId] = useGetAppointmentByPatientId();
     const [selectedDoctor, setSelectedDoctor] = useState("initial");
-    const [searc, setSelectedDoctor] = useState("initial");
+    // const [searc, setSelectedDoctor] = useState("initial");
     const [doctors, isLoading, setRequest] = useGetAllDoctors();
     const [appointments, isLoading1, setAppointmentByDoctorId] = useGetAppointmentByDoctorId();
     let data = [];
