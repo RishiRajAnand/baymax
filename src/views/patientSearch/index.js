@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Table, Tag, Input, Space, Button, Modal, Descriptions } from 'antd';
 import usePatientSearch from '../../state/patientSearch/hooks/usePatientSearch';
 import Spinner from '../../components/spinner';
+import usePatientById from '../../state/patientSearch/hooks/usePatientSearchbyId';
+import PatientDetails from '../patientDetails';
 
 const { Search } = Input;
 
@@ -11,7 +13,7 @@ const PatientSearch = () => {
     const [name, setName] = useState([]);
     const [showPatient, setShowPatient] = useState("all");
     const [patients, isLoading, setRequest] = usePatientSearch();
-    // const [patient, isLoading1, setPatientSearchbyId] = usePatientSearchbyId();
+    const [patientDetails, isLoading1, setPatientSearchbyId] = usePatientById();
     let data = [];
 
     useEffect(() => {
@@ -21,17 +23,36 @@ const PatientSearch = () => {
     }, [showPatient]);
 
     function onPatientSearch(searchValue) {
-    }
+        console.log(searchValue);
+        
+        if (searchValue == '') {
+            setRequest();
+            setShowPatient("all");
+        } else {
+            setPatientSearchbyId(searchValue);
+            setShowPatient("patientId");
+        }
 
-    if (patients.length > 0) {
-        patients.forEach((patient, index) => {
-            data.push({
+    }
+    if (showPatient == "patientId" && patientDetails != null) {
+        const row = [{
+            key: patientDetails.patientId,
+            name: patientDetails.patientName,
+            age: patientDetails.age,
+            phone: patientDetails.contactNum,
+            status: ['registered']
+        }];
+        data = row;
+    }
+    if (showPatient === "all" && patients.length > 0) {
+        data = patients.map((patient, index) => {
+            return {
                 key: patient.patientId,
                 name: patient.patientName,
                 age: patient.age,
                 phone: patient.contactNum,
                 status: ['registered'],
-            });
+            };
         });
     }
     const columns = [

@@ -10,7 +10,7 @@ import '../prescription/prescription.css';
 
 const { Option } = Select;
 
-const renderTitle = (title: string) => {
+const renderTitle = (title) => {
     return (
         <span>
             {title}
@@ -26,7 +26,7 @@ const renderTitle = (title: string) => {
     );
 };
 
-const renderItem = (title: string, count: number) => {
+const renderItem = (title, count) => {
     return {
         value: title,
         label: (
@@ -53,6 +53,9 @@ const Prescription = ({ location, history }) => {
     const [submitted, setSubmitted] = useState(false);
     const [form] = Form.useForm();
     const [medicineForm] = Form.useForm();
+    const [vitalsForm] = Form.useForm();
+    const [adviceForm] = Form.useForm();
+
     const [medicines, isLoadings, setMedicineSearch] = useMedicineSearch();
     const [status, isLoading1, setSavePrescription] = useSavePrescription();
     const [tests, isLoading, setTestSearch] = useSearchTest();
@@ -71,20 +74,28 @@ const Prescription = ({ location, history }) => {
         console.log('Received values of form:', values);
         console.log('Dawaiyaan', form.getFieldsValue());
         console.log('tests:', medicineForm.getFieldsValue());
+        console.log('vitals:', vitalsForm.getFieldsValue());
+        const medicineList = medicineForm.getFieldsValue().users;
+        const testList = form.getFieldsValue().users;
+        const patientVitals = vitalsForm.getFieldsValue();
         const body = {
             appointmentDto: {
                 appointmentId: queryParams.appointmentId,
                 patientId: queryParams.patientId,
-                doctorId: queryParams.doctorId
+                doctorId: queryParams.doctorId,
+                height: patientVitals.height,
+                weight: patientVitals.weight,
+                Bp: patientVitals.bp,
+                temprature: patientVitals.temparature,
+                advice: adviceForm.getFieldsValue().advice
             },
             prescribedMedsDtoList: null,
             prescribedTestingDtoList: null
         };
-        const medicineList = medicineForm.getFieldsValue().users;
-        const testList = form.getFieldsValue().users;
+
         if (medicineList != null && medicineList.length > 0) {
             body.prescribedMedsDtoList = medicineList.map(medicine => {
-                return { medName: medicine.medicineName, days: medicine.numberOfDays };
+                return { medName: medicine.medicineName, days: medicine.numberOfDays, dosage: medicine.dosage, comment: medicine.comments };
             });
         }
 
@@ -92,7 +103,8 @@ const Prescription = ({ location, history }) => {
             body.prescribedTestingDtoList = testList.map(test => {
                 return {
                     testDesc: test.testName,
-                    dateOfBooking: test.date
+                    dateOfBooking: test.date,
+                    comment: test.comments
                 };
             });
         }
@@ -132,7 +144,7 @@ const Prescription = ({ location, history }) => {
             });
         }
     }
-    let formActions = <Button size="large" type="primary" htmlType="submit">Submit</Button>;
+    let formActions = <Button size="large" type="primary">Submit</Button>;
     if (submitted) {
         formActions = (<><Button type="primary" shape="round" icon={<DownloadOutlined />} size='large'>Print</Button>
             <Button style={{ marginLeft: '10px' }} type="primary" shape="round" size='large' onClick={value => history.push({ pathname: '/home/doctorAppointment' })}>Go to My Appoinments</Button></>);
@@ -141,7 +153,36 @@ const Prescription = ({ location, history }) => {
         <>
             <PatientDetails patientId={queryParams.patientId} />
             <br></br>
+            <Divider>Patient Vitals</Divider>
 
+            <Form
+                form={vitalsForm}
+            >
+                <Row gutter={24}>
+                    <Col span={6}>
+                        <Form.Item label="BP" name="bp">
+                            <InputNumber name="bp" style={{ width: '90%' }} placeholder="Blood pressure" />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item label="Temparature" name="temparature">
+                            <InputNumber name="temparature" style={{ width: '90%' }} placeholder="Temp In degrees Celsius" />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item label="Height" name="height">
+                            <InputNumber name="height" style={{ width: '90%' }} placeholder="Height in feet" />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item label="Weight" name="weight">
+                            <Input name="weight" style={{ width: '90%' }} placeholder="Weight in (kgs)" />
+                        </Form.Item>
+                    </Col>
+                </Row>
+
+
+            </Form>
             <Divider>Prescribe Medicines</Divider>
             {/* <PrescribeMedicine /> */}
 
@@ -231,7 +272,7 @@ const Prescription = ({ location, history }) => {
 
             <br></br>
             <Divider>Prescribe Tests</Divider>
-            <Form name="dynamic_form_nest_item2" form={form} onFinish={onFinish} autoComplete="off">
+            <Form name="dynamic_form_nest_item2" form={form} autoComplete="off">
                 <Form.List name="users">
                     {(fields, { add, remove }) => {
                         return (
@@ -293,15 +334,24 @@ const Prescription = ({ location, history }) => {
                     }}
                 </Form.List>
 
-                <Form.Item>
-                    <Row>
-                        <Col span={12} offset={11}>
-                            {formActions}
-                        </Col>
-                    </Row>
-
-                </Form.Item>
             </Form>
+
+            <Form
+                form={adviceForm}
+            >
+                <Row gutter={24}>
+                    <Col span={20}>
+                        <Form.Item name='advice' label="Summary">
+                            <Input.TextArea />
+                        </Form.Item>
+                    </Col>
+                </Row>
+            </Form>
+            <Row>
+                <Col span={12} onClick={onFinish} offset={11}>
+                    {formActions}
+                </Col>
+            </Row>
         </>);
 };
 
