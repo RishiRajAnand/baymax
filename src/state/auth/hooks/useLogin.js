@@ -11,7 +11,7 @@ const useProducts = () => {
 
     setIsLoading(false);
     if (values.username !== '' && values.password !== '') {
-      dispatch(login());
+      dispatch(login(values.username));
     }
   };
 

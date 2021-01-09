@@ -2,6 +2,7 @@ import { LOGIN, LOGOUT } from './actions';
 
 export const INITIAL_STATE = {
   logged: false,
+  username: ""
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -9,6 +10,7 @@ export default (state = INITIAL_STATE, action) => {
     case LOGIN:
       return {
         logged: true,
+        username: action.payload
       };
     case LOGOUT:
       return {

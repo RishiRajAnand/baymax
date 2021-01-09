@@ -21,7 +21,7 @@ export const getAppointmentByDoctorId = (doctorId) => {
 
 export const getAppointmentByPatientId = (patientId) => {
   return axios
-    .get(`${api.url}/HMServiceController/getAppointmentListByPatientId?numberOfDays=30&startIndex=0&pazeSize=30patientId=` + patientId)
+    .get(`${api.url}/HMServiceController/getAppointmentListByPatientId?numberOfDays=30&startIndex=0&pazeSize=30&patientId=` + patientId)
     .then(res => res.data)
     .catch(err => {
       return err.response;

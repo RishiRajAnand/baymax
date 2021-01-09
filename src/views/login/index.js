@@ -19,7 +19,10 @@ const Login = ({ location, history }) => {
   return (
     <Container>
       <Spinner show={isLoading} />
-      <Form onSubmit={(values, actions) => setLogin({ values, actions })} />
+      <Form onSubmit={(values, actions) =>  {
+        console.log("values", values);
+        console.log("actions", actions);
+        setLogin({ values, actions });}} />
     </Container>
   );
 };

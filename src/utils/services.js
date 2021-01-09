@@ -1,5 +1,5 @@
 const api = {
-  url: 'http://localhost:8080',
+  url: 'http://ec2-18-221-50-135.us-east-2.compute.amazonaws.com:8080',
   token: '',
 };
 

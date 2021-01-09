@@ -13,57 +13,6 @@ function PickerWithType({ type, onChange }) {
 }
 
 function DoctorAppointment({ location, history }) {
-    let doctorsList = [];
-    const [type, setType] = useState('time');
-    const [patientAppointments, isLoading2, setAppointmentByPatientId] = useGetAppointmentByPatientId();
-    const [selectedDoctor, setSelectedDoctor] = useState("initial");
-    // const [searc, setSelectedDoctor] = useState("initial");
-    const [doctors, isLoading, setRequest] = useGetAllDoctors();
-    const [appointments, isLoading1, setAppointmentByDoctorId] = useGetAppointmentByDoctorId();
-    let data = [];
-    useEffect(() => {
-        if (selectedDoctor === "initial") {
-            setRequest();
-            setAppointmentByDoctorId(selectedDoctor)
-        } else {
-            setAppointmentByDoctorId(selectedDoctor);
-        }
-    }, [selectedDoctor]);
-
-    if (doctors.length > 0) {
-        doctorsList = doctors.map(doctor => <Option key={doctor.doctorId} >{doctor.doctorName}</Option>);
-    }
-    console.log("asadada", appointments);
-    if (appointments.length > 0) {
-        data = appointments.map(appointment => {
-            return {
-                key: appointment.appointmentId,
-                patientName: appointment.patientName,
-                appointmentId: appointment.appointmentId,
-                time: new Date(appointment.appointmentDate).toDateString(),
-                doctorId: appointment.doctorId,
-                patientId: appointment.patientId,
-                status: ['registered']
-            };
-        });
-    }
-    // if (patientAppointments.length > 0) {
-    //     data = patientAppointments.map(appointment => {
-    //         return {
-    //             key: appointment.appointmentId,
-    //             patientName: appointment.patientName,
-    //             appointmentId: appointment.appointmentId,
-    //             time: new Date(appointment.appointmentDate).toDateString(),
-    //             doctorId: appointment.doctorId,
-    //             patientId: appointment.patientId,
-    //             status: ['registered']
-    //         };
-    //     });
-    // }
-
-    function handleChangeOfDoctor(value) {
-        setSelectedDoctor(value);
-    }
 
     const columns = [
         {
@@ -72,11 +21,6 @@ function DoctorAppointment({ location, history }) {
             key: 'patientName',
             render: text => <span>{text}</span>,
         },
-        // {
-        //     title: 'Age/Gender',
-        //     dataIndex: 'age',
-        //     key: 'age',
-        // },
         {
             title: 'Time Slot',
             dataIndex: 'time',
@@ -108,7 +52,7 @@ function DoctorAppointment({ location, history }) {
                     }}>
                         Proceed
                 </Button>
-                <Button type="primary" onClick={() => {
+                    <Button type="primary" onClick={() => {
                         history.push({ pathname: '/home/viewPrescription', search: '?patientId=' + record.patientId + '&doctorId=' + record.doctorId + '&appointmentId=' + record.appointmentId });
                     }}>
                         View
@@ -117,8 +61,57 @@ function DoctorAppointment({ location, history }) {
             ),
         }
     ];
+    let doctorsList = [];
+    const [type, setType] = useState('time');
+    const [patientAppointments, isLoading2, setAppointmentByPatientId] = useGetAppointmentByPatientId();
+    // const [selectedDoctor, setSelectedDoctor] = useState("initial");
+    const [filter, setFilter] = useState("none");
+    const [doctors, isLoading, setRequest] = useGetAllDoctors();
+    const [appointments, isLoading1, setAppointmentByDoctorId] = useGetAppointmentByDoctorId();
+    let data = [];
+    useEffect(() => {
+        setRequest();
+    }, []);
+
+    if (doctors.length > 0) {
+        doctorsList = doctors.map(doctor => <Option key={doctor.doctorId} >{doctor.doctorName}</Option>);
+    }
+    console.log("asadada", appointments);
+    if (filter == "doctor" && appointments.length > 0) {
+        data = appointments.map(appointment => {
+            return {
+                key: appointment.appointmentId,
+                patientName: appointment.patientName,
+                appointmentId: appointment.appointmentId,
+                time: new Date(appointment.appointmentDate).toDateString(),
+                doctorId: appointment.doctorId,
+                patientId: appointment.patientId,
+                status: ['registered']
+            };
+        });
+    }
+    if (filter == "patient" && patientAppointments.length > 0) {
+        data = patientAppointments.map(appointment => {
+            return {
+                key: appointment.appointmentId,
+                patientName: appointment.patientName,
+                appointmentId: appointment.appointmentId,
+                time: new Date(appointment.appointmentDate).toDateString(),
+                doctorId: appointment.doctorId,
+                patientId: appointment.patientId,
+                status: ['registered']
+            };
+        });
+    }
+
+    function handleChangeOfDoctor(value) {
+        setAppointmentByDoctorId(value);
+        setFilter("doctor");
+    }
+
     const onPatientSearch = value => {
         setAppointmentByPatientId(value);
+        setFilter("patient");
     };
     return (
         <>
