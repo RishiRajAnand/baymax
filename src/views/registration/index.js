@@ -38,7 +38,7 @@ const Registration = ({ location, history }) => {
     const [response, isLoading, setRequest] = useRegistration();
 
     useEffect(() => {
-        if (response.recieptId !== null && response.recieptId !== undefined) {
+        if (response.status == "SUCCESS") {
             notification["success"]({
                 message: 'SUCCESS',
                 description: 'The patient has been registered successfully',

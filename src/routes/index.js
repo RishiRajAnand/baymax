@@ -1,6 +1,6 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { StateProvider } from '../state';
 import { INITIAL_STATE as AUTH_INITIAL_STATE } from '../state/auth/reducers';
 import { INITIAL_STATE as PRODUCT_INITIAL_STATE } from '../state/product/reducers';
