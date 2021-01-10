@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Descriptions } from 'antd';
+import React, { useState, useRef, useEffect } from 'react';
+import { Table, Descriptions, Button } from 'antd';
+import { useReactToPrint } from 'react-to-print';
 import useGetPrescriptionByAppointmentId from '../../../state/prescription/hooks/useGetPrescriptionByAppointmentId';
 import queryString from 'query-string';
 import usePatientById from '../../../state/patientSearch/hooks/usePatientSearchbyId';
 import PatientDetails from '../../patientDetails';
+import { PrinterOutlined } from '@ant-design/icons';
+import { PrintPrescription } from '../printPrescription';
 const medicinecolumns = [
     {
         title: 'Medicine Name',
@@ -21,15 +24,6 @@ const medicinecolumns = [
         title: 'Comment',
         dataIndex: 'comment',
     },
-];
-const medicineData = [
-    // {
-    //     key: '1',
-    //     medicineName: 'meds',
-    //     dosage: 'meds',
-    //     days: 'meds',
-    //     comment: 'meds',
-    // }
 ];
 
 const testcolumns = [
@@ -56,18 +50,12 @@ const testcolumns = [
 
     }
 ];
-const testData = [
-    // {
-    //     key: '1',
-    //     testName: 'test',
-    //     dateOfBooking: 'test',
-    //     dateOfResult: 'test',
-    //     reportDesc: 'test',
-    //     testDesc: 'test',
-    // }
-];
+
 
 const ViewPrescription = ({ location, history }) => {
+    const medicineData = [];
+    const testData = [];
+
     let appointmentDetails = {
         appointmentId: '',
         diseaseDesc: '',
@@ -88,6 +76,10 @@ const ViewPrescription = ({ location, history }) => {
     const queryParams = queryString.parse(location.search);
     const [prescriptionDetails, setPrescriptionDetails] = useGetPrescriptionByAppointmentId();
     const [patientDetails, isLoading, setPatientSearchById] = usePatientById(queryParams.patientId);
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+    });
     useEffect(() => {
         setPrescriptionDetails(queryParams.appointmentId);
         setPatientSearchById(queryParams.patientId);
@@ -131,17 +123,23 @@ const ViewPrescription = ({ location, history }) => {
             prescriptionDetails.prescribedTestingDtoList.forEach((test, index) => {
                 testData.push({
                     key: test + index,
-                    testName: test.testName,
+                    testName: test.testDesc,
                     dateOfBooking: test.dateOfBooking,
                     dateOfResult: test.dateOfResult,
                     reportDesc: test.reportDesc,
-                    testDesc: test.testDesc,
+                    testDesc: test.comment,
                 });
             });
         }
     }
     return (
         <>
+            <Button type="primary" style={{ float: "right" }} shape="round" icon={<PrinterOutlined />} size="default" onClick={handlePrint}>
+                Print
+        </Button>
+            <div style={{ display: 'none' }}>
+                <PrintPrescription ref={componentRef} patientVitals={appointmentDetails} appointmentId={appointmentDetails.appointmentId} patientId={queryParams.patientId} medicineList={medicineData} testList={testData} patientDetails={patientDetails} />
+            </div>
             <h4>Patient Info</h4>
             <br />
             <Descriptions title="" layout="Horizontal">
@@ -151,6 +149,7 @@ const ViewPrescription = ({ location, history }) => {
                 <Descriptions.Item label="Visit Type">{patientDetails.visitType}</Descriptions.Item>
             </Descriptions>
             <br />
+            <hr />
             <h4>Patient Vitals</h4>
             <br />
             <Descriptions title="" layout="Horizontal">
@@ -159,15 +158,19 @@ const ViewPrescription = ({ location, history }) => {
                 <Descriptions.Item label="BP">{appointmentDetails.Bp}</Descriptions.Item>
                 <Descriptions.Item label="Temperature">{appointmentDetails.temperature}</Descriptions.Item>
                 <Descriptions.Item label="Disease description">{appointmentDetails.diseaseDesc}</Descriptions.Item>
-                <Descriptions.Item label="Advice">{appointmentDetails.advise}</Descriptions.Item>
+
             </Descriptions>
             <br />
+            <hr />
             <h4>Prescribed Medicines</h4>
             <Table columns={medicinecolumns} dataSource={medicineData} size="middle" />
             <hr />
             <h4>Prescribed Tests</h4>
             <Table columns={testcolumns} dataSource={testData} size="middle" />
             <hr />
+            <Descriptions title="" layout="Horizontal">
+                <Descriptions.Item label="Appointment Summary">{appointmentDetails.advise}</Descriptions.Item>
+            </Descriptions>
         </>
 
     );

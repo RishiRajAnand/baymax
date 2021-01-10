@@ -55,8 +55,8 @@ const Home = ({ location, history, match }) => {
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="logo" />
         <Menu onSelect={handleClick} theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-          <SubMenu key="1" icon={<UserOutlined />} title="Patient">
-            <Menu.Item key="Registration"><Link to={`${path}/registration`}>Registration</Link></Menu.Item>
+          <SubMenu key="Patient" icon={<UserOutlined />} title="Patient">
+            <Menu.Item key="Patient Registration"><Link to={`${path}/registration`}>Registration</Link></Menu.Item>
             <Menu.Item key="Search Patients"><Link to={`${path}/patientSearch`}>Search Patients</Link></Menu.Item>
           </SubMenu>
           <SubMenu key="doctor" icon={<UserOutlined />} title="Doctor">
@@ -87,16 +87,16 @@ const Home = ({ location, history, match }) => {
           <Menu.Item key="Appointment" icon={<UploadOutlined />}>
             <Link to={`${path}/appointment`}>Appointment</Link>
           </Menu.Item>
-          <Menu.Item key="Prescription" icon={<UploadOutlined />}>
+          {/* <Menu.Item key="Prescription" icon={<UploadOutlined />}>
             <Link to={`${path}/prescription`}>Prescription</Link>
-          </Menu.Item>
-          <Menu.Item key="Certificates" icon={<UploadOutlined />}>
-            <Link to={`${path}/certificates`}>Certificates</Link>
-          </Menu.Item>
-          <Menu.Item key="Package Management" icon={<UploadOutlined />}>
-            <Link to={`${path}/package`}>Packages</Link>
-          </Menu.Item>
+          </Menu.Item> */}
           <SubMenu key="Upcoming Features" icon={<UserOutlined />} title="Upcoming">
+            <Menu.Item key="Certificates" icon={<UploadOutlined />}>
+              <Link to={`${path}/certificates`}>Certificates</Link>
+            </Menu.Item>
+            <Menu.Item key="Package Management" icon={<UploadOutlined />}>
+              <Link to={`${path}/package`}>Packages</Link>
+            </Menu.Item>
             <Menu.Item key="Canteen" icon={<UploadOutlined />}>
               <Link to={`${path}/canteen`}>Canteen</Link>
             </Menu.Item>
@@ -164,7 +164,7 @@ const Home = ({ location, history, match }) => {
           <Route path={`${path}/viewPrescription`} component={ViewPrescription} />
 
         </Content>
-        <Footer style={{ textAlign: 'center' }}>BayMax ©2020 Created by Rishiraj</Footer>
+        <Footer style={{ textAlign: 'center' }}>BayMax ©2021</Footer>
       </Layout>
     </Layout>
   );

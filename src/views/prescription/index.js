@@ -1,4 +1,4 @@
-import { DownloadOutlined, MinusCircleOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
+import { PrinterOutlined, MinusCircleOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
 import { AutoComplete, Button, Col, DatePicker, Divider, Form, Input, InputNumber, notification, Row, Select, Space } from 'antd';
 import queryString from 'query-string';
 import React, { useEffect, useState } from 'react';
@@ -57,19 +57,25 @@ const Prescription = ({ location, history }) => {
     const [adviceForm] = Form.useForm();
 
     const [medicines, isLoadings, setMedicineSearch] = useMedicineSearch();
-    const [status, isLoading1, setSavePrescription] = useSavePrescription();
+    const [response, isLoading1, setSavePrescription] = useSavePrescription();
     const [tests, isLoading, setTestSearch] = useSearchTest();
     // const [tests, isLoading, setTestSearch] = usePre();
     const queryParams = queryString.parse(location.search);
     useEffect(() => {
-        if (status) {
+        if (response.status == "SUCCESS") {
             notification["success"]({
                 message: 'SUCCESS',
                 description: 'The patient prescription has been generated successfully',
                 duration: 3
             });
+        } else if (response.status == 500) {
+            notification["error"]({
+                message: 'Error',
+                description: 'There was some error saving the prescription, please check with admin',
+                duration: 3
+            });
         }
-    }, [status]);
+    }, [response]);
     const onFinish = values => {
         console.log('Received values of form:', values);
         console.log('Dawaiyaan', form.getFieldsValue());
@@ -82,12 +88,14 @@ const Prescription = ({ location, history }) => {
             appointmentDto: {
                 appointmentId: queryParams.appointmentId,
                 patientId: queryParams.patientId,
+                patientName: queryParams.patientName,
                 doctorId: queryParams.doctorId,
                 height: patientVitals.height,
                 weight: patientVitals.weight,
                 Bp: patientVitals.bp,
                 temprature: patientVitals.temparature,
-                advice: adviceForm.getFieldsValue().advice
+                advise: adviceForm.getFieldsValue().advice,
+                status: "done"
             },
             prescribedMedsDtoList: null,
             prescribedTestingDtoList: null
@@ -102,7 +110,7 @@ const Prescription = ({ location, history }) => {
         if (testList != null && testList.length > 0) {
             body.prescribedTestingDtoList = testList.map(test => {
                 return {
-                    testDesc: test.testName,
+                    testName: test.testName,
                     dateOfBooking: test.date,
                     comment: test.comments
                 };
@@ -145,8 +153,10 @@ const Prescription = ({ location, history }) => {
         }
     }
     let formActions = <Button size="large" type="primary">Submit</Button>;
-    if (submitted) {
-        formActions = (<><Button type="primary" shape="round" icon={<DownloadOutlined />} size='large'>Print</Button>
+    if (submitted && response.status != 500) {
+        formActions = (<><Button type="primary" shape="round" onClick={() => {
+            history.push({ pathname: '/home/viewPrescription', search: '?patientId=' + queryParams.patientId + '&doctorId=' + queryParams.doctorId + '&appointmentId=' + queryParams.appointmentId });
+        }} icon={<PrinterOutlined />} size='large'>Print</Button>
             <Button style={{ marginLeft: '10px' }} type="primary" shape="round" size='large' onClick={value => history.push({ pathname: '/home/doctorAppointment' })}>Go to My Appoinments</Button></>);
     }
     return (

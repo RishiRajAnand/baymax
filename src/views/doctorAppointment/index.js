@@ -41,6 +41,17 @@ function DoctorAppointment({ location, history }) {
                     })}
                 </>
             ),
+            filters: [
+                {
+                    text: 'Registered',
+                    value: 'registered',
+                },
+                {
+                    text: 'Appointment done',
+                    value: 'done',
+                },
+            ],
+            onFilter: (value, record) => record.status == value,
         },
         {
             title: 'Action',
@@ -48,7 +59,7 @@ function DoctorAppointment({ location, history }) {
             render: (text, record) => (
                 <Space size="middle">
                     <Button type="primary" onClick={() => {
-                        history.push({ pathname: '/home/prescription', search: '?patientId=' + record.patientId + '&doctorId=' + record.doctorId + '&appointmentId=' + record.appointmentId });
+                        history.push({ pathname: '/home/prescription', search: '?patientId=' + record.patientId + '&patientName=' + record.patientName + '&doctorId=' + record.doctorId + '&appointmentId=' + record.appointmentId });
                     }}>
                         Proceed
                 </Button>
@@ -86,7 +97,7 @@ function DoctorAppointment({ location, history }) {
                 time: new Date(appointment.appointmentDate).toDateString(),
                 doctorId: appointment.doctorId,
                 patientId: appointment.patientId,
-                status: ['registered']
+                status: (appointment.status ? [appointment.status] : ['registered'])
             };
         });
     }
@@ -99,7 +110,7 @@ function DoctorAppointment({ location, history }) {
                 time: new Date(appointment.appointmentDate).toDateString(),
                 doctorId: appointment.doctorId,
                 patientId: appointment.patientId,
-                status: ['registered']
+                status: (appointment.status ? [appointment.status] : ['registered'])
             };
         });
     }

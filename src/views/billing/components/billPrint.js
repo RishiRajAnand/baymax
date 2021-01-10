@@ -1,11 +1,7 @@
 import React, { useRef } from 'react';
-import { Descriptions, Divider } from 'antd';
-import ReactToPrint from 'react-to-print';
 import '../components/billingPrint.css';
 import logo from '../../../assets/images/logo.jpg';
 import hospitalDetails from '../../../utils/constants';
-import Column from 'antd/lib/table/Column';
-import PatientDetails from '../../patientDetails';
 
 export class BillPrint extends React.Component {
     render() {
@@ -14,7 +10,7 @@ export class BillPrint extends React.Component {
         const patientId = this.props.patientId;
         const patientDetails = this.props.patientDetails;
         const finalCharges = this.props.finalCharges;
-        const todaysDate = (new Date()).toDateString() + + ' ' + (new Date()).toLocaleTimeString() ;
+        const todaysDate = (new Date()).toDateString() + + ' ' + (new Date()).toLocaleTimeString();
         const itemArray = itemList.map(item => {
             return (
                 <tr>
@@ -29,15 +25,6 @@ export class BillPrint extends React.Component {
 
         return (
             <>
-                {/* <Descriptions title="User Info">
-                    <Descriptions.Item label="UserName">Zhou Maomao</Descriptions.Item>
-                    <Descriptions.Item label="Telephone">1810000000</Descriptions.Item>
-                    <Descriptions.Item label="Live">Hangzhou, Zhejiang</Descriptions.Item>
-                    <Descriptions.Item label="Remark">empty</Descriptions.Item>
-                    <Descriptions.Item label="Address">
-                        No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China
-                   </Descriptions.Item>
-                </Descriptions> */}
                 <div id="wrapper" style={{ marginTop: '30px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                     <div>
                         <img style={{ width: "400px", margin: "0 auto" }} src={logo} />
@@ -80,7 +67,7 @@ export class BillPrint extends React.Component {
                         {itemArray}
                         <tr>
                             <td colspan="4"></td>
-                            <td>Subtotal</td>
+                            <td>Total</td>
                             <td>{finalCharges.totalAmount}</td>
                         </tr>
                         <tr>

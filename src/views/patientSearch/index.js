@@ -24,7 +24,7 @@ const PatientSearch = () => {
 
     function onPatientSearch(searchValue) {
         console.log(searchValue);
-        
+
         if (searchValue == '') {
             setRequest();
             setShowPatient("all");
@@ -40,6 +40,7 @@ const PatientSearch = () => {
             name: patientDetails.patientName,
             age: patientDetails.age,
             phone: patientDetails.contactNum,
+            address: patientDetails.street,
             status: ['registered']
         }];
         data = row;
@@ -51,6 +52,7 @@ const PatientSearch = () => {
                 name: patient.patientName,
                 age: patient.age,
                 phone: patient.contactNum,
+                address: patient.street,
                 status: ['registered'],
             };
         });
@@ -61,6 +63,8 @@ const PatientSearch = () => {
             dataIndex: 'name',
             key: 'name',
             render: text => <span>{text}</span>,
+            sorter: (a, b) => a.name.length - b.name.length,
+            sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Age',
@@ -91,6 +95,17 @@ const PatientSearch = () => {
                     })}
                 </>
             ),
+            filters: [
+                {
+                    text: 'Registered',
+                    value: 'registered',
+                },
+                {
+                    text: 'Discharged',
+                    value: 'discharged',
+                },
+            ],
+            onFilter: (value, record) => record.status == value,
         },
         {
             title: 'Action',
@@ -117,7 +132,7 @@ const PatientSearch = () => {
             title: 'Action',
             dataIndex: '',
             key: 'x',
-            render: () => <span>Delete</span>,
+            render: () => <span>View</span>,
         },
     ];
 
@@ -177,7 +192,7 @@ const PatientSearch = () => {
                             <Descriptions.Item label="Phone">{record.phone}</Descriptions.Item>
                             <Descriptions.Item label="Age">{record.age}</Descriptions.Item>
                             <Descriptions.Item label="Address">
-                                No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China
+                                {record.address}
                             </Descriptions.Item>
                         </Descriptions>
                         <Table

@@ -1,0 +1,35 @@
+.itemTable {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  #wrapper {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+
+  .itemTable td, .itemTable th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .itemTable tr:nth-child(even){background-color: #f2f2f2;}
+  
+  .itemTable tr:hover {background-color: #ddd;}
+  
+  .itemTable th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: whitesmoke;
+    color: wwhitesmoke
+  }
+  .heading{
+      text-align: center;
+      font-weight: bold;
+      text-decoration: underline;
+      font-size: 18px;
+  }
