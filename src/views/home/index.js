@@ -76,9 +76,10 @@ const Home = ({ location, history, match }) => {
             {/* <Menu.Item key="Indent Preparation"><Link to={`${path}/indentPreparation`}>Indent Preparation</Link></Menu.Item> */}
             {/* <Menu.Item key="Indent List"><Link to={`${path}/indentList`}>Indent List</Link></Menu.Item> */}
             <Menu.Item key="Add New Medicine"><Link to={`${path}/addNewMedicine`}>New Medicine</Link></Menu.Item>
+            <Menu.Item key="Manage Medicines"><Link to={`${path}/manageMedicines`}>Manage Medicines</Link></Menu.Item>
             <Menu.Item key="Purchase Order List"><Link to={`${path}/purchaseOrderList`}>Purchase List</Link></Menu.Item>
             <Menu.Item key="New Purchase Order"><Link to={`${path}/newPurchaseOrder`}>New Purchase Order</Link></Menu.Item>
-            <Menu.Item key="Manage Medicines"><Link to={`${path}/manageMedicines`}>Manage Medicine</Link></Menu.Item>
+            
             <Menu.Item key="Manage Suppliers"><Link to={`${path}/manageSuppliers`}>Manage Suppliers</Link></Menu.Item>
           </SubMenu>
           <Menu.Item key="Billing" icon={<UploadOutlined />}>

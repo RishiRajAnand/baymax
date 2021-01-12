@@ -1,7 +1,8 @@
-import { Space, Table } from 'antd';
-import React, { useEffect } from 'react';
+import { Space, Table, Input, Select } from 'antd';
+import React, { useEffect, useState } from 'react';
 import useGetAllPharmacyMedicines from '../../../state/pharmacy/hooks/useGetAllPharmacyMedicines';
-
+const { Search } = Input;
+const { Option } = Select;
 
 // const data = [
 //     {
@@ -54,16 +55,16 @@ const ManageMedicines = ({ location, history }) => {
             key: 'category',
             filters: [
                 {
-                    text: 'Aspirin',
-                    value: 'aspirin',
+                    text: 'Tablet',
+                    value: 'Tablet',
                 },
                 {
-                    text: 'Painkillers',
-                    value: 'painkiller',
+                    text: 'Syrup',
+                    value: 'Syrup',
                 }
             ],
-            onFilter: (value, record) => record.category.indexOf(value) === 0,
-            sorter: (a, b) => a.category.length - b.category.length,
+            onFilter: (value, record) => record.category == value,
+            sorter: (a, b) => a.category - b.category,
             sortDirections: ['descend'],
         },
         {
@@ -109,6 +110,7 @@ const ManageMedicines = ({ location, history }) => {
         },
     ];
     const [medicines, isLoading, setMedicineSearch] = useGetAllPharmacyMedicines();
+    const [filterValue, setfilterValue] = useState("medicineName");
     useEffect(() => {
         setMedicineSearch();
     }, []);
@@ -125,12 +127,34 @@ const ManageMedicines = ({ location, history }) => {
                 sellingPrice: medicine.salePrice,
                 genericName: medicine.genericName,
                 expiryDate: medicine.expDate,
+                stock: medicine.availability
             });
         });
         data = [...tempData];
     }
+
+    function onMedicineSearch() {
+        // if (searchValue == '') {
+        //     setRequest();
+        //     setShowPatient("all");
+        // } else if (filterValue == "medicineName") {
+        //     setPatientSearchbyId(searchValue);
+        //     setShowPatient("patientId");
+        // } else if (filterValue == "genericName") {
+        //     setPatientSearchbyName(searchValue);
+        //     setShowPatient("patientName");
+        // }
+    }
     return (
         <>
+            <Input.Group compact>
+                <Select defaultValue={filterValue} onSelect={setfilterValue}>
+                    <Option value="medicineName">Medicine Name</Option>
+                    <Option value="genericName">Generic Name</Option>
+                </Select>
+                <Input.Search onSearch={onMedicineSearch} style={{ width: '70%' }} placeholder="Search by" />
+            </Input.Group>
+            <br /><br />
             <Table columns={columns} dataSource={data} />
         </>
     );

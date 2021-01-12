@@ -158,30 +158,26 @@ const PatientSearch = () => {
         {
             key: 1,
             appointmentid: '3723823d',
-            appointmentdate: "15 Aug",
-
-            description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.',
+            appointmentdate: "15 Aug 2020",
+            description: "The Patient was diagnosed with Viral fever and was discharged after carrying out the tests."
         },
         {
             key: 2,
             appointmentid: '3723823d',
-            appointmentdate: "15 Aug",
-
-            description: 'My name is Jim Green, I am 42 years old, living in London No. 1 Lake Park.',
+            appointmentdate: "23 Aug 2020",
+            description: "The Patient was diagnosed with Viral fever and was discharged after carrying out the tests."
         },
         {
             key: 3,
             appointmentid: '3723823d',
-            appointmentdate: "15 Aug",
-
-            description: 'This not expandable',
+            appointmentdate: "30 Aug 2020",
+            description: "The Patient was diagnosed with Viral fever and was discharged after carrying out the tests."
         },
         {
             key: 4,
             appointmentid: '3723823d',
-            appointmentdate: "14 Aug",
-
-            description: 'My name is Joe Black, I am 32 years old, living in Sidney No. 1 Lake Park.',
+            appointmentdate: "14 Sep 2020",
+            description: "The Patient was diagnosed with Viral fever and was discharged after carrying out the tests."
         },
     ];
 

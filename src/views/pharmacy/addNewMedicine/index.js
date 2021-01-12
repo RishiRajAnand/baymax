@@ -53,25 +53,25 @@ const AddNewMedicine = ({ location, history }) => {
         clearForm();
         setSavedStatus(true);
     }
-    if (medicineDetail != null) {
+    if (medicineDetail != null && queryParams.mode == "edit") {
         form.setFieldsValue({
             user: {
                 medicineId: medicineDetail.medicineId,
                 medicineName: medicineDetail.medicineName,
                 genericName: medicineDetail.genericName,
-                boxSize: medicineDetail.boxSize,
+                boxSize: Number.parseInt(medicineDetail.boxSize),
                 expDate: medicineDetail.expiryDate,
                 medicineShelf: medicineDetail.medicineShelf,
                 details: medicineDetail.details,
                 category: medicineDetail.category,
                 unit: medicineDetail.unit,
-                triggerValue: medicineDetail.triggerValue,
+                triggerValue: Number.parseFloat(medicineDetail.triggerValue),
                 image: medicineDetail.image,
-                salePrice: medicineDetail.salePrice,
+                salePrice: Number.parseFloat(medicineDetail.salePrice),
                 supplierPrice: medicineDetail.suppliersPrice,
                 tax: medicineDetail.tax,
                 supplierName: medicineDetail.supplierName,
-                availability: "Available"
+                availability: medicineDetail.availability,
             }
         });
     }
@@ -88,7 +88,7 @@ const AddNewMedicine = ({ location, history }) => {
             triggerValue: form.triggerValue,
             image: form.image,
             salePrice: form.salePrice,
-            availability: "Available"
+            availability: form.availablity
         };
 
         if (queryParams.mode == "edit" && queryParams.medicineId != null) {
@@ -118,7 +118,7 @@ const AddNewMedicine = ({ location, history }) => {
                 triggerValue: 0,
                 image: null,
                 salePrice: 0,
-                availability: "Available"
+                availability: "inStock"
             }
         });
     }
@@ -133,6 +133,19 @@ const AddNewMedicine = ({ location, history }) => {
             <Button type="dashed" style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Import Medicine</Button>
             <br /><br /><br />
             <Form form={form} {...layout} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
+                <Row gutter={24}>
+                    <Col span={12}>
+                        <Form.Item name={['user', 'availablity']} label="Availability">
+                            <Select
+                                placeholder="Status"
+                                allowClear
+                                defaultValue="inStock">
+                                <Option value="inStock">In Stock</Option>
+                                <Option value="outOfStock">Out Of Stock</Option>
+                            </Select>
+                        </Form.Item>
+                    </Col>
+                </Row>
                 <Row gutter={24}>
                     <Col span={12}>
                         <Form.Item name={['user', 'medicineName']} label="Medicine Name" rules={[{ required: true }]}>
@@ -217,7 +230,7 @@ const AddNewMedicine = ({ location, history }) => {
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item name={['user', 'salePrice']} label="Sale Price" rules={[{ required: true }]}>
+                        <Form.Item name={['user', 'salePrice']} label="Sale price per unit" rules={[{ required: true }]}>
                             <InputNumber style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
