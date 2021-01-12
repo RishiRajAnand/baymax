@@ -6,7 +6,9 @@ const PatientDetails = (prop) => {
     const [patient, isLoading, setRequest] = usePatientSearchbyId();
 
     useEffect(() => {
-        setRequest(prop.patientId);
+        if(prop.patientId != null) {
+            setRequest(prop.patientId);
+        }
     }, [prop.patientId]);
 
     return (

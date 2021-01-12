@@ -10,6 +10,15 @@ export const getAllPatients = () => {
     });
 };
 
+export const getPatientByName = (patientName) => {
+  return axios
+    .get(`${api.url}/patient/patientByName?patientName=` + patientName)
+    .then(res => res.data)
+    .catch(err => {
+      return err.response;
+    });
+};
+
 export const getPatientById = (patientId) => {
   return axios
     .get(`${api.url}/patient/patientById?patientId=` + patientId)

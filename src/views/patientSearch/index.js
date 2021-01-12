@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Input, Space, Button, Modal, Descriptions } from 'antd';
+import { Table, Tag, Input, Space, Button, Modal, Descriptions, Select } from 'antd';
 import usePatientSearch from '../../state/patientSearch/hooks/usePatientSearch';
 import Spinner from '../../components/spinner';
 import usePatientById from '../../state/patientSearch/hooks/usePatientSearchbyId';
 import PatientDetails from '../patientDetails';
+import usePatientByName from '../../state/patientSearch/hooks/usePatientSearchByName';
 
 const { Search } = Input;
-
+const { Option } = Select;
 const PatientSearch = () => {
-
+    const [filterValue, setfilterValue] = useState("patientName");
     const [visible, setVisible] = useState(false);
     const [name, setName] = useState([]);
     const [showPatient, setShowPatient] = useState("all");
     const [patients, isLoading, setRequest] = usePatientSearch();
     const [patientDetails, isLoading1, setPatientSearchbyId] = usePatientById();
+    const [patientDetailsByName, isLoading2, setPatientSearchbyName] = usePatientByName();
     let data = [];
 
     useEffect(() => {
@@ -28,9 +30,12 @@ const PatientSearch = () => {
         if (searchValue == '') {
             setRequest();
             setShowPatient("all");
-        } else {
+        } else if (filterValue == "patientId") {
             setPatientSearchbyId(searchValue);
             setShowPatient("patientId");
+        } else if (filterValue == "patientName") {
+            setPatientSearchbyName(searchValue);
+            setShowPatient("patientName");
         }
 
     }
@@ -44,6 +49,19 @@ const PatientSearch = () => {
             status: ['registered']
         }];
         data = row;
+    }
+
+    if (showPatient == "patientName" && patientDetailsByName != null) {
+        data = patientDetailsByName.map((patient, index) => {
+            return {
+                key: patient.patientId,
+                name: patient.patientName,
+                age: patient.age,
+                phone: patient.contactNum,
+                address: patient.street,
+                status: ['registered'],
+            };
+        });
     }
     if (showPatient === "all" && patients.length > 0) {
         data = patients.map((patient, index) => {
@@ -170,12 +188,14 @@ const PatientSearch = () => {
     return (
         <>
             <Spinner show={isLoading} />
-            <Search style={{ width: '30%' }}
-                placeholder="Search by Patient Name / ID"
-                enterButton="Search"
-                size="large"
-                onSearch={onPatientSearch}
-            />
+            <Input.Group compact>
+                <Select defaultValue={filterValue} onSelect={setfilterValue}>
+                    <Option value="patientName">Patient Name</Option>
+                    <Option value="patientId">Patient Id</Option>
+                </Select>
+                <Input.Search onSearch={onPatientSearch} style={{ width: '70%' }} placeholder="Search by" />
+            </Input.Group>
+            <br /><br />
             <Table columns={columns} dataSource={data} />
             <Modal
                 title="Patient Details"

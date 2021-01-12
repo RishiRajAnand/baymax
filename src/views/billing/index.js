@@ -244,36 +244,38 @@ const Billing = ({ location, history }) => {
   useEffect(() => {
     calculateTotalCharges(mockData);
     setData(mockData);
-    if (queryParams.context === 'registration') {
+    if (queryParams.context == 'registration') {
       const tempData = [
         {
           key: '1',
           name: 'Registration',
           quantity: 1,
-          amount: 300,
-          gst: 10,
+          amount: 50,
+          gst: 0,
           discount: 0,
-          total: 310,
+          total: 50,
         }];
       setData(tempData);
       calculateTotalCharges(tempData);
-    } else if (queryParams.context === 'consulation') {
+      setRequest(queryParams.patientId);
+    } else if (queryParams.context == 'consulation') {
       const tempData = [
         {
           key: '1',
-          name: 'Consulation ' + '(' + (queryParams.doctorName) + ')',
+          name: 'Consultation ' + '(' + (queryParams.doctorName) + ')',
           quantity: 1,
           amount: queryParams.charges,
-          gst: 5,
+          gst: 0,
           discount: 0,
-          total: Number(queryParams.charges) + 5,
+          total: Number(queryParams.charges) + 0,
         }];
       setData(tempData);
       calculateTotalCharges(tempData);
+      setRequest(queryParams.patientId);
     } else {
       showSearch = <BillSearch onSearch={onBillSearch} />;
     }
-    setRequest(queryParams.patientId);
+   
 
     if (generateBillStatus.response == "success") {
       notification["success"]({
@@ -440,11 +442,10 @@ const Billing = ({ location, history }) => {
       <Modal title="Add Item" visible={isModalVisible} footer={null} onOk={handleOk} onCancel={handleCancel}>
         <AddItem onItemAdded={onItemAdded} />
       </Modal>
-      {showSearch}
+      <BillSearch onSearch={onBillSearch} />
       <PatientDetails patientId={queryParams.patientId} />
       <div style={{ display: 'none' }}>
         <BillPrint ref={componentRef} itemList={data} finalCharges={finalCharges} patientDetails={patient} billId={billDetails.billId} patientId={queryParams.patientId} />
-
       </div>
       <Divider>Bill Details</Divider>
       <Descriptions>
