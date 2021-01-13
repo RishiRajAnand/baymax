@@ -40,6 +40,7 @@ const NewPurchaseOrder = ({ location, history }) => {
     const [purchaseDetailsForm] = Form.useForm();
     const [productListForm] = Form.useForm();
     const [name, setName] = useState("");
+    const [submitted, setSubmitted] = useState(false);
     const [items, setItems] = useState(['ABC pharma', 'Medimex store']);
     const [suppliers, isLoadings, setSupplierSearch] = useGetAllSuppliers();
     const queryParams = queryString.parse(location.search);
@@ -50,17 +51,18 @@ const NewPurchaseOrder = ({ location, history }) => {
     useEffect(() => {
         setMedicineSearch();
         setSupplierSearch();
-        if (status) {
+        if (status && submitted) {
             notification["success"]({
                 message: 'SUCCESS',
                 description: 'Purchase order created successfully',
                 duration: 3
             });
+            setSubmitted(false);
         }
-        if (queryParams.mode == "edit" && queryParams.purchaseOrderId != null) {
+        if (queryParams.mode == "edit" && queryParams.purchaseOrderId != null && submitted == false && status == false) {
             setGetPurchaseOrderDetails(queryParams.purchaseOrderId);
         }
-    }, []);
+    }, [status, submitted]);
 
 
     if (orderDetail != null) {
@@ -68,12 +70,41 @@ const NewPurchaseOrder = ({ location, history }) => {
         purchaseDetailsForm.setFieldsValue({
             user: {
                 supplierName: orderDetail.supplierName,
-                // orderDate: moment(orderDetail.orderDate).toDate,
+                orderDate: moment(new Date(orderDetail.orderDate), 'YYYY-MM-DD'),
                 storeName: orderDetail.storeName,
-                // deliveryDate: orderDetail.deliveryDate,
+                status: orderDetail.status,
+                invoiceNumber: orderDetail.invoiceNumber,
+                deliveryDate: moment(new Date(orderDetail.deliveryDate), 'YYYY-MM-DD'),
                 rol: orderDetail.rol
             }
         });
+        productListForm.setFieldsValue({
+            user: {
+                totalAmount: orderDetail.totalAmount,
+                totalGST: orderDetail.totalGST,
+                totalDiscount: orderDetail.totalDiscount,
+            }
+        });
+        if (orderDetail.productDetails != null) {
+            const productList = [];
+            orderDetail.productDetails.forEach(product => {
+                productList.push({
+                    productId: product.productId,
+                    productName: product.productName,
+                    quantity: product.quantity,
+                    unit: product.unit,
+                    purchaseCost: product.purchaseCost,
+                    batchNumber: product.batchNumber,
+                    expiryDate: moment(new Date(product.expiryDate), 'YYYY-MM-DD'),
+                    discount: product.discount,
+                    tax: product.tax,
+                });
+            });
+            productListForm.setFieldsValue({
+                users: [...productList]
+            });
+        }
+
     }
     if (suppliers.length > 0) {
         suppliers.forEach(supplier => {
@@ -90,6 +121,7 @@ const NewPurchaseOrder = ({ location, history }) => {
 
         productListForm.setFieldsValue({
             users: [{
+                productId: null,
                 productName: queryParams.medicineName,
                 quantity: 1,
                 unit: "",
@@ -103,23 +135,27 @@ const NewPurchaseOrder = ({ location, history }) => {
     }
     const onFinish = formData => {
         const purchaseDetails = purchaseDetailsForm.getFieldsValue().user;
-
+        const productList = productListForm.getFieldsValue().users;
+        const finalCharges = productListForm.getFieldsValue().user;
         const body = {
             purchaseOrderId: queryParams.purchaseOrderId,
             supplierName: purchaseDetails.supplierName,
             orderDate: purchaseDetails.orderDate,
             storeName: purchaseDetails.storeName,
-            // totalAmount: formData.user.totalAmount,
+            invoiceNumber: purchaseDetails.invoiceNumber,
+            totalAmount: finalCharges.totalAmount,
+            totalGST: finalCharges.totalGST,
+            totalDiscount: finalCharges.totalDiscount,
             deliveryDate: purchaseDetails.deliveryDate,
             rol: purchaseDetails.rol,
+            status: purchaseDetails.status,
             productDetails: [],
         };
-        const productList = productListForm.getFieldsValue().users;
         if (productList != null && productList.length > 0) {
             productList.forEach(product => {
                 const medicine = medicineMap.get(product.productName);
                 body.productDetails.push({
-                    productId: null,
+                    productId: product.productId,
                     purchaseOrderId: queryParams.purchaseOrderId,
                     medicineId: medicine.medicineId,
                     productName: product.productName,
@@ -132,6 +168,7 @@ const NewPurchaseOrder = ({ location, history }) => {
                 });
             });
         }
+        setSubmitted(true);
         setSavePurchaseOrder(body);
     };
     function onNameChange(event) {
@@ -168,7 +205,7 @@ const NewPurchaseOrder = ({ location, history }) => {
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item name={['user', 'paid']} label="Status">
+                        <Form.Item name={['user', 'status']} label="Status">
                             <Select
                                 placeholder="Status"
                                 allowClear>
@@ -199,7 +236,7 @@ const NewPurchaseOrder = ({ location, history }) => {
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item name={['user', 'invoiceN']} label="Invoice Number">
+                        <Form.Item name={['user', 'invoiceNumber']} label="Invoice Number">
                             <Input style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>

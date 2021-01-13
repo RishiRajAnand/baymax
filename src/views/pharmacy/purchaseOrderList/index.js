@@ -1,10 +1,12 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { Table, Tag, Space, notification } from 'antd';
+import { Table, Tag, Space, notification, Input, Select } from 'antd';
 import UseGetAllPurchaseOrder from '../../../state/pharmacy/hooks/UseGetAllPurchaseOrders';
 import useDeletePurchaseOrder from '../../../state/pharmacy/hooks/useDeletePurchaseOrder';
-
+import { getRenderPropValue } from 'antd/lib/_util/getRenderPropValue';
+const { Search } = Input;
+const { Option } = Select;
 // const data = [
 //     {
 //         key: '1',
@@ -37,7 +39,18 @@ import useDeletePurchaseOrder from '../../../state/pharmacy/hooks/useDeletePurch
 //     },
 // ];
 
+function resolveTag(tag) {
+    if (tag == "cancelled") {
+        return "red";
+    } else if (tag == "orderPlaced") {
+        return "orange";
+    } else {
+        return "green";
+    }
+
+}
 const PurchaseOrder = ({ location, history }) => {
+
     let data = [];
     const columns = [
         {
@@ -51,16 +64,32 @@ const PurchaseOrder = ({ location, history }) => {
             dataIndex: 'orderDate',
             key: 'orderDate',
             render: text => <a>{text}</a>,
+            sorter: (a, b) => a.orderDate - b.orderDate,
         },
         {
             title: 'Delivery Date',
             dataIndex: 'deliveryDate',
             key: 'deliveryDate',
+            sorter: (a, b) => a.deliveryDate - b.deliveryDate,
         },
         {
             title: 'Supplier',
             dataIndex: 'supplier',
             key: 'supplier',
+            filters: [
+                {
+                    text: 'ACME',
+                    value: 'cancelled',
+                },
+                {
+                    text: 'GSK',
+                    value: 'delivered',
+                }, {
+                    text: 'Medimex',
+                    value: 'orderPlaced',
+                },
+            ],
+            onFilter: (value, record) => record.supplier == value,
         },
         {
             title: 'Store',
@@ -80,13 +109,27 @@ const PurchaseOrder = ({ location, history }) => {
                 <>
                     {tags.map(tag => {
                         return (
-                            <Tag color="green" key={tag}>
+                            <Tag color={resolveTag(tag)} key={tag}>
                                 {tag.toUpperCase()}
                             </Tag>
                         );
                     })}
                 </>
             ),
+            filters: [
+                {
+                    text: 'Cancelled',
+                    value: 'cancelled',
+                },
+                {
+                    text: 'Discharged',
+                    value: 'delivered',
+                }, {
+                    text: 'Order Placed',
+                    value: 'orderPlaced',
+                },
+            ],
+            onFilter: (value, record) => record.status == value,
         },
         {
             title: 'Action',
@@ -104,6 +147,7 @@ const PurchaseOrder = ({ location, history }) => {
             ),
         },
     ];
+    const [filterValue, setfilterValue] = useState("invoiceNumber");
     const [purchaseOrders, isLoading, setGetAllPurchaseOrder] = UseGetAllPurchaseOrder();
     const [status, setDeletePurchaseOrder] = useDeletePurchaseOrder();
     useEffect(() => {
@@ -139,13 +183,36 @@ const PurchaseOrder = ({ location, history }) => {
                 deliveryDate: order.deliveryDate,
                 supplier: order.supplierName,
                 store: order.storeName,
-                // totalAmount: order.totalAmount,
-                status: ['order placed']
+                totalAmount: order.totalAmount,
+                status: (order.status != null ? [order.status] : ['Order Placed'])
             };
         });
     }
+    function onOrderSearch(searchValue) {
+
+        if (searchValue == '') {
+            // setRequest();
+            // // setShowPatient("all");
+        } else if (filterValue == "invoiceNumber") {
+            // setPatientSearchbyId(searchValue);
+            // setShowPatient("patientId");
+        } else if (filterValue == "supplierName") {
+            // setPatientSearchbyName(searchValue);
+            // setShowPatient("patientName");
+        }
+
+    }
     return (
         <>
+            <Input.Group compact>
+                <Select defaultValue={filterValue} onSelect={setfilterValue}>
+                    <Option value="invoiceNumber">Invoice Number</Option>
+                    <Option value="supplierName">Supplier</Option>
+                    {/* <Option value="SupplierName">Supplier Name</Option> */}
+                </Select>
+                <Input.Search onSearch={onOrderSearch} style={{ width: '70%' }} placeholder="Search by" />
+            </Input.Group>
+            <br /><br />
             <Table columns={columns} dataSource={data} />
         </>
     );

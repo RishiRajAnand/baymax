@@ -2,18 +2,12 @@ import { useState } from 'react';
 import { savePurchaseOrder } from '../queries';
 
 const useSavePurchaseOrder = () => {
-  const [status, setStatus] = useState(false);
+  const [status, setStatus] = useState("");
 
   const request = async (body) => {
     const response = await savePurchaseOrder(body);
 
-    if (response) {
-      if (response.status === "SUCCESS") {
-        setStatus(true);
-      }
-    } else {
-      setStatus(false);
-    }
+    setStatus(response);
   };
 
   return [status, request];
