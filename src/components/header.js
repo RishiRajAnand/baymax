@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-
+import { Link, Route } from "react-router-dom";
 import { useStateValue } from '../state';
 import { logout } from '../state/auth/actions';
 
@@ -25,6 +25,7 @@ const Title = styled.h1`
   margin: 0;
   color: white;
   font-weight: 600;
+  cursor: pointer;
 `;
 
 const Header = props => {
@@ -36,7 +37,7 @@ const Header = props => {
 
   return (
     <Nav>
-      <Title>BAYMAX</Title>
+      <Title><Link to={`/home`}>BAYMAX</Link></Title>
       <Right>
         {auth.logged && (
           <Button gradient onClick={() => handleLogout()}>

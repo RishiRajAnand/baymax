@@ -35,51 +35,57 @@ export class BillPrint extends React.Component {
                     </div>
                     <div style={{ width: '100%', height: '2px', background: 'grey', margin: '10px 0px' }}></div>
                     <table border="1" cellpadding="5" cellspacing="5" width="100%">
-                        <tr>
-                            <th>Name</th>
-                            <th>{patientDetails.patientName}</th>
-                            <td>Age</td>
-                            <td>{patientDetails.age}</td>
-                        </tr>
-                        <tr>
-                            <td>PatientId</td>
-                            <td>{patientId}</td>
-                            <td>BillId</td>
-                            <td>{billId}</td>
-                        </tr>
-                        <tr>
-                            <td>Date</td>
-                            <td>{todaysDate}</td>
-                            <td>Visit type</td>
-                            <td>{patientDetails.visitType}</td>
-                        </tr>
+                        <tbody>
+                            <tr>
+                                <th>Name</th>
+                                <th>{patientDetails.patientName}</th>
+                                <td>Age</td>
+                                <td>{patientDetails.age}</td>
+                            </tr>
+                            <tr>
+                                <td>PatientId</td>
+                                <td>{patientId}</td>
+                                <td>BillId</td>
+                                <td>{billId}</td>
+                            </tr>
+                            <tr>
+                                <td>Date</td>
+                                <td>{todaysDate}</td>
+                                <td>Visit type</td>
+                                <td>{patientDetails.visitType}</td>
+                            </tr>
+                        </tbody>
+
                     </table>
                     <br></br>
                     <table id="customers">
-                        <tr>
-                            <th>Item Name</th>
-                            <th>Quantity</th>
-                            <th>Amount</th>
-                            <th>GST(CGST + SGST)</th>
-                            <th>Discount(%)</th>
-                            <th>Total</th>
-                        </tr>
-                        {itemArray}
-                        <tr>
-                            <td colspan="4"></td>
-                            <td>Total</td>
-                            <td>{finalCharges.totalAmount}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="4"></td>
-                            <td>Discount</td>
-                            <td>{finalCharges.totalDiscount}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="4"></td>
-                            <td>Tax</td>
-                            <td>{finalCharges.totalGST}</td>
-                        </tr>
+                        <tbody>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Quantity</th>
+                                <th>Amount</th>
+                                <th>GST(CGST + SGST)</th>
+                                <th>Discount(%)</th>
+                                <th>Total</th>
+                            </tr>
+                            {itemArray}
+                            <tr>
+                                <td colspan="4"></td>
+                                <td>Total</td>
+                                <td>{finalCharges.totalAmount}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"></td>
+                                <td>Discount(%)</td>
+                                <td>{finalCharges.totalDiscount}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"></td>
+                                <td>Tax</td>
+                                <td>{finalCharges.totalGST}</td>
+                            </tr>
+                        </tbody>
+
                     </table>
                     <div style={{ marginTop: '50px', width: '100%', padding: '20px' }}>
                         <div>Cashier Signature</div>

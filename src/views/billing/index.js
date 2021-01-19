@@ -10,7 +10,8 @@ import BillSearch from './components/billSearch';
 import FinalCharges from './components/finalCharges';
 import usePatientSearchbyId from '../../state/patientSearch/hooks/usePatientSearchbyId';
 import useSaveGenerateBill from '../../state/billing/hooks/useGenerateBill';
-import { saveGenerateBill } from '../../state/billing/queries';
+import { getPatientById } from '../../state/patientSearch/queries';
+import { getBillDetails } from './services';
 const { Search } = Input;
 const { Option } = Select;
 
@@ -216,8 +217,12 @@ const Billing = ({ location, history }) => {
   </Col>;
   let printButton = "";
   const [showFilter, setShowFilter] = useState("patientId");
+  const [state, setState] = useState("initial");
   const [paymentMode, setPaymentMode] = useState("Cash");
-  const [billResponse, isLoading, setBillSearch] = useBillSearch();
+  // const [billResponse, isLoading, setBillSearch] = useBillSearch();
+  const [billSearchResponse, setBillSearchResponse] = useState({});
+  const [patientDetails, setPatientDetails] = useState({});
+
   const [generateBillStatus, setGenerateBillStatus] = useSaveGenerateBill();
   const [patient, isLoading1, setRequest] = usePatientSearchbyId();
   const [isModalVisible, setIsModalVisible] = useState(false);;
@@ -242,9 +247,9 @@ const Billing = ({ location, history }) => {
   const queryParams = queryString.parse(location.search);
 
   useEffect(() => {
-    calculateTotalCharges(mockData);
-    setData(mockData);
-    if (queryParams.context == 'registration') {
+    // calculateTotalCharges(mockData);
+    // setData(mockData);
+    if (queryParams.context == 'registration' && state == "initial") {
       const tempData = [
         {
           key: '1',
@@ -257,8 +262,8 @@ const Billing = ({ location, history }) => {
         }];
       setData(tempData);
       calculateTotalCharges(tempData);
-      setRequest(queryParams.patientId);
-    } else if (queryParams.context == 'consulation') {
+      patientSearch(queryParams.patientId);
+    } else if (queryParams.context == 'consulation' && state == "initial") {
       const tempData = [
         {
           key: '1',
@@ -271,11 +276,11 @@ const Billing = ({ location, history }) => {
         }];
       setData(tempData);
       calculateTotalCharges(tempData);
-      setRequest(queryParams.patientId);
+      patientSearch(queryParams.patientId);
     } else {
       showSearch = <BillSearch onSearch={onBillSearch} />;
     }
-   
+
 
     if (generateBillStatus.response == "success") {
       notification["success"]({
@@ -313,59 +318,52 @@ const Billing = ({ location, history }) => {
     });
     return finalCharges;
   }
-  if (billResponse) {
-    const tempData = [];
-    if (billResponse["billDto"]) {
-      billDetails.billId = billResponse["billDto"]["billId"];
-      billDetails.createdAt = new Date(billResponse["billDto"]["createdAt"]);
-    }
-    if (billResponse["billDto"] && billResponse["medicineList"]) {
-      const medicineList = billResponse["medicineList"];
-      if (medicineList !== null && medicineList.length > 0) {
-        medicineList.forEach(medicine => {
-          tempData.push({
-            key: '1',
-            name: medicine.medName,
-            quantity: medicine.days,
-            amount: medicine.cost,
-            gst: 10,
-            discount: 0,
-            total: medicine.cost * 1,
-          });
-        });
-      }
-    }
-
-    if (billResponse["billDto"] && billResponse["testList"]) {
-      const testList = billResponse["testList"];
-      if (testList !== null && testList.length > 0) {
-
-        testList.forEach(test => {
-          tempData.push({
-            key: '1',
-            name: test.testId,
-            quantity: 1,
-            amount: test.cost,
-            gst: 10,
-            discount: 0,
-            total: test.cost * 1,
-          });
-        });
-      }
-    }
-    // setData([...data, ...tempData]);
-  }
-
-
-
   function onChange(pagination, filters, sorter, extra) {
     console.log('params', pagination, filters, sorter, extra);
   }
 
   function onBillSearch(searchValue, searchFilter) {
-    setBillSearch(searchValue, searchFilter);
+    patientSearch(searchValue)
+    getBillDetails(searchValue).then(data => {
+      console.log("bill response", data);
+      setBillDetails({
+        billId: data.billId,
+        createdAt: (new Date()).toDateString()
+      });
+
+      if (data["billDetailList"]) {
+
+        const tempData = data["billDetailList"].map((item, index) => {
+          return {
+            key: item.itemName + index,
+            id: item.id,
+            name: item.itemName,
+            billMapId: item.billMapId,
+            quantity: 1,
+            amount: item.mrp,
+            gst: 0,
+            discount: item.concessionPercentage,
+            total: Number(item.mrp) - ((Number(item.concessionPercentage) / 100) * Number(item.mrp)),
+          }
+        });
+
+        setData(tempData);
+        calculateTotalCharges(tempData);
+      }
+    });
   }
 
+  function patientSearch(patientId) {
+    getPatientById(patientId).then(patientDetails => {
+      setPatientDetails(patientDetails);
+    }).catch(errInfo => {
+      notification["error"]({
+        message: 'Error',
+        description: 'Error while searching patient with Id' + patientId,
+        duration: 3
+      });
+    });
+  }
   function onItemAdded(itemFormValue) {
     const newData = {
       key: Math.random(),
@@ -416,7 +414,7 @@ const Billing = ({ location, history }) => {
       createdAt: new Date(),
       paymentStatus: "paid",
       paymentMode: paymentMode,
-      patientId: queryParams.patientId,
+      patientId: patientDetails.patientId,
       totalCost: finalCharges.totalAmount,
       billDetailList: []
     };
@@ -435,6 +433,7 @@ const Billing = ({ location, history }) => {
     });
 
     setGenerateBillStatus(body);
+    setState("billGenerated");
   }
 
   return (
@@ -443,9 +442,9 @@ const Billing = ({ location, history }) => {
         <AddItem onItemAdded={onItemAdded} />
       </Modal>
       <BillSearch onSearch={onBillSearch} />
-      <PatientDetails patientId={queryParams.patientId} />
+      <PatientDetails patientId={patientDetails.patientId} />
       <div style={{ display: 'none' }}>
-        <BillPrint ref={componentRef} itemList={data} finalCharges={finalCharges} patientDetails={patient} billId={billDetails.billId} patientId={queryParams.patientId} />
+        <BillPrint ref={componentRef} itemList={data} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} patientId={queryParams.patientId} />
       </div>
       <Divider>Bill Details</Divider>
       <Descriptions>

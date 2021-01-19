@@ -1,0 +1,11 @@
+.backgroundImageDiv {
+    height: 700px;
+    color : black;
+    line-height: 500px;
+    text-align: center;
+    font-size: 72px;
+    font-weight: 700;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+  }

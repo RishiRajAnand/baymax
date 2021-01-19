@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react';
 import { Carousel } from 'antd';
-
+import corousal1 from '../../../assets/images/corousal1.jpg';
+import corousal2 from '../../../assets/images/corousal2.jpg';
+import corousal3 from '../../../assets/images/corousal3.jpg';
+import corousal4 from '../../../assets/images/corousal4.jpg';
+import '../homescreen/homescreen.css';
 const contentStyle = {
     height: '700px',
     color: '#fff',
@@ -10,21 +14,30 @@ const contentStyle = {
     fontSize: "32px"
 };
 
+
+
 const HomeScreen = () => {
     return (
         <Carousel autoplay>
             <div>
-                <h3 style={contentStyle}>Welcome to Healthcare</h3>
+                <div class="backgroundImageDiv" style={{ backgroundImage: `url(${corousal1})` }}>
+                    Welcome to Baymax Healthcare
+                </div>
             </div>
             <div>
-                <h3 style={contentStyle}>
-                    “Wherever the art of Medicine is loved, there is also a love of Humanity. ”</h3>
+                <div class="backgroundImageDiv" style={{ backgroundImage: `url(${corousal2})` }}>
+                    Manage everything from central place
+                </div>
             </div>
             <div>
-                <h3 style={contentStyle}>“As to diseases, make a habit of two things — to help, or at least, to do no harm.”</h3>
+                <div class="backgroundImageDiv" style={{ backgroundImage: `url(${corousal3})` }}>
+                    Secure and reliable
+                </div>
             </div>
             <div>
-                <h3 style={contentStyle}>“Let food be thy medicine and medicine be thy food.”</h3>
+                <div class="backgroundImageDiv" style={{ backgroundImage: `url(${corousal4})` }}>
+                    Access records from anywhere
+                </div>
             </div>
         </Carousel>
     );
