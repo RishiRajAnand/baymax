@@ -26,7 +26,7 @@ const Root = props => {
           <Content>
             <Switch>
               <Route exact path="/" component={Login} />
-              {/* <PrivateRoute path="/billing" component={Billing} /> */}
+              {/* <PrivateRoute path="/home" component={Home} /> */}
               <Route path="/home" component={Home} />
             </Switch>
           </Content>

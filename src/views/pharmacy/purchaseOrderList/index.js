@@ -56,7 +56,7 @@ const PurchaseOrder = ({ location, history }) => {
         {
             title: 'Invoice No.',
             dataIndex: 'invoiceNumber',
-            key: 'orderDate',
+            key: 'invoiceNumber',
             render: text => <a>{text}</a>,
         },
         {
@@ -178,9 +178,10 @@ const PurchaseOrder = ({ location, history }) => {
         data = purchaseOrders.map((order, index) => {
             return {
                 key: index,
+                invoiceNumber: order.invoiceNumber,
                 purchaseOrderId: order.purchaseOrderId,
                 orderDate: (new Date(order.orderDate)).toDateString(),
-                deliveryDate: order.deliveryDate,
+                deliveryDate: (new Date(order.deliveryDate)).toDateString(),
                 supplier: order.supplierName,
                 store: order.storeName,
                 totalAmount: order.totalAmount,

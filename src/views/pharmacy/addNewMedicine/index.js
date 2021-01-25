@@ -72,6 +72,7 @@ const AddNewMedicine = ({ location, history }) => {
                 tax: medicineDetail.tax,
                 supplierName: medicineDetail.supplierName,
                 availability: medicineDetail.availability,
+                stockQuantity: medicineDetail.stockQuantity,
             }
         });
     }
@@ -88,7 +89,8 @@ const AddNewMedicine = ({ location, history }) => {
             triggerValue: form.triggerValue,
             image: form.image,
             salePrice: form.salePrice,
-            availability: form.availablity
+            availability: form.availability,
+            stockQuantity: form.stockQuantity
         };
 
         if (queryParams.mode == "edit" && queryParams.medicineId != null) {
@@ -118,7 +120,7 @@ const AddNewMedicine = ({ location, history }) => {
                 triggerValue: 0,
                 image: null,
                 salePrice: 0,
-                availability: "inStock"
+                availability: "In stock"
             }
         });
     }
@@ -135,14 +137,19 @@ const AddNewMedicine = ({ location, history }) => {
             <Form form={form} {...layout} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
                 <Row gutter={24}>
                     <Col span={12}>
-                        <Form.Item name={['user', 'availablity']} label="Availability">
+                        <Form.Item name={['user', 'availability']} label="Availability">
                             <Select
                                 placeholder="Status"
                                 allowClear
-                                defaultValue="inStock">
-                                <Option value="inStock">In Stock</Option>
-                                <Option value="outOfStock">Out Of Stock</Option>
+>
+                                <Option value="In stock">In Stock</Option>
+                                <Option value="Out of stock">Out Of Stock</Option>
                             </Select>
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name={['user', 'stockQuantity']} label="Stock Quantity">
+                            <InputNumber style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -235,50 +242,6 @@ const AddNewMedicine = ({ location, history }) => {
                         </Form.Item>
                     </Col>
                 </Row>
-                {/* <Divider orientation="left">Purchase Details</Divider>
-                <Row gutter={24}>
-                <Col span={12}>
-                        <Form.Item name={['user', 'supplierName']} label="Supplier Name">
-                            <Select
-                                showSearch
-                                placeholder="Select Suppliers Name" style={{ width: '100%' }}
-                                optionFilterProp="children"
-                                filterOption={(input, option) =>
-                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                }>
-
-                            </Select>
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                    <Form.Item name={['user', 'purchaseQuantity']} label="Purchase quantity" rules={[{ type: 'number', min: 0, max: 5000 }]}>
-                            <InputNumber style={{ width: '100%' }} />
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item name={['user', 'purchaseUnit']} label="Purchase Unit">
-                            <Select
-                                showSearch
-                                placeholder="Select Distribution Unit" style={{ width: '100%' }}
-                                optionFilterProp="children"
-                                filterOption={(input, option) =>
-                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                }>
-                                {medicineUnits}
-                            </Select>
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item name={['user', 'suppliersPrice']} label="Suppliers Price" rules={[{ required: true }]}>
-                            <InputNumber style={{ width: '100%' }} />
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item name={['user', 'tax']} label="Tax (%)">
-                            <InputNumber style={{ width: '100%' }} />
-                        </Form.Item>
-                    </Col>
-                </Row> */}
                 <Row>
                     <Col span={24} style={{ textAlign: 'right' }}>
                         <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>

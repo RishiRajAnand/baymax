@@ -93,6 +93,11 @@ const ManageMedicines = ({ location, history }) => {
             key: 'stock',
         },
         {
+            title: 'Stock Quantity',
+            dataIndex: 'stockQuantity',
+            key: 'stockQuantity',
+        },
+        {
             title: 'Action',
             key: 'action',
             render: (text, record) => (
@@ -100,7 +105,7 @@ const ManageMedicines = ({ location, history }) => {
                     <a onClick={() => {
                         history.push({ pathname: '/home/newPurchaseOrder', search: '?mode=prefetch' + '&medicineName=' + record.name });
                     }}>Place Order</a>
-                    <a>Stock</a>
+                    {/* <a>Stock</a> */}
                     <a onClick={() => {
                         history.push({ pathname: '/home/addNewMedicine', search: '?mode=edit' + '&medicineId=' + record.medicineId });
                     }}>Edit</a>
@@ -127,7 +132,8 @@ const ManageMedicines = ({ location, history }) => {
                 sellingPrice: medicine.salePrice,
                 genericName: medicine.genericName,
                 expiryDate: medicine.expDate,
-                stock: medicine.availability
+                stock: medicine.availability,
+                stockQuantity: medicine.stockQuantity
             });
         });
         data = [...tempData];

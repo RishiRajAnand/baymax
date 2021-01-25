@@ -1,6 +1,6 @@
 import { MedicineBoxOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, Route } from "react-router-dom";
 import AddDoctor from '../admin/addDoctor';
 import Appointment from '../appointment';
@@ -28,18 +28,27 @@ import Certificates from '../certificates';
 import Package from '../package';
 import NewPackage from '../package/newPackage';
 import InProgress from '../inProgress';
-import viewPrescription from '../prescription/viewPrescription';
 import ViewPrescription from '../prescription/viewPrescription';
 import { useStateValue } from '../../state';
+import { getRoutes } from '../../routes/routeResolver';
+import { ADMIN, DOCTOR, PHARMACY, RECEPTION, UPCOMING } from '../../utils/roles';
 
 const { Header, Sider, Content, Footer } = Layout;
 const { SubMenu } = Menu;
 
 const Home = ({ location, history, match }) => {
   const path = match.path;
+  let realRoutes = [];
   const [{ auth }, dispatch] = useStateValue();
   const [collapsed, setCollapsed] = useState(false);
   const [itemSelected, setItemSelected] = useState("");
+  const [routes, setRoutes] = useState([]);
+
+
+  useEffect(() => {
+    setRoutes(getRoutes([RECEPTION, DOCTOR, ADMIN, PHARMACY, UPCOMING]));
+    // setRoutes(getRoutes([...auth.roles]));
+  }, []);
 
   const toggle = () => {
     setCollapsed(!collapsed);
@@ -50,73 +59,29 @@ const Home = ({ location, history, match }) => {
     setItemSelected(e.key);
   };
 
+  for (const [roleName, routeList] of Object.entries(routes)) {
+    const childroutes = routeList.map(route => {
+      return generateRouteObject(route);
+    });
+    // if (auth.roles.length == 1) {
+    //   realRoutes = childroutes;
+    // } else {
+    //   realRoutes = [...realRoutes, subRoutesByRole(childroutes, roleName)];
+    // }
+    realRoutes = [...realRoutes, subRoutesByRole(childroutes, roleName)];
+  }
+  function generateRouteObject(routeObject) {
+    return <Menu.Item key={routeObject.label}><Link to={`${path}${routeObject.link}`}>{routeObject.label}</Link></Menu.Item>
+  }
+  function subRoutesByRole(routes, roleName) {
+    return <SubMenu key={roleName} icon={<UserOutlined />} title={roleName}>{routes}</SubMenu>
+  }
   return (
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="logo" />
         <Menu onSelect={handleClick} theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-          <SubMenu key="Patient" icon={<UserOutlined />} title="Patient">
-            <Menu.Item key="Patient Registration"><Link to={`${path}/registration`}>Registration</Link></Menu.Item>
-            <Menu.Item key="Search Patients"><Link to={`${path}/patientSearch`}>Search Patients</Link></Menu.Item>
-          </SubMenu>
-          <SubMenu key="doctor" icon={<UserOutlined />} title="Doctor">
-            <Menu.Item key="Doctor Appointment"><Link to={`${path}/doctorAppointment`}>Appointments</Link></Menu.Item>
-            {/* <Menu.Item key="Search Patients"><Link to={`${path}/patientSearch`}>Search Patients</Link></Menu.Item> */}
-          </SubMenu>
-          <SubMenu key="Admin" icon={<UserOutlined />} title="Admin">
-            <Menu.Item key="Add Doctors"><Link to={`${path}/addDoctor`}>Add Doctors</Link></Menu.Item>
-            <Menu.Item key="Add Medicines"><Link to={`${path}/addMedicine`}>Add Medicines</Link></Menu.Item>
-            <Menu.Item key="Add Test"><Link to={`${path}/addTest`}>Add Tests</Link></Menu.Item>
-            <Menu.Item key="Service Catalogue"><Link to={`${path}/inProgress`}>Service Catalogue</Link></Menu.Item>
-            {/* <Menu.Item key="Add Departments">Add Departments</Menu.Item>
-              <Menu.Item key="Add Employees">Add Employees</Menu.Item>
-              <Menu.Item key="Add Services">Add Services</Menu.Item> */}
-          </SubMenu>
-          <SubMenu key="Pharmacy Management" icon={<MedicineBoxOutlined />} title="Pharmacy">
-            {/* <Menu.Item key="Indent Preparation"><Link to={`${path}/indentPreparation`}>Indent Preparation</Link></Menu.Item> */}
-            {/* <Menu.Item key="Indent List"><Link to={`${path}/indentList`}>Indent List</Link></Menu.Item> */}
-            <Menu.Item key="Add New Medicine"><Link to={`${path}/addNewMedicine`}>New Medicine</Link></Menu.Item>
-            <Menu.Item key="Manage Medicines"><Link to={`${path}/manageMedicines`}>Manage Medicines</Link></Menu.Item>
-            <Menu.Item key="Purchase Order List"><Link to={`${path}/purchaseOrderList`}>Purchase List</Link></Menu.Item>
-            <Menu.Item key="New Purchase Order"><Link to={`${path}/newPurchaseOrder`}>New Purchase Order</Link></Menu.Item>
-            
-            <Menu.Item key="Manage Suppliers"><Link to={`${path}/manageSuppliers`}>Manage Suppliers</Link></Menu.Item>
-          </SubMenu>
-          <Menu.Item key="Billing" icon={<UploadOutlined />}>
-            <Link to={`${path}/billing`}>Billing</Link>
-          </Menu.Item>
-          <Menu.Item key="Appointment" icon={<UploadOutlined />}>
-            <Link to={`${path}/appointment`}>Appointment</Link>
-          </Menu.Item>
-          {/* <Menu.Item key="Prescription" icon={<UploadOutlined />}>
-            <Link to={`${path}/prescription`}>Prescription</Link>
-          </Menu.Item> */}
-          <SubMenu key="Upcoming Features" icon={<UserOutlined />} title="Upcoming">
-            <Menu.Item key="Certificates" icon={<UploadOutlined />}>
-              <Link to={`${path}/certificates`}>Certificates</Link>
-            </Menu.Item>
-            <Menu.Item key="Package Management" icon={<UploadOutlined />}>
-              <Link to={`${path}/package`}>Packages</Link>
-            </Menu.Item>
-            <Menu.Item key="Canteen" icon={<UploadOutlined />}>
-              <Link to={`${path}/canteen`}>Canteen</Link>
-            </Menu.Item>
-            <Menu.Item key="Pharmacy" icon={<VideoCameraOutlined />}>
-              <Link to={`${path}/pharmacy`}>Pharmacy</Link>
-            </Menu.Item>
-            <Menu.Item key="Reimbursements" icon={<UploadOutlined />}>
-              Reimbursements
-            </Menu.Item>
-            <Menu.Item key="Insurance" icon={<UploadOutlined />}>
-              Insurance
-            </Menu.Item>
-            <Menu.Item key="Certificate creation" icon={<UploadOutlined />}>
-              Certificate creation
-            </Menu.Item>
-            <Menu.Item key="Referrals" icon={<UploadOutlined />}>
-              Referrals
-            </Menu.Item>
-          </SubMenu>
+          {realRoutes}
         </Menu>
       </Sider>
       <Layout className="site-layout">

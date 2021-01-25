@@ -1,8 +1,7 @@
-import { Button, Col, Descriptions, Divider, Form, Input, InputNumber, notification, Radio, Row, Select, Table, Popconfirm, Modal } from 'antd';
+import { Button, Col, Descriptions, Divider, Form, InputNumber, Switch, Input, notification, Radio, Row, Select, Table, Popconfirm, Modal } from 'antd';
 import queryString from 'query-string';
 import React, { useRef, useState, useEffect, useContext } from 'react';
 import { useReactToPrint } from 'react-to-print';
-import useBillSearch from '../../state/billing/hooks/useBillSearch';
 import PatientDetails from '../patientDetails';
 import AddItem from './components/addItemModal';
 import { BillPrint } from './components/billPrint';
@@ -12,8 +11,6 @@ import usePatientSearchbyId from '../../state/patientSearch/hooks/usePatientSear
 import useSaveGenerateBill from '../../state/billing/hooks/useGenerateBill';
 import { getPatientById } from '../../state/patientSearch/queries';
 import { getBillDetails } from './services';
-const { Search } = Input;
-const { Option } = Select;
 
 const EditableContext = React.createContext();
 
@@ -53,7 +50,7 @@ const EditableCell = ({
     });
   };
 
-  const save = async (e) => {
+  const save = async () => {
     try {
       const values = await form.validateFields();
       toggleEdit();
@@ -195,40 +192,24 @@ const Billing = ({ location, history }) => {
     totalDiscount: 0,
     totalGST: 0
   };
-  const mockData = [{
-    key: '1',
-    name: "test1",
-    quantity: 1,
-    amount: 100,
-    gst: 10,
-    discount: 34,
-    total: 100,
-  }, {
-    key: '2',
-    name: "test2",
-    quantity: 1,
-    amount: 100,
-    gst: 10,
-    discount: 0,
-    total: 100,
-  }];
   let generateBillButton = <Col className="gutter-row" span={3}>
     <Button style={{ width: '90%' }} type="primary" onClick={generateBill}>Generate Bill</Button>
   </Col>;
   let printButton = "";
-  const [showFilter, setShowFilter] = useState("patientId");
+  const [newPatientForm] = Form.useForm();
   const [state, setState] = useState("initial");
   const [paymentMode, setPaymentMode] = useState("Cash");
   // const [billResponse, isLoading, setBillSearch] = useBillSearch();
-  const [billSearchResponse, setBillSearchResponse] = useState({});
   const [patientDetails, setPatientDetails] = useState({});
-
+  const [newPatientSwitch, setNewPatientSwitch] = useState(false);
   const [generateBillStatus, setGenerateBillStatus] = useSaveGenerateBill();
-  const [patient, isLoading1, setRequest] = usePatientSearchbyId();
   const [isModalVisible, setIsModalVisible] = useState(false);;
   const [billDetails, setBillDetails] = useState(defaultbillDetails);
   const [finalCharges, setFinalCharges] = useState(defaultFinalCharges);
   const [data, setData] = useState([]);
+
+  let patientInfo = <PatientDetails patientId={patientDetails.patientId} />;
+  let billSearchComp = <BillSearch onSearch={onBillSearch} />;
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -301,6 +282,26 @@ const Billing = ({ location, history }) => {
       <Button style={{ width: '90%' }} type="primary" onClick={handlePrint}>Print</Button>
     </Col>;
   }
+  if (newPatientSwitch) {
+    patientInfo = <div>
+      <Divider>Patient Details</Divider>
+      <Form layout="inline" form={newPatientForm}>
+        <Form.Item name="patientName" label="Name">
+          <Input placeholder="name" />
+        </Form.Item>
+        <Form.Item name="age" label="Age">
+          <InputNumber placeholder="age" />
+        </Form.Item>
+        <Form.Item name="contact" label="Contact">
+          <Input placeholder="phone number" />
+        </Form.Item>
+        <Form.Item name="referal doctor" label="Referal doctor">
+          <Input placeholder="doctor name" />
+        </Form.Item>
+      </Form>
+    </div>;
+    billSearchComp = "";
+  }
   function getFinalCharges(dataList) {
     const finalCharges = {
       totalAmount: 0,
@@ -323,14 +324,15 @@ const Billing = ({ location, history }) => {
   }
 
   function onBillSearch(searchValue, searchFilter) {
-    patientSearch(searchValue)
-    getBillDetails(searchValue).then(data => {
-      console.log("bill response", data);
+    patientSearch(searchValue);
+    getBillDetails(searchValue, searchFilter).then(data => {
       setBillDetails({
         billId: data.billId,
         createdAt: (new Date()).toDateString()
       });
-
+      if (data["patientId"]) {
+        patientSearch(data.patientId);
+      }
       if (data["billDetailList"]) {
 
         const tempData = data["billDetailList"].map((item, index) => {
@@ -356,7 +358,7 @@ const Billing = ({ location, history }) => {
   function patientSearch(patientId) {
     getPatientById(patientId).then(patientDetails => {
       setPatientDetails(patientDetails);
-    }).catch(errInfo => {
+    }).catch(() => {
       notification["error"]({
         message: 'Error',
         description: 'Error while searching patient with Id' + patientId,
@@ -395,9 +397,6 @@ const Billing = ({ location, history }) => {
       totalGST: finalCharges.totalGST
     });
   }
-  function getTotalCharges(itemDetails) {
-    return itemDetails.amount + itemDetails.gst - itemDetails.discount;
-  }
 
   function onDiscountChange(discountValue) {
     console.log("Discount changed", discountValue);
@@ -434,15 +433,26 @@ const Billing = ({ location, history }) => {
 
     setGenerateBillStatus(body);
     setState("billGenerated");
+    if (newPatientSwitch) {
+      const newPatientFormValues = newPatientForm.getFieldsValue();
+      setPatientDetails({
+        patientName: newPatientFormValues.patientName,
+        patientId: "N/A",
+        age: newPatientFormValues.age,
+      });
+    }
   }
-
+  function onNewPatientSwitchChange(checked) {
+    setNewPatientSwitch(checked);
+  }
   return (
     <>
       <Modal title="Add Item" visible={isModalVisible} footer={null} onOk={handleOk} onCancel={handleCancel}>
         <AddItem onItemAdded={onItemAdded} />
       </Modal>
-      <BillSearch onSearch={onBillSearch} />
-      <PatientDetails patientId={patientDetails.patientId} />
+      New Patient <Switch onChange={onNewPatientSwitchChange} /> <br /> <br />
+      {billSearchComp}
+      {patientInfo}
       <div style={{ display: 'none' }}>
         <BillPrint ref={componentRef} itemList={data} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} patientId={queryParams.patientId} />
       </div>
@@ -480,7 +490,7 @@ const Billing = ({ location, history }) => {
         {printButton}
 
         <Col className="gutter-row" span={3}>
-          <Button style={{ width: '90%' }} type="primary" onClick={value => history.push({ pathname: '/home/appointment', search: '?patientId='.concat(queryParams.patientId) })}>Go To Appointment</Button>
+          <Button style={{ width: '90%' }} type="primary" onClick={() => history.push({ pathname: '/home/appointment', search: '?patientId='.concat(queryParams.patientId) })}>Go To Appointment</Button>
         </Col>
       </Row>
     </>

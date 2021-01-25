@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, InputNumber, Radio, Divider, Descriptions, Select, Badge, Table, Row, Col } from 'antd';
+import { Input, Select } from 'antd';
 const { Option } = Select;
 
 const BillSearch = (props) => {
@@ -16,7 +16,7 @@ const BillSearch = (props) => {
                         <Option value="billId">Bill Id</Option>
                         <Option value="receiptId">Receipt Id</Option>
                     </Select>
-                    <Input.Search onSearch={onSearch} style={{ width: '70%' }} placeholder="Search by" />
+                    <Input.Search onSearch={onSearch} style={{ width: '70%' }} placeholder="Search Bill by" />
                 </Input.Group>);
 };
 export default BillSearch;

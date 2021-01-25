@@ -39,11 +39,10 @@ const Header = props => {
     <Nav>
       <Title><Link to={`/home`}>BAYMAX</Link></Title>
       <Right>
-        {auth.logged && (
-          <Button gradient onClick={() => handleLogout()}>
+          <Link to={`/`}><Button gradient onClick={() => handleLogout()}>
             Logout
           </Button>
-        )}
+          </Link>
       </Right>
     </Nav>
   );

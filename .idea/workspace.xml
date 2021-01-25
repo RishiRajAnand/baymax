@@ -2,46 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c4ac6c84-080e-4df3-8caa-2cdf5d6122f7" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/.editorconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.eslintrc.js" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintrc.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.prettierrc" beforeDir="false" afterPath="$PROJECT_DIR$/.prettierrc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/favicon.ico" beforeDir="false" afterPath="$PROJECT_DIR$/public/favicon.ico" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/public/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/button.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/button.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/content.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/content.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/form/error.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/form/error.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/form/formGroup.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/form/formGroup.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/form/input.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/form/input.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/header.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/header.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/spinner.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/spinner.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/theme.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/theme.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/registerServiceWorker.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/registerServiceWorker.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/routes/base-styles.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/base-styles.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/routes/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/routes/private-route/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/private-route/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/auth/actions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/auth/actions.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/auth/hooks/useLogin.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/auth/hooks/useLogin.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/auth/queries.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/auth/queries.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/auth/reducers.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/auth/reducers.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/product/actions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/product/actions.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/product/hooks/useProducts.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/product/hooks/useProducts.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/product/queries.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/product/queries.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/product/reducers.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/product/reducers.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/reducers.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/reducers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils/services.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/services.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/home/components/card.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/components/card.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/home/components/list.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/components/list.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/home/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/login/containers/container.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/login/containers/container.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/login/containers/form.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/login/containers/form.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/login/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/login/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,6 +23,33 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../Hospital-Management" />
   </component>
+  <component name="RunManager">
+    <configuration name="[spring-boot:run]" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="spring-boot:run" />
+              </list>
+            </option>
+            <option name="pomFileName" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -75,9 +64,13 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl" timestamp="1600141101061">
+    <state x="418" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1611255963530">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl/0.27.1920.1053@0.27.1920.1053" timestamp="1600141101061" />
+    <state x="418" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog/1920.0.1920.1080/0.27.1920.1053@0.27.1920.1053" timestamp="1611255963530" />
+    <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl" timestamp="1611256124088">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl/1920.0.1920.1080/0.27.1920.1053@0.27.1920.1053" timestamp="1611256124088" />
   </component>
 </project>
