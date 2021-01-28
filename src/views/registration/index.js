@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Form, Input, InputNumber, Button, Select, notification } from 'antd';
 import useRegistration from '../../state/registration/hooks/useRegistration';
 import Spinner from '../../components/spinner';
+import { registration } from '../../state/registration/queries';
 
 const { Option } = Select;
 
@@ -35,19 +36,6 @@ const PhonePrefixSelector = (
 );
 
 const Registration = ({ location, history }) => {
-    const [response, isLoading, setRequest] = useRegistration();
-
-    useEffect(() => {
-        if (response.recieptId !== null && response.recieptId !== undefined) {
-            notification["success"]({
-                message: 'SUCCESS',
-                description: 'The patient has been registered successfully',
-                duration: 3
-            });
-            history.push({ pathname: '/home/billing', search: '?patientId=' + response.patientId + '&receiptId=' + response.recieptId + '&context=registration' });
-        }
-    }, [response, history]);
-
     const onFinish = formData => {
 
         const form = formData.user;
@@ -61,12 +49,26 @@ const Registration = ({ location, history }) => {
             "country": form.country,
             "visitType": form.visit
         };
-        setRequest(body);
+        registration(body).then(data => {
+            notification["success"]({
+                message: 'SUCCESS',
+                description: 'The patient has been registered successfully',
+                duration: 3
+            });
+            history.push({ pathname: '/home/billing', search: '?patientId=' + data.patientId + '&receiptId=' + data.recieptId + '&context=registration' });
+        }).catch(errr => {
+            notification["error"]({
+                message: 'Error',
+                description: 'There was some error in registration',
+                duration: 3
+            });
+
+        });
+        // setRequest(body);
     };
 
     return (
         <>
-            <Spinner show={isLoading} />
             <Form {...layout} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
                 <Form.Item name={['user', 'name']} label="Name" rules={[{ required: true }]}>
                     <Input />

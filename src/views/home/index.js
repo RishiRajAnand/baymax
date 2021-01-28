@@ -32,6 +32,7 @@ import ViewPrescription from '../prescription/viewPrescription';
 import { useStateValue } from '../../state';
 import { getRoutes } from '../../routes/routeResolver';
 import { ADMIN, DOCTOR, PHARMACY, RECEPTION, UPCOMING } from '../../utils/roles';
+import BillSearch from '../billSearch';
 
 const { Header, Sider, Content, Footer } = Layout;
 const { SubMenu } = Menu;
@@ -104,6 +105,7 @@ const Home = ({ location, history, match }) => {
         >
           <Route exact path="/home" component={HomeScreen} />
           <Route path={`${path}/billing`} component={Billing} />
+          <Route path={`${path}/billSearch`} component={BillSearch} />
           <Route path={`${path}/registration`} component={Registration} />
           <Route path={`${path}/patientSearch`} component={PatientSearch} />
           <Route path={`${path}/addDoctor`} component={AddDoctor} />

@@ -209,7 +209,7 @@ const Billing = ({ location, history }) => {
   const [data, setData] = useState([]);
 
   let patientInfo = <PatientDetails patientId={patientDetails.patientId} />;
-  let billSearchComp = <BillSearch onSearch={onBillSearch} />;
+  // let billSearchComp = <BillSearch onSearch={onBillSearch} />;
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -236,6 +236,7 @@ const Billing = ({ location, history }) => {
           key: '1',
           name: 'Registration',
           quantity: 1,
+          type: 'registration',
           amount: 50,
           gst: 0,
           discount: 0,
@@ -250,6 +251,7 @@ const Billing = ({ location, history }) => {
           key: '1',
           name: 'Consultation ' + '(' + (queryParams.doctorName) + ')',
           quantity: 1,
+          type: 'consultation',
           amount: queryParams.charges,
           gst: 0,
           discount: 0,
@@ -258,8 +260,8 @@ const Billing = ({ location, history }) => {
       setData(tempData);
       calculateTotalCharges(tempData);
       patientSearch(queryParams.patientId);
-    } else {
-      showSearch = <BillSearch onSearch={onBillSearch} />;
+    } else if (queryParams.context == 'edit') {
+      onBillSearch(queryParams.billId, "billId");
     }
 
 
@@ -300,7 +302,6 @@ const Billing = ({ location, history }) => {
         </Form.Item>
       </Form>
     </div>;
-    billSearchComp = "";
   }
   function getFinalCharges(dataList) {
     const finalCharges = {
@@ -326,32 +327,37 @@ const Billing = ({ location, history }) => {
   function onBillSearch(searchValue, searchFilter) {
     patientSearch(searchValue);
     getBillDetails(searchValue, searchFilter).then(data => {
-      setBillDetails({
-        billId: data.billId,
-        createdAt: (new Date()).toDateString()
-      });
-      if (data["patientId"]) {
-        patientSearch(data.patientId);
-      }
-      if (data["billDetailList"]) {
-
-        const tempData = data["billDetailList"].map((item, index) => {
-          return {
-            key: item.itemName + index,
-            id: item.id,
-            name: item.itemName,
-            billMapId: item.billMapId,
-            quantity: 1,
-            amount: item.mrp,
-            gst: 0,
-            discount: item.concessionPercentage,
-            total: Number(item.mrp) - ((Number(item.concessionPercentage) / 100) * Number(item.mrp)),
-          }
+      if (data && data[0]) {
+        const billDetails = data[0];
+        setBillDetails({
+          billId: billDetails.billId,
+          createdAt: (new Date(billDetails.createdAt)).toDateString()
         });
+        if (billDetails["patientId"]) {
+          patientSearch(billDetails.patientId);
+        }
+        if (billDetails["billDetailList"]) {
 
-        setData(tempData);
-        calculateTotalCharges(tempData);
+          const tempData = billDetails["billDetailList"].map((item, index) => {
+            return {
+              key: item.itemName + index,
+              id: item.id,
+              name: item.itemName,
+              type: item.purchaseType,
+              billMapId: item.billMapId,
+              quantity: 1,
+              amount: item.mrp,
+              gst: 0,
+              discount: item.concessionPercentage,
+              total: Number(item.mrp) - ((Number(item.concessionPercentage) / 100) * Number(item.mrp)),
+            }
+          });
+
+          setData(tempData);
+          calculateTotalCharges(tempData);
+        }
       }
+
     });
   }
 
@@ -367,11 +373,14 @@ const Billing = ({ location, history }) => {
     });
   }
   function onItemAdded(itemFormValue) {
+    console.log(itemFormValue);
     const newData = {
       key: Math.random(),
       name: itemFormValue.name,
+      itemId: itemFormValue.itemId,
       quantity: itemFormValue.quantity,
       amount: itemFormValue.amount,
+      type: itemFormValue.itemType,
       gst: 10,
       discount: 0,
       total: itemFormValue.quantity * itemFormValue.amount,
@@ -421,12 +430,13 @@ const Billing = ({ location, history }) => {
       const billItem = {
         id: null,
         itemName: item.name,
-        itemId: null,
+        itemId: item.itemId,
         billMapId: null,
         cost: item.total,
         concessionPercentage: item.discount,
         mrp: item.amount,
-        concessionType: "discount"
+        concessionType: "discount",
+        purchaseType: (item.type == "medicine" ? "pharmacy-purchase" : item.type)
       };
       body.billDetailList.push(billItem);
     });
@@ -451,7 +461,7 @@ const Billing = ({ location, history }) => {
         <AddItem onItemAdded={onItemAdded} />
       </Modal>
       New Patient <Switch onChange={onNewPatientSwitchChange} /> <br /> <br />
-      {billSearchComp}
+      {/* {billSearchComp} */}
       {patientInfo}
       <div style={{ display: 'none' }}>
         <BillPrint ref={componentRef} itemList={data} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} patientId={queryParams.patientId} />

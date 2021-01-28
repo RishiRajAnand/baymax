@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Input, Select } from 'antd';
 const { Option } = Select;
 
-const BillSearch = (props) => {
+const BillSearchComp = (props) => {
     const defaultSearch = "patientId";
     const [filterValue, setfilterValue] = useState(defaultSearch);
 
@@ -19,4 +19,4 @@ const BillSearch = (props) => {
                     <Input.Search onSearch={onSearch} style={{ width: '70%' }} placeholder="Search Bill by" />
                 </Input.Group>);
 };
-export default BillSearch;
+export default BillSearchComp;

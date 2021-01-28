@@ -6,6 +6,7 @@ import queryString from 'query-string';
 import useSavePharmacyMedicine from '../../../state/pharmacy/hooks/useSavePharmacyMedicine';
 import useGetPharmacyMedicineDetail from '../../../state/pharmacy/hooks/useGetMedicinedetail';
 import { setNestedObjectValues } from 'formik';
+import { savePharmacyMedicine } from '../../../state/pharmacy/queries';
 const { Option } = Select;
 const { TextArea } = Input;
 const layout = {
@@ -34,8 +35,6 @@ const AddNewMedicine = ({ location, history }) => {
     const [form] = Form.useForm();
     const [name, setName] = useState("");
     const [items, setItems] = useState(['Aspirin', 'Tablets', 'Syrup']);
-    const [status, setRequest] = useSavePharmacyMedicine();
-    const [savedStatus, setSavedStatus] = useState(true);
     const [medicineDetail, setRequest1] = useGetPharmacyMedicineDetail();
     const queryParams = queryString.parse(location.search);
     useEffect(() => {
@@ -43,16 +42,7 @@ const AddNewMedicine = ({ location, history }) => {
             setRequest1(queryParams.medicineId);
         }
     }, []);
-    console.log("loadedddddddddddddddd", status);
-    if (savedStatus == false && status == true) {
-        notification["success"]({
-            message: 'SUCCESS',
-            description: 'Medicine added successfully',
-            duration: 3
-        });
-        clearForm();
-        setSavedStatus(true);
-    }
+
     if (medicineDetail != null && queryParams.mode == "edit") {
         form.setFieldsValue({
             user: {
@@ -96,8 +86,21 @@ const AddNewMedicine = ({ location, history }) => {
         if (queryParams.mode == "edit" && queryParams.medicineId != null) {
             body["medicineId"] = queryParams.medicineId;
         }
-        setSavedStatus(false);
-        setRequest(body);
+
+        savePharmacyMedicine(body).then(data => {
+            notification["success"]({
+                message: 'SUCCESS',
+                description: `Medicine ${form.medicineName} ${queryParams.mode == 'edit' ? 'edited' : 'added'} successfully`,
+                duration: 3
+            });
+            clearForm();
+        }).catch(err => {
+            notification["error"]({
+                message: 'ERROR',
+                description: `Error while saving Medicine`,
+                duration: 3
+            });
+        });
     };
     function onNameChange(event) {
         // console.log("sas", event.target.value);
@@ -120,7 +123,8 @@ const AddNewMedicine = ({ location, history }) => {
                 triggerValue: 0,
                 image: null,
                 salePrice: 0,
-                availability: "In stock"
+                availability: "In stock",
+                stockQuantity: 0
             }
         });
     }
@@ -141,7 +145,7 @@ const AddNewMedicine = ({ location, history }) => {
                             <Select
                                 placeholder="Status"
                                 allowClear
->
+                            >
                                 <Option value="In stock">In Stock</Option>
                                 <Option value="Out of stock">Out Of Stock</Option>
                             </Select>

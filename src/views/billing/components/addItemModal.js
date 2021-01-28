@@ -25,12 +25,12 @@ const AddItem = (props) => {
 
     if (selected == "test") {
         options = [...tests.map(test => {
-            testMap.set();
+            testMap.set(test.testName, test);
             return { value: test.testName, label: test.testName };
         })];
     } else if (selected == "medicine") {
         if (medicines.length > 0) {
-            
+
             medicines.forEach(medicine => {
                 medicineMap.set(medicine.medicineName, medicine);
                 options.push({ value: medicine.medicineName, label: medicine.medicineName });
@@ -46,17 +46,24 @@ const AddItem = (props) => {
 
     function onFinish(value) {
         let amount = 0;
-        if(selected == "medicine") {
-         amount = medicineMap.get(value.user.name).salePrice;
-        } else if (selected == "test") {
-
-        }
         const obj = {
-            itemId: "",
-            name : value.user.name,
-            quantity : value.user.quantity,
+            itemId: null,
+            name: value.user.name,
+            quantity: value.user.quantity,
+            itemType: selected,
             amount: amount
         }
+        if (selected == "medicine") {
+            const medicinedetail = medicineMap.get(value.user.name);
+            obj["amount"] = medicinedetail.salePrice;
+            obj["itemId"] = medicinedetail.medicineId;
+
+        } else if (selected == "test") {
+            const testdetail = testMap.get(value.user.name);
+            obj["amount"] = testdetail.price;
+            obj["itemId"] = null;
+        }
+
         props.onItemAdded(obj);
     }
     function onItemTypeSelect(value) {
@@ -82,7 +89,7 @@ const AddItem = (props) => {
                 <InputNumber />
             </Form.Item>
             <Form.Item name={['user', 'itemType']} label="Item type" >
-                <Select onSelect={onItemTypeSelect} defaultValue="medicine" placeholder="Item type">
+                <Select onSelect={onItemTypeSelect} defaultValue={selected} placeholder="Item type">
                     <Option value="medicine">Medicine</Option>
                     <Option value="test">Test</Option>
                     <Option value="consulation">Consulation</Option>

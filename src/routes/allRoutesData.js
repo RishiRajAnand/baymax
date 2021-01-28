@@ -1,4 +1,4 @@
-export const registration = { label: "Patient Registration", link: "/registration" }
+export const registration = { label: "Registration", link: "/registration" }
 export const patientSearch = { label: "Search Patients", link: "/patientSearch" }
 export const doctorAppointment = { label: "Doctor Appointment", link: "/doctorAppointment" }
 export const addDoctor = { label: "Add Doctors", link: "/addDoctor" }
@@ -11,6 +11,7 @@ export const purchaseOrderList = { label: "Purchase Order List", link: "/purchas
 export const newPurchaseOrder = { label: "New Purchase Order", link: "/newPurchaseOrder" }
 export const manageSuppliers = { label: "Manage Suppliers", link: "/manageSuppliers" }
 export const billing = { label: "Billing", link: "/billing" };
+export const billSearch = { label: "Bill Search", link: "/billSearch" };
 export const appointment = { label: "Appointment", link: "/appointment" };
 export const certificates = { label: "Certificates", link: "/certificates" };
 export const packageManagement = { label: "Package Management", link: "/package" };
@@ -23,6 +24,6 @@ export const referrals = { label: "Referrals", link: "/inProgress" };
 
 export const doctorRoutes = [doctorAppointment];
 export const pharmacyRoutes = [addNewMedicine, manageMedicines, purchaseOrderList, newPurchaseOrder, manageSuppliers, billing];
-export const receptionRoutes = [registration, patientSearch, appointment, billing];
+export const receptionRoutes = [registration, patientSearch, appointment, billing, billSearch];
 export const upcomingRoutes = [certificates, packageManagement, canteen, pharmacy, reimbursements, insurance, certificateCreation, referrals];
 export const adminRoutes = [addMedicine, addTest, addDoctor, serviceCatalogue]; 
