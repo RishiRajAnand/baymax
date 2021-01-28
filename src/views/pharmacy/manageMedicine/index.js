@@ -47,7 +47,9 @@ const ManageMedicines = ({ location, history }) => {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
-            render: text => <a>{text}</a>,
+            render: (text, record) => (
+                <a>{(record.stockQuantity - record.triggerValue > 0 ? text : 'khatam ho gya')}</a>
+            ),
         },
         {
             title: 'Category',
@@ -129,6 +131,7 @@ const ManageMedicines = ({ location, history }) => {
                 medicineId: medicine.medicineId,
                 category: medicine.category,
                 purchasePrice: medicine.supplierPrice,
+                triggerValue: medicine.triggerValue,
                 sellingPrice: medicine.salePrice,
                 genericName: medicine.genericName,
                 expiryDate: medicine.expDate,

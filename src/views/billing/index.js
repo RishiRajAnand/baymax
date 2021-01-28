@@ -436,6 +436,7 @@ const Billing = ({ location, history }) => {
         concessionPercentage: item.discount,
         mrp: item.amount,
         concessionType: "discount",
+        quantity: item.quantity,
         purchaseType: (item.type == "medicine" ? "pharmacy-purchase" : item.type)
       };
       body.billDetailList.push(billItem);
