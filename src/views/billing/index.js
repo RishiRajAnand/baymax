@@ -345,7 +345,7 @@ const Billing = ({ location, history }) => {
               name: item.itemName,
               type: item.purchaseType,
               billMapId: item.billMapId,
-              quantity: 1,
+              quantity: item.quantity,
               amount: item.mrp,
               gst: 0,
               discount: item.concessionPercentage,

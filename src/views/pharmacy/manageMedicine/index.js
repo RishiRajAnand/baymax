@@ -1,6 +1,7 @@
-import { Space, Table, Input, Select } from 'antd';
+import { Space, Table, Input, Select, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import useGetAllPharmacyMedicines from '../../../state/pharmacy/hooks/useGetAllPharmacyMedicines';
+const { Text } = Typography;
 const { Search } = Input;
 const { Option } = Select;
 
@@ -48,7 +49,7 @@ const ManageMedicines = ({ location, history }) => {
             dataIndex: 'name',
             key: 'name',
             render: (text, record) => (
-                <a>{(record.stockQuantity - record.triggerValue > 0 ? text : 'khatam ho gya')}</a>
+                <Text type={record.stockQuantity - record.triggerValue > 0 ? 'success' : 'danger'}>{text}</Text>
             ),
         },
         {
