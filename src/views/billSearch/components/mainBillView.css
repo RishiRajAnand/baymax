@@ -21,15 +21,18 @@
   .itemTable tr:hover {background-color: #ddd;}
   
   .itemTable th {
-    padding-top: 12px;
-    padding-bottom: 12px;
     text-align: left;
     background-color: whitesmoke;
-    color: whitesmoke
+    font-size: 15px;
+    color:black
   }
+
   .heading{
       text-align: center;
       font-weight: bold;
       text-decoration: underline;
-      font-size: 18px;
+      font-size: 25px;
+  }
+  .billDetail span {
+      font-weight: 700;
   }

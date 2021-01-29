@@ -23,7 +23,7 @@ export const certificateCreation = { label: "Certificate creation", link: "/inPr
 export const referrals = { label: "Referrals", link: "/inProgress" };
 
 export const doctorRoutes = [doctorAppointment];
-export const pharmacyRoutes = [addNewMedicine, manageMedicines, purchaseOrderList, newPurchaseOrder, manageSuppliers, billing];
+export const pharmacyRoutes = [addNewMedicine, manageMedicines, purchaseOrderList, newPurchaseOrder, manageSuppliers, billing, billSearch];
 export const receptionRoutes = [registration, patientSearch, appointment, billing, billSearch];
 export const upcomingRoutes = [certificates, packageManagement, canteen, pharmacy, reimbursements, insurance, certificateCreation, referrals];
 export const adminRoutes = [addMedicine, addTest, addDoctor, serviceCatalogue]; 

@@ -13,7 +13,7 @@ import { getPatientById } from '../../state/patientSearch/queries';
 import { getBillDetails } from './services';
 
 const EditableContext = React.createContext();
-
+const { Search } = Input;
 const EditableRow = ({ index, ...props }) => {
   const [form] = Form.useForm();
   return (
@@ -94,6 +94,7 @@ const EditableCell = ({
   return <td {...restProps}>{childNode}</td>;
 };
 const Billing = ({ location, history }) => {
+  const queryParams = queryString.parse(location.search);
   const components = {
     body: {
       row: EditableRow,
@@ -150,7 +151,7 @@ const Billing = ({ location, history }) => {
       key: 'action',
       render: (text, record) =>
         <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-          <a>Delete</a>
+          <a> {record.type == "pharmacy-purchase" && queryParams.context == "edit" ? "Return" : "Delete"} </a>
         </Popconfirm>
     }
   ];
@@ -193,7 +194,7 @@ const Billing = ({ location, history }) => {
     totalGST: 0
   };
   let generateBillButton = <Col className="gutter-row" span={3}>
-    <Button style={{ width: '90%' }} type="primary" onClick={generateBill}>Generate Bill</Button>
+    <Button style={{ width: '90%' }} type="primary" onClick={generateBill}>Generate {queryParams.context == "edit" ? "new " : "" }bill</Button>
   </Col>;
   let printButton = "";
   const [newPatientForm] = Form.useForm();
@@ -207,8 +208,12 @@ const Billing = ({ location, history }) => {
   const [billDetails, setBillDetails] = useState(defaultbillDetails);
   const [finalCharges, setFinalCharges] = useState(defaultFinalCharges);
   const [data, setData] = useState([]);
+  const [returnedItems, setReturnedItems] = useState([]);
 
-  let patientInfo = <PatientDetails patientId={patientDetails.patientId} />;
+  let patientInfo = <div>
+    <Search placeholder="Search by Patient Id" allowClear onSearch={patientSearch} style={{ width: '30%' }} />
+    <PatientDetails patientId={patientDetails.patientId} />
+  </div>;
   // let billSearchComp = <BillSearch onSearch={onBillSearch} />;
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
@@ -225,7 +230,6 @@ const Billing = ({ location, history }) => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-  const queryParams = queryString.parse(location.search);
 
   useEffect(() => {
     // calculateTotalCharges(mockData);
@@ -325,7 +329,6 @@ const Billing = ({ location, history }) => {
   }
 
   function onBillSearch(searchValue, searchFilter) {
-    patientSearch(searchValue);
     getBillDetails(searchValue, searchFilter).then(data => {
       if (data && data[0]) {
         const billDetails = data[0];
@@ -342,6 +345,7 @@ const Billing = ({ location, history }) => {
             return {
               key: item.itemName + index,
               id: item.id,
+              itemId: item.itemId,
               name: item.itemName,
               type: item.purchaseType,
               billMapId: item.billMapId,
@@ -364,7 +368,7 @@ const Billing = ({ location, history }) => {
   function patientSearch(patientId) {
     getPatientById(patientId).then(patientDetails => {
       setPatientDetails(patientDetails);
-    }).catch(() => {
+    }).catch(err => {
       notification["error"]({
         message: 'Error',
         description: 'Error while searching patient with Id' + patientId,
@@ -381,7 +385,7 @@ const Billing = ({ location, history }) => {
       quantity: itemFormValue.quantity,
       amount: itemFormValue.amount,
       type: itemFormValue.itemType,
-      gst: 10,
+      gst: 0,
       discount: 0,
       total: itemFormValue.quantity * itemFormValue.amount,
     }
@@ -392,8 +396,17 @@ const Billing = ({ location, history }) => {
     setIsModalVisible(false);
   }
   function handleDelete(key) {
+    let returnedItems = [];
+    if (queryParams.context == "edit") {
+      data.forEach((item) => {
+        if (item.key == key && item.type == "pharmacy-purchase") {
+          returnedItems.push(item);
+        }
+      });
+      setReturnedItems(returnedItems);
+    }
     const dataSource = data.filter((item) => item.key !== key);
-    calculateTotalCharges(dataSource)
+    calculateTotalCharges(dataSource);
     setData(dataSource);
   };
 
@@ -424,6 +437,8 @@ const Billing = ({ location, history }) => {
       paymentMode: paymentMode,
       patientId: patientDetails.patientId,
       totalCost: finalCharges.totalAmount,
+      totalDiscount: finalCharges.totalDiscount,
+      totalGST: finalCharges.totalGST,
       billDetailList: []
     };
     data.forEach(item => {
@@ -434,6 +449,7 @@ const Billing = ({ location, history }) => {
         billMapId: null,
         cost: item.total,
         concessionPercentage: item.discount,
+        gstPercentage: item.gst,
         mrp: item.amount,
         concessionType: "discount",
         quantity: item.quantity,
@@ -441,7 +457,22 @@ const Billing = ({ location, history }) => {
       };
       body.billDetailList.push(billItem);
     });
-
+    returnedItems.forEach(item => {
+      const billItem = {
+        id: null,
+        itemName: item.name,
+        itemId: item.itemId,
+        billMapId: null,
+        cost: item.total,
+        concessionPercentage: item.discount,
+        gstPercentage: item.gst,
+        mrp: item.amount,
+        concessionType: "discount",
+        quantity: item.quantity,
+        purchaseType: (item.type == "pharmacy-purchase" ? "pharmacy-return" : item.type)
+      };
+      body.billDetailList.push(billItem);
+    });
     setGenerateBillStatus(body);
     setState("billGenerated");
     if (newPatientSwitch) {
@@ -456,13 +487,13 @@ const Billing = ({ location, history }) => {
   function onNewPatientSwitchChange(checked) {
     setNewPatientSwitch(checked);
   }
+
   return (
     <>
       <Modal title="Add Item" visible={isModalVisible} footer={null} onOk={handleOk} onCancel={handleCancel}>
         <AddItem onItemAdded={onItemAdded} />
       </Modal>
       New Patient <Switch onChange={onNewPatientSwitchChange} /> <br /> <br />
-      {/* {billSearchComp} */}
       {patientInfo}
       <div style={{ display: 'none' }}>
         <BillPrint ref={componentRef} itemList={data} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} patientId={queryParams.patientId} />
@@ -478,6 +509,7 @@ const Billing = ({ location, history }) => {
         type="primary"
         style={{
           marginBottom: 16,
+          display: (queryParams.context == "edit" ? "none" : "")
         }}
       >
         Add Item

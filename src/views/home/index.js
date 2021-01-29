@@ -47,8 +47,8 @@ const Home = ({ location, history, match }) => {
 
 
   useEffect(() => {
-    setRoutes(getRoutes([RECEPTION, DOCTOR, ADMIN, PHARMACY, UPCOMING]));
-    // setRoutes(getRoutes([...auth.roles]));
+    // setRoutes(getRoutes([RECEPTION, DOCTOR, ADMIN, PHARMACY, UPCOMING]));
+    setRoutes(getRoutes([...auth.roles]));
   }, []);
 
   const toggle = () => {
@@ -64,12 +64,12 @@ const Home = ({ location, history, match }) => {
     const childroutes = routeList.map(route => {
       return generateRouteObject(route);
     });
-    // if (auth.roles.length == 1) {
-    //   realRoutes = childroutes;
-    // } else {
-    //   realRoutes = [...realRoutes, subRoutesByRole(childroutes, roleName)];
-    // }
-    realRoutes = [...realRoutes, subRoutesByRole(childroutes, roleName)];
+    if (auth.roles.length == 1) {
+      realRoutes = childroutes;
+    } else {
+      realRoutes = [...realRoutes, subRoutesByRole(childroutes, roleName)];
+    }
+    // realRoutes = [...realRoutes, subRoutesByRole(childroutes, roleName)];
   }
   function generateRouteObject(routeObject) {
     return <Menu.Item key={routeObject.label}><Link to={`${path}${routeObject.link}`}>{routeObject.label}</Link></Menu.Item>
