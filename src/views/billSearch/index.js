@@ -45,9 +45,9 @@ const BillSearch = ({ location, history }) => {
                     <a onClick={() => {
                         history.push({ pathname: '/home/billing', search: '?context=edit' + '&billId=' + record.billId });
                     }}>View/Edit</a>
-                    <a onClick={() => {
-                        
-                    }}>Print</a>
+                    {/* <a onClick={() => {
+                        printSingleBill(record);
+                    }}>Print</a> */}
                 </Space>
             ),
         },
@@ -55,10 +55,15 @@ const BillSearch = ({ location, history }) => {
     const [data, setData] = useState([]);
     const [patientDetails, setPatientDetails] = useState({});
     const [searchCriteria, setSearchFilter] = useState({});
+    const [singleBillData, setSingleBillData] = useState({});
     let mainBillViewButton = "";
     const componentRef = useRef();
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
+    });
+    const componentRefSingleBillPrint = useRef();
+    const handleSingleBillPrint = useReactToPrint({
+        content: () => componentRefSingleBillPrint.current,
     });
     useEffect(() => {
         // 
@@ -101,17 +106,34 @@ const BillSearch = ({ location, history }) => {
             });
         });
     }
+    function printSingleBill(billItem) {
+        const printSingleObject = {
+            finalCharges: {
+                totalAmount: 12,
+                totalGST: 12,
+                totalDiscount: 12
+            },
+            itemList: [],
+            patientDetails: {
+
+            }
+        };
+        setSingleBillData(billItem);
+    }
     return (
         <>
             <div style={{ display: 'none' }}>
-                {/* <BillPrint ref={componentRef} itemList={data} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} patientId={queryParams.patientId} /> */}
                 <MainBillView ref={componentRef} billItemList={data} patientDetails={patientDetails} patientId={searchCriteria.searchValue} />
+                {/* <BillPrint ref={componentRef} itemList={billPrintData} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} patientId={queryParams.patientId} /> */}
             </div>
             <Row gutter={24}>
-                <Col span={12}>
+                <Col span={10}>
                     <BillSearchComp onSearch={onBillSearch} />
                 </Col>
-                <Col span={12}>
+                <Col span={3}>
+                    <Button type="primary" onClick={() => { history.push({ pathname: '/home/billing' }) }}>Create New bill</Button>
+                </Col>
+                <Col span={4}>
                     {mainBillViewButton}
                 </Col>
             </Row>

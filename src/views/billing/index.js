@@ -94,6 +94,10 @@ const EditableCell = ({
   return <td {...restProps}>{childNode}</td>;
 };
 const Billing = ({ location, history }) => {
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
   const queryParams = queryString.parse(location.search);
   const components = {
     body: {
@@ -123,6 +127,7 @@ const Billing = ({ location, history }) => {
     {
       title: 'GST(CGST+SGST)',
       dataIndex: 'gst',
+      editable: "true",
       sorter: {
         compare: (a, b) => a.gst - b.gst,
         multiple: 3,
@@ -193,8 +198,12 @@ const Billing = ({ location, history }) => {
     totalDiscount: 0,
     totalGST: 0
   };
+
+  const printBillButton = <Col className="gutter-row" span={3}>
+    <Button style={{ width: '90%' }} type="primary" onClick={handlePrint}>Print</Button>
+  </Col>;
   let generateBillButton = <Col className="gutter-row" span={3}>
-    <Button style={{ width: '90%' }} type="primary" onClick={generateBill}>Generate {queryParams.context == "edit" ? "new " : "" }bill</Button>
+    <Button style={{ width: '90%' }} type="primary" onClick={generateBill}>Generate {queryParams.context == "edit" ? "new " : ""}bill</Button>
   </Col>;
   let printButton = "";
   const [newPatientForm] = Form.useForm();
@@ -215,10 +224,6 @@ const Billing = ({ location, history }) => {
     <PatientDetails patientId={patientDetails.patientId} />
   </div>;
   // let billSearchComp = <BillSearch onSearch={onBillSearch} />;
-  const componentRef = useRef();
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-  });
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -278,15 +283,16 @@ const Billing = ({ location, history }) => {
       setBillDetails({
         billId: generateBillStatus.billId,
         createdAt: (new Date()).toDateString()
-
       });
     }
   }, [generateBillStatus]);
   if (generateBillStatus.response == "success") {
     generateBillButton = "";
-    printButton = <Col className="gutter-row" span={3}>
-      <Button style={{ width: '90%' }} type="primary" onClick={handlePrint}>Print</Button>
-    </Col>;
+    printButton = printBillButton;
+  }
+
+  if (queryParams.context == "edit") {
+    printButton = printBillButton;
   }
   if (newPatientSwitch) {
     patientInfo = <div>
@@ -316,8 +322,9 @@ const Billing = ({ location, history }) => {
     }
 
     dataList.forEach(data => {
-      const discountedAmount = Number.parseInt(data.amount) - ((Number.parseInt(data.discount) / 100) * Number.parseInt(data.amount));
-      finalCharges.totalAmount += Number.parseInt(data.amount);
+      const amount = Number.parseInt(data.amount) * Number.parseInt(data.quantity);
+      const discountedAmount = Number.parseInt(amount) - ((Number.parseInt(data.discount) / 100) * Number.parseInt(amount));
+      finalCharges.totalAmount += Number.parseInt(amount);
       finalCharges.totalDiscount += Number.parseInt(data.discount);
       finalCharges.discountedAmount += discountedAmount;
       finalCharges.totalGST += Number.parseInt(data.gst);
@@ -473,16 +480,17 @@ const Billing = ({ location, history }) => {
       };
       body.billDetailList.push(billItem);
     });
-    setGenerateBillStatus(body);
-    setState("billGenerated");
-    if (newPatientSwitch) {
-      const newPatientFormValues = newPatientForm.getFieldsValue();
-      setPatientDetails({
-        patientName: newPatientFormValues.patientName,
-        patientId: "N/A",
-        age: newPatientFormValues.age,
-      });
-    }
+    console.log("body", body);
+    // setGenerateBillStatus(body);
+    // setState("billGenerated");
+    // if (newPatientSwitch) {
+    //   const newPatientFormValues = newPatientForm.getFieldsValue();
+    //   setPatientDetails({
+    //     patientName: newPatientFormValues.patientName,
+    //     patientId: "N/A",
+    //     age: newPatientFormValues.age,
+    //   });
+    // }
   }
   function onNewPatientSwitchChange(checked) {
     setNewPatientSwitch(checked);
