@@ -340,6 +340,7 @@ const Billing = ({ location, history }) => {
           billId: billDetails.billId,
           createdAt: (new Date(billDetails.createdAt)).toDateString()
         });
+        setPaymentMode(billDetails.paymentMode);
         if (billDetails["patientId"]) {
           patientSearch(billDetails.patientId);
         }

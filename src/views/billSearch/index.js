@@ -128,7 +128,7 @@ const BillSearch = ({ history }) => {
                 });
             });
         } else {
-            getBillListByDateRange(moment(searchValue[0]).toDate().getTime(), moment(searchValue[1]).toDate().getTime(), 'PHARMACY').then(data => {
+            getBillListByDateRange(moment(searchValue[1]).toDate().getTime(), moment(searchValue[0]).toDate().getTime(), 'PHARMACY').then(data => {
                 console.log(data);
                 if (data) {
                     setData([...data]);
