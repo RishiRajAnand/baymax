@@ -27,3 +27,12 @@ export const saveGenerateBill = (body) => {
             return err;
         });
 };
+
+export const getBillListByDateRange = (toDate, fromDate, billType) => {
+    return axios
+        .get(`${api.url}/HMServiceController/fetchBillListByDateRange?toDate=` + toDate + '&fromDate=' + fromDate + '&billType=' + billType)
+        .then(res => res.data)
+        .catch(err => {
+            return err;
+        });
+};

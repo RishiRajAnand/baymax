@@ -7,6 +7,7 @@ export class BillPrint extends React.Component {
     render() {
         const itemList = this.props.itemList;
         const billId = this.props.billId;
+        const paymentMode = this.props.paymentMode;
         const patientId = this.props.patientId;
         const patientDetails = this.props.patientDetails;
         const finalCharges = this.props.finalCharges;
@@ -53,6 +54,10 @@ export class BillPrint extends React.Component {
                                 <td>{todaysDate}</td>
                                 <td>Visit type</td>
                                 <td>{patientDetails.visitType}</td>
+                            </tr>
+                            <tr>
+                                <td>Payment mode</td>
+                                <td>{paymentMode}</td>
                             </tr>
                         </tbody>
 

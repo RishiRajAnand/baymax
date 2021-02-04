@@ -1,13 +1,11 @@
-import { Button, Col, Descriptions, Divider, Form, InputNumber, Switch, Input, notification, Radio, Row, Select, Table, Popconfirm, Modal } from 'antd';
+import { Button, Col, Descriptions, Divider, Form, InputNumber, Switch, Input, notification, Radio, Row, Table, Popconfirm, Modal } from 'antd';
 import queryString from 'query-string';
 import React, { useRef, useState, useEffect, useContext } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import PatientDetails from '../patientDetails';
 import AddItem from './components/addItemModal';
 import { BillPrint } from './components/billPrint';
-import BillSearch from './components/billSearch';
 import FinalCharges from './components/finalCharges';
-import usePatientSearchbyId from '../../state/patientSearch/hooks/usePatientSearchbyId';
 import useSaveGenerateBill from '../../state/billing/hooks/useGenerateBill';
 import { getPatientById } from '../../state/patientSearch/queries';
 import { getBillDetails } from './services';
@@ -187,7 +185,6 @@ const Billing = ({ location, history }) => {
     calculateTotalCharges(newData);
   };
 
-  let showSearch = "";
   const defaultbillDetails = {
     billId: '',
     createdAt: (new Date()).toDateString() + ' ' + (new Date()).toLocaleTimeString()
@@ -375,7 +372,7 @@ const Billing = ({ location, history }) => {
   function patientSearch(patientId) {
     getPatientById(patientId).then(patientDetails => {
       setPatientDetails(patientDetails);
-    }).catch(err => {
+    }).catch(() => {
       notification["error"]({
         message: 'Error',
         description: 'Error while searching patient with Id' + patientId,
@@ -438,9 +435,9 @@ const Billing = ({ location, history }) => {
   function generateBill() {
     const body = {
       billId: null,
-      billType: "",
+      billType: "PHARMACY",
       createdAt: new Date(),
-      paymentStatus: "paid",
+      paymentStatus: (paymentMode == "Due" ? "dues" : "paid"),
       paymentMode: paymentMode,
       patientId: patientDetails.patientId,
       totalCost: finalCharges.totalAmount,
@@ -481,16 +478,16 @@ const Billing = ({ location, history }) => {
       body.billDetailList.push(billItem);
     });
     console.log("body", body);
-    // setGenerateBillStatus(body);
-    // setState("billGenerated");
-    // if (newPatientSwitch) {
-    //   const newPatientFormValues = newPatientForm.getFieldsValue();
-    //   setPatientDetails({
-    //     patientName: newPatientFormValues.patientName,
-    //     patientId: "N/A",
-    //     age: newPatientFormValues.age,
-    //   });
-    // }
+    setGenerateBillStatus(body);
+    setState("billGenerated");
+    if (newPatientSwitch) {
+      const newPatientFormValues = newPatientForm.getFieldsValue();
+      setPatientDetails({
+        patientName: newPatientFormValues.patientName,
+        patientId: "N/A",
+        age: newPatientFormValues.age,
+      });
+    }
   }
   function onNewPatientSwitchChange(checked) {
     setNewPatientSwitch(checked);
@@ -504,7 +501,7 @@ const Billing = ({ location, history }) => {
       New Patient <Switch onChange={onNewPatientSwitchChange} /> <br /> <br />
       {patientInfo}
       <div style={{ display: 'none' }}>
-        <BillPrint ref={componentRef} itemList={data} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} patientId={queryParams.patientId} />
+        <BillPrint ref={componentRef} itemList={data} paymentMode={paymentMode} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} patientId={queryParams.patientId} />
       </div>
       <Divider>Bill Details</Divider>
       <Descriptions>
@@ -531,6 +528,7 @@ const Billing = ({ location, history }) => {
         <Radio value="Card">Card</Radio>
         <Radio value="UPI">UPI</Radio>
         <Radio value="Paytm">Paytm</Radio>
+        <Radio value="Due">Due</Radio>
       </Radio.Group>
       <br /><br /><br />
       <Row gutter={24}>

@@ -1,15 +1,15 @@
 import { Space, Table, Button, Input, Row, Col, Select, notification } from 'antd';
 import React, { useEffect, useState, useRef } from 'react';
-import useBillSearch from '../../state/billing/hooks/useBillSearch';
+import moment from 'moment';
 import { getPatientById } from '../../state/patientSearch/queries';
 import BillSearchComp from '../billing/components/billSearch';
 import { getBillDetails } from '../billing/services';
 import { MainBillView } from './components/mainBillView';
 import { useReactToPrint } from 'react-to-print';
-const { Search } = Input;
-const { Option } = Select;
+import { getBillListByDateRange } from '../../state/billing/queries';
+import { SERVER_ERROR } from '../../utils/constantMessages';
 
-const BillSearch = ({ location, history }) => {
+const BillSearch = ({ history }) => {
     const columns = [
         {
             title: 'Bill Id',
@@ -36,6 +36,17 @@ const BillSearch = ({ location, history }) => {
             title: 'Status',
             dataIndex: 'paymentStatus',
             key: 'paymentStatus',
+            filters: [
+                {
+                    text: 'dues',
+                    value: 'dues',
+                },
+                {
+                    text: 'paid',
+                    value: 'paid',
+                }
+            ],
+            onFilter: (value, record) => record.paymentStatus == value,
         },
         {
             title: 'Action',
@@ -55,16 +66,13 @@ const BillSearch = ({ location, history }) => {
     const [data, setData] = useState([]);
     const [patientDetails, setPatientDetails] = useState({});
     const [searchCriteria, setSearchFilter] = useState({});
-    const [singleBillData, setSingleBillData] = useState({});
+    const [, setSingleBillData] = useState({});
     let mainBillViewButton = "";
     const componentRef = useRef();
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
     });
     const componentRefSingleBillPrint = useRef();
-    const handleSingleBillPrint = useReactToPrint({
-        content: () => componentRefSingleBillPrint.current,
-    });
     useEffect(() => {
         // 
     }, []);
@@ -80,45 +88,65 @@ const BillSearch = ({ location, history }) => {
     function changePatientdetails(patientId) {
         getPatientById(patientId).then(patientDetails => {
             setPatientDetails(patientDetails);
-        }).catch(err => {
+        }).catch(() => {
 
         });
     }
 
     function onBillSearch(searchValue, searchFilter) {
-        getBillDetails(searchValue, searchFilter).then(response => {
-            if (response) {
-                setSearchFilter({
-                    searchFilter: searchFilter,
-                    searchValue: searchValue
-                });
-                if (searchFilter == "patientId") {
-                    changePatientdetails(searchValue);
+        if (searchFilter != "dateRange") {
+            getBillDetails(searchValue, searchFilter).then(response => {
+                if (response) {
+                    setSearchFilter({
+                        searchFilter: searchFilter,
+                        searchValue: searchValue
+                    });
+                    if (searchFilter == "patientId") {
+                        changePatientdetails(searchValue);
+                    }
+                    if (response) {
+                        const temp = response.map((data, index) => {
+                            return {
+                                ...data, createdAt: new Date(data.createdAt).toDateString(), key: index
+                            }
+                        });
+                        setData([...temp]);
+                    }
+
+                } else {
+                    notification["error"]({
+                        message: 'Error',
+                        description: `No records found for ${searchFilter} ${searchValue}`,
+                        duration: 3
+                    });
                 }
-
-                setData([...response]);
-            }
-        }).catch(err => {
-            notification["error"]({
-                message: 'Error',
-                description: `Error while searching ${searchFilter} ${searchValue}`,
-                duration: 3
+            }).catch(() => {
+                notification["error"]({
+                    message: 'Error',
+                    description: `Error while searching ${searchFilter} ${searchValue}`,
+                    duration: 3
+                });
             });
-        });
-    }
-    function printSingleBill(billItem) {
-        const printSingleObject = {
-            finalCharges: {
-                totalAmount: 12,
-                totalGST: 12,
-                totalDiscount: 12
-            },
-            itemList: [],
-            patientDetails: {
-
-            }
-        };
-        setSingleBillData(billItem);
+        } else {
+            getBillListByDateRange(moment(searchValue[0]).toDate().getTime(), moment(searchValue[1]).toDate().getTime(), 'PHARMACY').then(data => {
+                console.log(data);
+                if (data) {
+                    setData([...data]);
+                } else {
+                    notification["error"]({
+                        message: 'Error',
+                        description: `No records found for ${searchFilter}`,
+                        duration: 3
+                    });
+                }
+            }).catch(err => {
+                notification["error"]({
+                    message: 'Error',
+                    description: SERVER_ERROR,
+                    duration: 3
+                });
+            });
+        }
     }
     return (
         <>

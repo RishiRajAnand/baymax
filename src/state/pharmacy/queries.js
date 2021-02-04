@@ -73,9 +73,27 @@ export const getPharmacyMedicineList = () => {
         });
 };
 
+export const getPharmacyMedicineListByName = (medicineName) => {
+    return axios
+        .get(`${api.url}/pharmacyController/getMedicineListByName?medicineName=` + medicineName)
+        .then(res => res.data)
+        .catch(err => {
+            return err;
+        });
+};
+
 export const getPharmacyMedicineDetail = (medicineId) => {
     return axios
         .get(`${api.url}/pharmacyController/getMedicineDetails?medicineId=` + medicineId)
+        .then(res => res.data)
+        .catch(err => {
+            return err;
+        });
+};
+
+export const deleteMedicine = (medicineId) => {
+    return axios
+        .delete(`${api.url}/pharmacyController/deleteMedicineRecord/` + medicineId)
         .then(res => res.data)
         .catch(err => {
             return err;

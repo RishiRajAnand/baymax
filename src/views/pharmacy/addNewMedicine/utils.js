@@ -28,4 +28,5 @@ export const medicineDistributionUnits = ["ampoule",
     "tablet",
     "tray",
     "tube",
-    "vial"];
+    "vial", 
+    "strips"];

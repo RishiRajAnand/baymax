@@ -10,8 +10,8 @@ import { savePharmacyMedicine } from '../../../state/pharmacy/queries';
 const { Option } = Select;
 const { TextArea } = Input;
 const layout = {
-    labelCol: { span: 4 },
-    wrapperCol: { span: 9 },
+    labelCol: { span: 8 },
+    wrapperCol: { span: 8 },
 };
 // eslint-disable-next-line
 const validateMessages = {

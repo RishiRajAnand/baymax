@@ -1,6 +1,8 @@
-import { Space, Table, Input, Select, Typography } from 'antd';
+import { Space, Table, Input, Select, Typography, notification } from 'antd';
 import React, { useEffect, useState } from 'react';
 import useGetAllPharmacyMedicines from '../../../state/pharmacy/hooks/useGetAllPharmacyMedicines';
+import { getPharmacyMedicineList, getPharmacyMedicineListByName, deleteMedicine } from '../../../state/pharmacy/queries';
+import { SERVER_ERROR } from '../../../utils/constantMessages';
 const { Text } = Typography;
 const { Search } = Input;
 const { Option } = Select;
@@ -72,13 +74,13 @@ const ManageMedicines = ({ location, history }) => {
         },
         {
             title: 'Purchase Price',
-            dataIndex: 'purchasePrice',
-            key: 'purchasePrice',
+            dataIndex: 'supplierPrice',
+            key: 'supplierPrice',
         },
         {
             title: 'Selling Price',
-            dataIndex: 'sellingPrice',
-            key: 'sellingPrice',
+            dataIndex: 'salePrice',
+            key: 'salePrice',
         },
         {
             title: 'Generic name',
@@ -87,13 +89,13 @@ const ManageMedicines = ({ location, history }) => {
         },
         {
             title: 'Expiry date',
-            dataIndex: 'expiryDate',
-            key: 'expiryDate',
+            dataIndex: 'expDate',
+            key: 'expDate',
         },
         {
             title: 'Stock',
-            dataIndex: 'stock',
-            key: 'stock',
+            dataIndex: 'availability',
+            key: 'availability',
         },
         {
             title: 'Stock Quantity',
@@ -112,48 +114,81 @@ const ManageMedicines = ({ location, history }) => {
                     <a onClick={() => {
                         history.push({ pathname: '/home/addNewMedicine', search: '?mode=edit' + '&medicineId=' + record.medicineId });
                     }}>Edit</a>
-                    <a>Delete</a>
+                    <a onClick={() => {
+                        deleteMedicineRecord(record.medicineId);
+                    }}>Delete</a>
                 </Space>
             ),
         },
     ];
+    const [medicineData, setMedicineData] = useState([]);
     const [medicines, isLoading, setMedicineSearch] = useGetAllPharmacyMedicines();
     const [filterValue, setfilterValue] = useState("medicineName");
     useEffect(() => {
-        setMedicineSearch();
+        getAllMedicines();
     }, []);
 
-    if (medicines.length > 0) {
+    if (medicineData.length > 0) {
         const tempData = [];
-        medicines.forEach((medicine, index) => {
+        medicineData.forEach((medicine, index) => {
             tempData.push({
                 key: index,
                 name: medicine.medicineName,
                 medicineId: medicine.medicineId,
                 category: medicine.category,
-                purchasePrice: medicine.supplierPrice,
+                supplierPrice: medicine.supplierPrice,
                 triggerValue: medicine.triggerValue,
-                sellingPrice: medicine.salePrice,
+                salePrice: medicine.salePrice,
                 genericName: medicine.genericName,
-                expiryDate: medicine.expDate,
-                stock: medicine.availability,
+                expDate: medicine.expDate,
+                availability: medicine.availability,
                 stockQuantity: medicine.stockQuantity
             });
         });
         data = [...tempData];
     }
 
-    function onMedicineSearch() {
-        // if (searchValue == '') {
-        //     setRequest();
-        //     setShowPatient("all");
-        // } else if (filterValue == "medicineName") {
-        //     setPatientSearchbyId(searchValue);
-        //     setShowPatient("patientId");
-        // } else if (filterValue == "genericName") {
-        //     setPatientSearchbyName(searchValue);
-        //     setShowPatient("patientName");
-        // }
+    function onMedicineSearch(value) {
+        getPharmacyMedicineListByName(value).then(data => {
+            if (data) {
+                setMedicineData([...data]);
+            }
+        }).catch(err => {
+            notification["error"]({
+                message: 'Error',
+                description: `Error while searching`,
+                duration: 3
+            });
+        });
+    }
+
+    function deleteMedicineRecord(medicineId) {
+        deleteMedicine(medicineId).then(data => {
+            getAllMedicines();
+            notification["success"]({
+                message: 'Success',
+                description: 'Medicine deleted successfully',
+                duration: 3
+            });
+        }).catch(err => {
+            notification["error"]({
+                message: 'Error',
+                description: SERVER_ERROR,
+                duration: 3
+            });
+        });
+    }
+
+    function getAllMedicines() {
+        getPharmacyMedicineList().then(data => {
+            setMedicineData([...data]);
+        }).catch(err => {
+            notification["error"]({
+                message: 'Error',
+                description: SERVER_ERROR,
+                duration: 3
+            });
+        });
     }
     return (
         <>
