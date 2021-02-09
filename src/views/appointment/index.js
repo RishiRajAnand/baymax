@@ -157,7 +157,7 @@ const Appointment = ({ location, history }) => {
                 onSearch={onPatientSearch}
             />
             <br />
-            <PatientDetails patientId={patientDetails.patientId} />
+            <PatientDetails patientDetails={patientDetails} />
             <br></br>
             <Divider>Appointment Booking</Divider>
             <Form name="nest-messages" onFinish={bookAppointment}>

@@ -1,4 +1,4 @@
-import { Space, Table, Input, Select, Typography, notification } from 'antd';
+import { Space, Table, Input, Select, Typography, notification, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
 import useGetAllPharmacyMedicines from '../../../state/pharmacy/hooks/useGetAllPharmacyMedicines';
 import { getPharmacyMedicineList, getPharmacyMedicineListByName, deleteMedicine } from '../../../state/pharmacy/queries';
@@ -96,6 +96,7 @@ const ManageMedicines = ({ location, history }) => {
             title: 'Stock',
             dataIndex: 'availability',
             key: 'availability',
+            render: text => (text == 'In stock' ? <Tag color='green' key={text}>{text.toUpperCase()}</Tag> : <Tag color='red' key={text}>{text.toUpperCase()}</Tag>)
         },
         {
             title: 'Stock Quantity',

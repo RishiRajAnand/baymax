@@ -16,6 +16,7 @@ const AddItem = (props) => {
         wrapperCol: { span: 16 },
     };
     const [selected, setSelected] = useState("medicine");
+    const [selectedValue, setSelectedValue] = useState("");
     const [medicines, isLoading, setMedicineSearch] = useGetPharmacyMedicines();
     const [tests, isLoading1, setTestSearch] = useTestSearch();
     // const [options, isLoading, setMedicineSearch] = useGetPharmacyMedicines();
@@ -48,7 +49,7 @@ const AddItem = (props) => {
         let amount = 0;
         const obj = {
             itemId: null,
-            name: value.user.name,
+            name: selectedValue,
             quantity: value.user.quantity,
             itemType: selected,
             amount: amount
@@ -72,15 +73,19 @@ const AddItem = (props) => {
             setTestSearch();
         }
     }
-
+    function onSelect(data) {
+        setSelectedValue(data);
+    }
     return (
         <Form {...layout} name="nest-messages" onFinish={onFinish} >
-            <Form.Item name={['user', 'name']} label="Item name" rules={[{ required: true }]}>
+            <Form.Item name={['user', 'name']} label="Item name">
                 <AutoComplete
                     dropdownClassName="certain-category-search-dropdown"
-                    dropdownMatchSelectWidth={500}
+                    dropdownMatchSelectWidth={200}
                     style={{ width: '100%' }}
                     options={options}
+                    onSelect={onSelect}
+                    filterOption={(inputValue, option) => option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
                 >
                     <Input.Search size="default" placeholder="Item name" />
                 </AutoComplete>

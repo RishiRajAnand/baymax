@@ -1,6 +1,6 @@
 import { Button, Col, Descriptions, Divider, Form, InputNumber, Switch, Input, notification, Radio, Row, Table, Popconfirm, Modal } from 'antd';
 import queryString from 'query-string';
-import React, { useRef, useState, useEffect, useContext } from 'react';
+import React, { useRef, useState, useEffect, useContext, useLayoutEffect } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import PatientDetails from '../patientDetails';
 import AddItem from './components/addItemModal';
@@ -9,6 +9,9 @@ import FinalCharges from './components/finalCharges';
 import useSaveGenerateBill from '../../state/billing/hooks/useGenerateBill';
 import { getPatientById } from '../../state/patientSearch/queries';
 import { getBillDetails } from './services';
+import ReturnItem from './components/returnItemModal';
+import { saveGenerateBill } from '../../state/billing/queries';
+import { SERVER_ERROR } from '../../utils/constantMessages';
 
 const EditableContext = React.createContext();
 const { Search } = Input;
@@ -126,6 +129,7 @@ const Billing = ({ location, history }) => {
       title: 'GST(CGST+SGST)',
       dataIndex: 'gst',
       editable: "true",
+      width: '10%',
       sorter: {
         compare: (a, b) => a.gst - b.gst,
         multiple: 3,
@@ -154,7 +158,7 @@ const Billing = ({ location, history }) => {
       key: 'action',
       render: (text, record) =>
         <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-          <a> {record.type == "pharmacy-purchase" && queryParams.context == "edit" ? "Return" : "Delete"} </a>
+          <a> {queryParams.context != "edit" ? "Delete" : ""} </a>
         </Popconfirm>
     }
   ];
@@ -179,7 +183,7 @@ const Billing = ({ location, history }) => {
     const index = newData.findIndex((item) => row.key === item.key);
     const item = newData[index];
     const finalCharges = getFinalCharges([row]);
-    row.total = finalCharges.discountedAmount + finalCharges.totalGST;
+    row.total = (finalCharges.discountedAmount + finalCharges.totalGST).toFixed(2);
     newData.splice(index, 1, { ...item, ...row });
     setData(newData);
     calculateTotalCharges(newData);
@@ -210,33 +214,45 @@ const Billing = ({ location, history }) => {
   const [patientDetails, setPatientDetails] = useState({});
   const [newPatientSwitch, setNewPatientSwitch] = useState(false);
   const [generateBillStatus, setGenerateBillStatus] = useSaveGenerateBill();
-  const [isModalVisible, setIsModalVisible] = useState(false);;
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isReturnModalVisible, setIsReturnModalVisible] = useState(false);
   const [billDetails, setBillDetails] = useState(defaultbillDetails);
   const [finalCharges, setFinalCharges] = useState(defaultFinalCharges);
-  const [data, setData] = useState([]);
-  const [returnedItems, setReturnedItems] = useState([]);
+  const [data, setData] = useState([]);;
 
   let patientInfo = <div>
     <Search placeholder="Search by Patient Id" allowClear onSearch={patientSearch} style={{ width: '30%' }} />
-    <PatientDetails patientId={patientDetails.patientId} />
+    <PatientDetails searchType="patientId" patientDetails={patientDetails} />
   </div>;
   // let billSearchComp = <BillSearch onSearch={onBillSearch} />;
 
   const showModal = () => {
     setIsModalVisible(true);
   };
+
+  const showReturnItemModal = () => {
+    setIsReturnModalVisible(true);
+  };
+
+
   const handleOk = () => {
     setIsModalVisible(false);
+  };
+
+  const submitReturn = () => {
+    setIsReturnModalVisible(false);
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-
+  const cancelReturnModal = () => {
+    setIsReturnModalVisible(false);
+  };
   useEffect(() => {
     // calculateTotalCharges(mockData);
     // setData(mockData);
-    if (queryParams.context == 'registration' && state == "initial") {
+    if (queryParams.context == 'registration') {
       const tempData = [
         {
           key: '1',
@@ -251,7 +267,7 @@ const Billing = ({ location, history }) => {
       setData(tempData);
       calculateTotalCharges(tempData);
       patientSearch(queryParams.patientId);
-    } else if (queryParams.context == 'consulation' && state == "initial") {
+    } else if (queryParams.context == 'consulation') {
       const tempData = [
         {
           key: '1',
@@ -269,21 +285,8 @@ const Billing = ({ location, history }) => {
     } else if (queryParams.context == 'edit') {
       onBillSearch(queryParams.billId, "billId");
     }
-
-
-    if (generateBillStatus.response == "success") {
-      notification["success"]({
-        message: 'SUCCESS',
-        description: 'Bill Generated Successfully with id ' + generateBillStatus.billId,
-        duration: 3
-      });
-      setBillDetails({
-        billId: generateBillStatus.billId,
-        createdAt: (new Date()).toDateString()
-      });
-    }
-  }, [generateBillStatus]);
-  if (generateBillStatus.response == "success") {
+  }, []);
+  if (state == "billGenerated") {
     generateBillButton = "";
     printButton = printBillButton;
   }
@@ -343,6 +346,8 @@ const Billing = ({ location, history }) => {
         setPaymentMode(billDetails.paymentMode);
         if (billDetails["patientId"]) {
           patientSearch(billDetails.patientId);
+        } else {
+          setPatientDetails({ patientId: null, patientName: billDetails.name, age: billDetails.age, gender: billDetails.gender, visitType: "General" });
         }
         if (billDetails["billDetailList"]) {
 
@@ -358,7 +363,7 @@ const Billing = ({ location, history }) => {
               amount: item.mrp,
               gst: 0,
               discount: item.concessionPercentage,
-              total: Number(item.mrp) - ((Number(item.concessionPercentage) / 100) * Number(item.mrp)),
+              total: (Number(item.mrp) - ((Number(item.concessionPercentage) / 100) * Number(item.mrp))) * item.quantity,
             }
           });
 
@@ -401,15 +406,6 @@ const Billing = ({ location, history }) => {
     setIsModalVisible(false);
   }
   function handleDelete(key) {
-    let returnedItems = [];
-    if (queryParams.context == "edit") {
-      data.forEach((item) => {
-        if (item.key == key && item.type == "pharmacy-purchase") {
-          returnedItems.push(item);
-        }
-      });
-      setReturnedItems(returnedItems);
-    }
     const dataSource = data.filter((item) => item.key !== key);
     calculateTotalCharges(dataSource);
     setData(dataSource);
@@ -419,14 +415,23 @@ const Billing = ({ location, history }) => {
     const finalCharges = getFinalCharges(tempDataList);
     console.log(finalCharges);
     setFinalCharges({
-      totalAmount: finalCharges.discountedAmount + finalCharges.totalGST,
-      totalDiscount: (finalCharges.totalAmount - finalCharges.discountedAmount) / finalCharges.totalAmount * 100,
-      totalGST: finalCharges.totalGST
+      totalAmount: (finalCharges.discountedAmount + finalCharges.totalGST).toFixed(2),
+      totalDiscount: ((finalCharges.totalAmount - finalCharges.discountedAmount) / finalCharges.totalAmount * 100).toFixed(2),
+      totalGST: (finalCharges.totalGST).toFixed(2)
     });
   }
 
   function onDiscountChange(discountValue) {
     console.log("Discount changed", discountValue);
+    let tempData = [];
+    tempData = data.map(item => {
+      return {
+        ...item,
+        discount: discountValue
+      }
+    });
+    calculateTotalCharges(tempData);
+    setData(tempData);
   }
 
   function paymentMethod(e) {
@@ -435,12 +440,15 @@ const Billing = ({ location, history }) => {
 
   function generateBill() {
     const body = {
-      billId: null,
+      billId: (billDetails.billId),
       billType: "PHARMACY",
       createdAt: new Date(),
       paymentStatus: (paymentMode == "Due" ? "dues" : "paid"),
       paymentMode: paymentMode,
       patientId: patientDetails.patientId,
+      name: patientDetails.name,
+      age: patientDetails.age,
+      gender: patientDetails.gender,
       totalCost: finalCharges.totalAmount,
       totalDiscount: finalCharges.totalDiscount,
       totalGST: finalCharges.totalGST,
@@ -462,42 +470,77 @@ const Billing = ({ location, history }) => {
       };
       body.billDetailList.push(billItem);
     });
-    returnedItems.forEach(item => {
-      const billItem = {
-        id: null,
-        itemName: item.name,
-        itemId: item.itemId,
-        billMapId: null,
-        cost: item.total,
-        concessionPercentage: item.discount,
-        gstPercentage: item.gst,
-        mrp: item.amount,
-        concessionType: "discount",
-        quantity: item.quantity,
-        purchaseType: (item.type == "pharmacy-purchase" ? "pharmacy-return" : item.type)
-      };
-      body.billDetailList.push(billItem);
-    });
     console.log("body", body);
-    setGenerateBillStatus(body);
-    setState("billGenerated");
     if (newPatientSwitch) {
       const newPatientFormValues = newPatientForm.getFieldsValue();
+      body.name = newPatientFormValues.patientName;
+      body.age = newPatientFormValues.age;
+      body.patientId = null;
       setPatientDetails({
         patientName: newPatientFormValues.patientName,
         patientId: "N/A",
         age: newPatientFormValues.age,
       });
     }
+    saveGenerateBill(body).then(generateBillStatus => {
+      if (generateBillStatus.response == "success") {
+        notification["success"]({
+          message: 'SUCCESS',
+          description: 'Bill Generated Successfully with id ' + generateBillStatus.billId,
+          duration: 3
+        });
+        setBillDetails({
+          billId: generateBillStatus.billId,
+          createdAt: (new Date()).toDateString()
+        });
+        setState("billGenerated");
+
+      }
+    }).catch(err => {
+      notification["error"]({
+        message: 'Error',
+        description: SERVER_ERROR,
+        duration: 3
+      });
+
+    });
+
   }
   function onNewPatientSwitchChange(checked) {
     setNewPatientSwitch(checked);
   }
 
+  function onItemsReturned(returnedRows) {
+    let tempData = [...data];
+    let itemKeysToRemove = [];
+    data.forEach((mainRow, mainIndex) => {
+      returnedRows.forEach(returnedRow => {
+        if (returnedRow.key == mainRow.key) {
+          if (mainRow.quantity == returnedRow.quantity) {
+            console.log("remove", tempData[mainIndex]);
+            itemKeysToRemove.push(mainRow.key);
+
+          } else {
+            mainRow.quantity = mainRow.quantity - returnedRow.quantity;
+            console.log("edit", tempData[mainIndex]);
+            console.log("with", mainRow);
+            tempData.splice(mainIndex, 1, { ...tempData, ...mainRow });
+          }
+        }
+      });
+    });
+    tempData = tempData.filter(item => !itemKeysToRemove.includes(item.key));
+
+    setData(tempData);
+    calculateTotalCharges(tempData);
+  }
   return (
     <>
       <Modal title="Add Item" visible={isModalVisible} footer={null} onOk={handleOk} onCancel={handleCancel}>
         <AddItem onItemAdded={onItemAdded} />
+      </Modal>
+      <Modal title="Return Item" visible={isReturnModalVisible} footer={null} onOk={submitReturn} onCancel={cancelReturnModal}>
+        <ReturnItem rowsData={data} patientDetails={patientDetails} onItemAdded={onItemAdded} onItemsReturned={onItemsReturned} isModalVisible={setIsReturnModalVisible} />
       </Modal>
       New Patient <Switch onChange={onNewPatientSwitchChange} /> <br /> <br />
       {patientInfo}
@@ -516,9 +559,15 @@ const Billing = ({ location, history }) => {
         style={{
           marginBottom: 16,
           display: (queryParams.context == "edit" ? "none" : "")
-        }}
-      >
-        Add Item
+        }}>Add Item
+        </Button>
+      <Button
+        onClick={showReturnItemModal}
+        type="primary"
+        style={{
+          marginBottom: 16,
+          display: (queryParams.context == "edit" ? "" : "none")
+        }}>Return Item
         </Button>
       <Table columns={columns} components={components} dataSource={data} onChange={onChange} rowClassName={() => 'editable-row'} />
 

@@ -35,7 +35,7 @@ export class BillPrint extends React.Component {
                         </div>
                     </div>
                     <div style={{ width: '100%', height: '2px', background: 'grey', margin: '10px 0px' }}></div>
-                    <table border="1" cellpadding="5" cellspacing="5" width="100%">
+                    <table border="1" cellPadding="5" cellSpacing="5" width="100%">
                         <tbody>
                             <tr>
                                 <th>Name</th>
@@ -75,17 +75,17 @@ export class BillPrint extends React.Component {
                             </tr>
                             {itemArray}
                             <tr>
-                                <td colspan="4"></td>
+                                <td colSpan="4"></td>
                                 <td>Total</td>
                                 <td>{finalCharges.totalAmount}</td>
                             </tr>
                             <tr>
-                                <td colspan="4"></td>
+                                <td colSpan="4"></td>
                                 <td>Discount(%)</td>
                                 <td>{finalCharges.totalDiscount}</td>
                             </tr>
                             <tr>
-                                <td colspan="4"></td>
+                                <td colSpan="4"></td>
                                 <td>Tax</td>
                                 <td>{finalCharges.totalGST}</td>
                             </tr>
