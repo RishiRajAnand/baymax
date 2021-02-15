@@ -4,6 +4,7 @@ import queryString from 'query-string';
 import React, { useEffect, useState } from 'react';
 import useMedicineSearch from '../../state/addMedicine/hooks/useSearchMedicine';
 import useSearchTest from '../../state/addMedicine/hooks/useSearchTest';
+import { getPatientById } from '../../state/patientSearch/queries';
 import useSavePrescription from '../../state/prescription/hooks/useSavePrescription';
 import PatientDetails from '../patientDetails';
 import '../prescription/prescription.css';
@@ -51,6 +52,7 @@ const Prescription = ({ location, history }) => {
     let options = [];
     const optionsTests = [];
     const [submitted, setSubmitted] = useState(false);
+    const [patientDetails, setPatientDetails] = useState({});
     const [form] = Form.useForm();
     const [medicineForm] = Form.useForm();
     const [vitalsForm] = Form.useForm();
@@ -62,6 +64,7 @@ const Prescription = ({ location, history }) => {
     // const [tests, isLoading, setTestSearch] = usePre();
     const queryParams = queryString.parse(location.search);
     useEffect(() => {
+        getPatientDetails(queryParams.patientId);
         if (response.status == "SUCCESS") {
             notification["success"]({
                 message: 'SUCCESS',
@@ -76,6 +79,11 @@ const Prescription = ({ location, history }) => {
             });
         }
     }, [response]);
+    function getPatientDetails(patientId) {
+        getPatientById(patientId).then(data => {
+            setPatientDetails(data);
+        });
+    }
     const onFinish = values => {
         console.log('Received values of form:', values);
         console.log('Dawaiyaan', form.getFieldsValue());
@@ -87,6 +95,7 @@ const Prescription = ({ location, history }) => {
         const body = {
             appointmentDto: {
                 appointmentId: queryParams.appointmentId,
+                appointmentDate: new Date().getTime(),
                 patientId: queryParams.patientId,
                 patientName: queryParams.patientName,
                 doctorId: queryParams.doctorId,
@@ -161,7 +170,7 @@ const Prescription = ({ location, history }) => {
     }
     return (
         <>
-            <PatientDetails patientId={queryParams.patientId} />
+            <PatientDetails patientDetails={patientDetails} />
             <br></br>
             <Divider>Patient Vitals</Divider>
 

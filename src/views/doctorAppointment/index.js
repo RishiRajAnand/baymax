@@ -43,8 +43,8 @@ function DoctorAppointment({ location, history }) {
             ),
             filters: [
                 {
-                    text: 'Registered',
-                    value: 'registered',
+                    text: 'Booked',
+                    value: 'booked',
                 },
                 {
                     text: 'Appointment done',
@@ -56,20 +56,24 @@ function DoctorAppointment({ location, history }) {
         {
             title: 'Action',
             key: 'action',
-            render: (text, record) => (
-                <Space size="middle">
-                    <Button type="primary" onClick={() => {
+            render: (text, record) => {
+                let proceed = "";
+                if (record.status != "done") {
+                    proceed = <Button type="primary" onClick={() => {
                         history.push({ pathname: '/home/prescription', search: '?patientId=' + record.patientId + '&patientName=' + record.patientName + '&doctorId=' + record.doctorId + '&appointmentId=' + record.appointmentId });
                     }}>
                         Proceed
                 </Button>
+                }
+                return <Space size="middle">
+                    {proceed}
                     <Button type="primary" onClick={() => {
                         history.push({ pathname: '/home/viewPrescription', search: '?patientId=' + record.patientId + '&doctorId=' + record.doctorId + '&appointmentId=' + record.appointmentId });
                     }}>
                         View
-                </Button>
+            </Button>
                 </Space>
-            ),
+            },
         }
     ];
     let doctorsList = [];
@@ -97,7 +101,7 @@ function DoctorAppointment({ location, history }) {
                 time: new Date(appointment.appointmentDate).toDateString(),
                 doctorId: appointment.doctorId,
                 patientId: appointment.patientId,
-                status: (appointment.status ? [appointment.status] : ['registered'])
+                status: (appointment.status ? [appointment.status] : ['booked'])
             };
         });
     }
@@ -110,7 +114,7 @@ function DoctorAppointment({ location, history }) {
                 time: new Date(appointment.appointmentDate).toDateString(),
                 doctorId: appointment.doctorId,
                 patientId: appointment.patientId,
-                status: (appointment.status ? [appointment.status] : ['registered'])
+                status: (appointment.status ? [appointment.status] : ['booked'])
             };
         });
     }
@@ -137,7 +141,7 @@ function DoctorAppointment({ location, history }) {
                     }>
                     {doctorsList}
                 </Select>
-                <Select value={type} onChange={setType}>
+                {/* <Select value={type} onChange={setType}>
                     <Option value="time">Time</Option>
                     <Option value="date">Date</Option>
                     <Option value="week">Week</Option>
@@ -145,7 +149,7 @@ function DoctorAppointment({ location, history }) {
                     <Option value="quarter">Quarter</Option>
                     <Option value="year">Year</Option>
                 </Select>
-                <PickerWithType type={type} onChange={value => console.log(value)} />
+                <PickerWithType type={type} onChange={value => console.log(value)} /> */}
                 <Search
                     placeholder="Search Patient By Id"
                     allowClear

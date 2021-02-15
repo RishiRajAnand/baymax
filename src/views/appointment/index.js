@@ -133,7 +133,7 @@ const Appointment = ({ location, history }) => {
             dateAndTime: selectedDate.toDateString(),
             department: selectedDepartment
         };
-        appointmentCard = (<Card title="Appointment Details" extra={<a href="#" onClick={handlePrint}>Print</a>} style={{ width: 300 }}>
+        appointmentCard = (<Card title="Appointment Details" extra={<a onClick={() => { handlePrint(); }}>Print</a>} style={{ width: 300 }}>
             <p>Appointment booked for :</p>
             <p>{patientDetails.patientName}</p>
             <p>on {selectedDate.toDateString()}</p>
