@@ -48,10 +48,10 @@ const PatientSearch = ({ history }) => {
         const row = [{
             key: patientDetails.patientId,
             patientId: patientDetails.patientId,
-            name: patientDetails.patientName,
+            patientName: patientDetails.patientName,
             age: patientDetails.age,
-            phone: patientDetails.contactNum,
-            address: patientDetails.street,
+            contactNum: patientDetails.contactNum,
+            street: patientDetails.street,
             status: ['registered']
         }];
         data = row;
@@ -60,36 +60,28 @@ const PatientSearch = ({ history }) => {
     if (showPatient == "patientName" && patientDetailsByName != null) {
         data = patientDetailsByName.map((patient, index) => {
             return {
+                ...patient, 
                 key: patient.patientId,
-                patientId: patient.patientId,
-                name: patient.patientName,
-                age: patient.age,
-                phone: patient.contactNum,
-                address: patient.street,
-                status: ['registered'],
+                status: ['registered']
             };
         });
     }
     if (showPatient === "all" && patients.length > 0) {
         data = patients.map((patient, index) => {
             return {
+                ...patient, 
                 key: patient.patientId,
-                patientId: patient.patientId,
-                name: patient.patientName,
-                age: patient.age,
-                phone: patient.contactNum,
-                address: patient.street,
-                status: ['registered'],
+                status: ['registered']
             };
         });
     }
     const columns = [
         {
             title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'patientName',
+            key: 'patientName',
             render: text => <span>{text}</span>,
-            sorter: (a, b) => a.name.length - b.name.length,
+            sorter: (a, b) => a.patientName.length - b.patientName.length,
             sortDirections: ['descend', 'ascend'],
         },
         {
@@ -104,8 +96,8 @@ const PatientSearch = ({ history }) => {
         },
         {
             title: 'Phone',
-            dataIndex: 'phone',
-            key: 'phone',
+            dataIndex: 'contactNum',
+            key: 'contactNum',
         },
         {
             title: 'Status',

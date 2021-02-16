@@ -1,10 +1,12 @@
-const timeSlot = (date, startTime, endTime, interval) => {
+const timeSlot = (date, startHours, startminutes, endHours,endMinutes, interval) => {
     // date.setHours(startTime);
-    let startDate = date;
-    startDate.setHours(startTime);
+    let startDate = new Date(date);
+    startDate.setHours(startHours);
+    startDate.setMinutes(startminutes);
     // date.setHours(endTime);
-    let endDate = date;
-    endDate.setHours(endTime);
+    let endDate = new Date(date);
+    endDate.setHours(endHours);
+    endDate.setMinutes(endMinutes);
     console.log(startDate);
     console.log(endDate);
     let start = startDate.getTime();

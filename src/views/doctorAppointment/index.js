@@ -22,9 +22,14 @@ function DoctorAppointment({ location, history }) {
             render: text => <span>{text}</span>,
         },
         {
-            title: 'Time Slot',
+            title: 'Date',
             dataIndex: 'time',
             key: 'time',
+        },
+        {
+            title: 'Time Slot',
+            dataIndex: 'timeSlot',
+            key: 'timeSlot',
         },
         {
             title: 'Status',
@@ -99,6 +104,7 @@ function DoctorAppointment({ location, history }) {
                 patientName: appointment.patientName,
                 appointmentId: appointment.appointmentId,
                 time: new Date(appointment.appointmentDate).toDateString(),
+                timeSlot: appointment.timeSlot,
                 doctorId: appointment.doctorId,
                 patientId: appointment.patientId,
                 status: (appointment.status ? [appointment.status] : ['booked'])
@@ -112,6 +118,7 @@ function DoctorAppointment({ location, history }) {
                 patientName: appointment.patientName,
                 appointmentId: appointment.appointmentId,
                 time: new Date(appointment.appointmentDate).toDateString(),
+                timeSlot: appointment.timeSlot,
                 doctorId: appointment.doctorId,
                 patientId: appointment.patientId,
                 status: (appointment.status ? [appointment.status] : ['booked'])

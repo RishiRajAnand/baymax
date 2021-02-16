@@ -1,8 +1,11 @@
 import React, { } from 'react';
-import { Table, Input, Select, Button } from 'antd';
+import { Table, Input, Select, Button, Descriptions } from 'antd';
+import PatientDetails from '../../patientDetails';
 const ViewPatientRecords = (props) => {
     let history = props.history;
+    const patientDetails = props.patientDetails;
     let dataModal = [];
+    let userDetails = [];
     const columnsModal = [
         { title: 'Appointment ID', dataIndex: 'appointmentId', key: 'appointmentId' },
         { title: 'Appointment Date', dataIndex: 'appointmentDate', key: 'appointmentDate' },
@@ -20,6 +23,12 @@ const ViewPatientRecords = (props) => {
             dataModal.push({ ...data, appointmentDate: (new Date(data.appointmentDate)).toDateString() });
         }
     });
+    console.log("patient", patientDetails);
+    for (var key of Object.keys(patientDetails)) {
+        if (patientDetails[key] && key!= "key") {
+            userDetails.push(<Descriptions.Item label={key}>{patientDetails[key]}</Descriptions.Item>);
+        }
+    }
     // const dataModal = [
     //     {
     //         key: 1,
@@ -49,12 +58,15 @@ const ViewPatientRecords = (props) => {
 
     return (
         <>
+            <Descriptions>
+            {userDetails}
+            </Descriptions>
             <Table
                 columns={columnsModal}
-                expandable={{
-                    expandedRowRender: record => <p style={{ margin: 0 }}>{record.description}</p>,
-                    rowExpandable: record => record.app !== '14 Aug',
-                }}
+                // expandable={{
+                //     expandedRowRender: record => <p style={{ margin: 0 }}>{record.description}</p>,
+                //     rowExpandable: record => record.app !== '14 Aug',
+                // }}
                 dataSource={dataModal}
             />
         </>

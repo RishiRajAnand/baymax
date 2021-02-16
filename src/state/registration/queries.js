@@ -18,3 +18,12 @@ export const doctorsRegistration = (body) => {
       return err;
     }); 
 };
+
+export const getDoctorDetailById = (doctorId) => {
+  return axios
+    .get(`${api.url}/doctorService/getDoctorDetailById?doctorId=` +  doctorId)
+    .then(res => res.data)
+    .catch(err => {
+      return err;
+    }); 
+};

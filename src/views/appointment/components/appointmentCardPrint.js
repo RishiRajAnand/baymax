@@ -19,15 +19,16 @@ export class AppointmentCardPrint extends React.Component {
                     </div>
                     <div style={{ width: '100%', height: '2px', background: 'grey', margin: '10px 0px' }}></div>
                     <div style={{ marginTop: '50px' }}>
-                       <h3 style={{fontWeight: 'bold', fontSize: '30px'}}>Appointment Card</h3>
+                        <h3 style={{ fontWeight: 'bold', fontSize: '30px' }}>Appointment Card</h3>
                     </div>
                     <div style={{ marginTop: '50px', width: '100%', padding: '20px' }}>
-                    <div style={{ fontSize: '25px' ,  float: 'left'}}>
-                        <p><b>Patient Name:</b> {appointmentDetails.patientName}</p>
-                        <p><b>Doctor Name:</b> {appointmentDetails.doctorName}</p>
-                        <p><b>Date and Time:</b> {appointmentDetails.dateAndTime}</p>
-                        <p><b>Department: </b>{appointmentDetails.department}</p>
-                    </div>  
+                        <div style={{ fontSize: '25px', float: 'left' }}>
+                            <p><b>Patient Name:</b> {appointmentDetails.patientName}</p>
+                            <p><b>Doctor Name:</b> {appointmentDetails.doctorName}</p>
+                            <p><b>Date:</b> {appointmentDetails.dateAndTime}</p>
+                            <p><b>Time Slot:</b> {appointmentDetails.timeSlot}</p>
+                            <p><b>Department: </b>{appointmentDetails.department}</p>
+                        </div>
                     </div>
 
                     <div style={{ marginTop: '50px', width: '100%', padding: '20px' }}>

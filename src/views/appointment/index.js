@@ -23,21 +23,26 @@ function disabledDate(current) {
 const department = departments.map(department => <Option key={department}>{department}</Option>);
 
 const Appointment = ({ location, history }) => {
+
     let doctorsList = [];
     let timeSlots = [];
     let appointmentDetails = {
         patientName: '',
         doctorName: '',
         dateAndTime: '',
+        timeSlot: '',
         department: ''
     };
     // let selectedDoctor = "";
     const map = new Map();
     const queryParams = queryString.parse(location.search);
     const [selectedDepartment, setSelectedDepartment] = useState("all");
+    const [form] = Form.useForm();
     const [selectedDate, setSelectedDate] = useState(new Date());
     const componentRef = useRef();
     const [selectedDoctor, setSelectedDoctor] = useState("");
+    const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+
     const [doctors, isLoading, setRequest] = useGetAllDoctors();
     const [patientDetails, isLoading2, setPatientSearchById] = usePatientSearchbyId();
     const [doctorBydepartment, isLoadings, callDoctorByDepartment] = useGetAllDoctorByDepartment();
@@ -93,8 +98,12 @@ const Appointment = ({ location, history }) => {
         // selectedDoctor = value;
         setSelectedDoctor(value);
     }
+    function handleChangeOfTimeSlot(value) {
+        // selectedDoctor = value;
+        setSelectedTimeSlot(value);
+    }
 
-    function bookAppointment() {
+    function bookAppointment(formData) {
         const body = {
             "diseaseDesc": "test desc",
             "advise": "test",
@@ -102,10 +111,13 @@ const Appointment = ({ location, history }) => {
             "patientName": patientDetails.patientName,
             "doctorId": selectedDoctor,
             "appointmentDate": selectedDate.getTime(),
+            "timeSlot": selectedTimeSlot,
             "height": 6,
             "weight": 80,
-            "Bp": "120/80"
+            "Bp": "120/80",
+            "status": "booked"
         };
+        console.log(body);
         if (patientDetails.patientId != null) {
             setBookAppointment(body);
         } else {
@@ -131,18 +143,23 @@ const Appointment = ({ location, history }) => {
             patientName: patientDetails.patientName,
             doctorName: map.get(selectedDoctor).doctorName,
             dateAndTime: selectedDate.toDateString(),
+            timeSlot: selectedTimeSlot,
             department: selectedDepartment
         };
         appointmentCard = (<Card title="Appointment Details" extra={<a onClick={() => { handlePrint(); }}>Print</a>} style={{ width: 300 }}>
             <p>Appointment booked for :</p>
             <p>{patientDetails.patientName}</p>
             <p>on {selectedDate.toDateString()}</p>
+            <p>between {selectedTimeSlot}</p>
             <p>At {selectedDepartment}</p>
             <p>With Dr. {map.get(selectedDoctor).doctorName}</p>
         </Card>);
     }
 
-    timeSlots = timeSlot(new Date(), 2, 4, 15).map(val => <Option key={val} >val</Option>);
+    timeSlots = timeSlot(new Date(), 9, 0, 18, 0, 15).map(val => {
+        const timeSlot = moment(val[0].toLocaleTimeString(), "HH:mm:ss").format("hh:mm A") + "-" + moment(val[1].toLocaleTimeString(), "HH:mm:ss").format("hh:mm A");
+        return <Option key={timeSlot}>{timeSlot}</Option>;
+    });
     const onPatientSearch = value => {
         setPatientSearchById(value);
     };
@@ -160,7 +177,7 @@ const Appointment = ({ location, history }) => {
             <PatientDetails patientDetails={patientDetails} />
             <br></br>
             <Divider>Appointment Booking</Divider>
-            <Form name="nest-messages" onFinish={bookAppointment}>
+            <Form form={form} name="nest-messages" onFinish={bookAppointment}>
                 <Row>
                     <Col span={8}>
                         <div className="site-calendar-demo-card">
@@ -198,14 +215,8 @@ const Appointment = ({ location, history }) => {
 
                         <br /><br /><br />
                         <Form.Item name={['user', 'timeSlot']}>
-                            <Select placeholder="Select Time Slot" style={{ width: 300 }}>
+                            <Select onChange={handleChangeOfTimeSlot} placeholder="Select Time Slot" style={{ width: 300 }}>
                                 {timeSlots}
-                                {/* <Option value="jack">11:30 - 11:45</Option>
-                                <Option value="jack1">11:30 - 11:45</Option>
-                                <Option value="jack2">11:30 - 11:45</Option>
-                                <Option value="jack3">11:30 - 11:45</Option>
-                                <Option value="jack4">11:30 - 11:45</Option>
-                                <Option value="jack5">11:30 - 11:45</Option> */}
                             </Select>
                         </Form.Item>
                     </Col>

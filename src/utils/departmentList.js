@@ -1,4 +1,5 @@
-export const departments = ["Accident and emergency (A&E)",
+export const departments = [
+    "Accident and emergency (A&E)",
     "Admissions",
     "Anesthetics",
     "Breast Screening",
