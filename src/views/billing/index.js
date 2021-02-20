@@ -262,7 +262,7 @@ const Billing = ({ location, history }) => {
           amount: 500,
           gst: 0,
           discount: 0,
-          total: 50,
+          total: 500,
         }];
       setData(tempData);
       calculateTotalCharges(tempData);
