@@ -259,7 +259,7 @@ const Billing = ({ location, history }) => {
           name: 'Registration',
           quantity: 1,
           type: 'registration',
-          amount: 50,
+          amount: 500,
           gst: 0,
           discount: 0,
           total: 50,
