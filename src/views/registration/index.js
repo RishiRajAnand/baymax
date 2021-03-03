@@ -47,7 +47,8 @@ const Registration = ({ location, history }) => {
             "street": form.address,
             "state": form.state,
             "country": form.country,
-            "visitType": form.visit
+            "visitType": form.visit,
+            "createdAt": (new Date()).getTime()
         };
         registration(body).then(data => {
             notification["success"]({
@@ -82,17 +83,25 @@ const Registration = ({ location, history }) => {
                         <Option value="other">other</Option>
                     </Select>
                 </Form.Item>
-                <Form.Item name={['user', 'email']} label="Email" rules={[{ type: 'email' }]}>
-                    <Input />
-                </Form.Item>
+
                 <Form.Item name={['user', 'age']} label="Age" rules={[{ type: 'number', min: 0, max: 99 }]}>
                     <InputNumber />
+                </Form.Item>
+                <Form.Item name={['user', 'visit']} label="Visit Type" rules={[{ required: true }]}>
+                    <Select placeholder="Select Visit type">
+                        <Option value="OPD">OPD</Option>
+                        <Option value="IPD">IPD</Option>
+                        <Option value="OPD to IPD">OPD to IPD</Option>
+                    </Select>
                 </Form.Item>
                 <Form.Item name={['user', 'phone']} label="Phone Number" rules={[{ required: true, message: 'Please input your phone number!' }]}>
                     <Input addonBefore={PhonePrefixSelector} style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item name={['user', 'alternatecontact']} label="Alternate Contact Number">
                     <Input addonBefore={PhonePrefixSelector} style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name={['user', 'email']} label="Email" rules={[{ type: 'email' }]}>
+                    <Input />
                 </Form.Item>
                 <Form.Item name={['user', 'address']} label="Address">
                     <Input.TextArea />
@@ -115,13 +124,6 @@ const Registration = ({ location, history }) => {
                         allowClear>
                         <Option value="india">India</Option>
                         <Option value="us">US</Option>
-                    </Select>
-                </Form.Item>
-                <Form.Item name={['user', 'visit']} label="Visit Type" >
-                    <Select placeholder="Select Visit type">
-                        <Option value="general">General</Option>
-                        <Option value="emergency">Emergency</Option>
-                        <Option value="referral">Referral</Option>
                     </Select>
                 </Form.Item>
                 <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>

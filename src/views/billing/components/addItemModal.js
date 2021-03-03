@@ -15,7 +15,7 @@ const AddItem = (props) => {
         labelCol: { span: 8 },
         wrapperCol: { span: 16 },
     };
-    const [selected, setSelected] = useState("medicine");
+    const [selected, setSelected] = useState("others");
     const [selectedValue, setSelectedValue] = useState("");
     const [medicines, isLoading, setMedicineSearch] = useGetPharmacyMedicines();
     const [tests, isLoading1, setTestSearch] = useTestSearch();
@@ -46,10 +46,11 @@ const AddItem = (props) => {
     }
 
     function onFinish(value) {
+        console.log("arakadra", value.user.name);
         let amount = 0;
         const obj = {
             itemId: null,
-            name: selectedValue,
+            name: value.user.name,
             quantity: value.user.quantity,
             itemType: selected,
             amount: amount
@@ -64,7 +65,7 @@ const AddItem = (props) => {
             obj["amount"] = testdetail.price;
             obj["itemId"] = null;
         }
-
+        // console.log(obj);
         props.onItemAdded(obj);
     }
     function onItemTypeSelect(value) {
@@ -97,7 +98,7 @@ const AddItem = (props) => {
                 <Select onSelect={onItemTypeSelect} defaultValue={selected} placeholder="Item type">
                     <Option value="medicine">Medicine</Option>
                     <Option value="test">Test</Option>
-                    <Option value="consulation">Consulation</Option>
+                    <Option value="consulation">Others</Option>
                 </Select>
             </Form.Item>
             <Form.Item>
