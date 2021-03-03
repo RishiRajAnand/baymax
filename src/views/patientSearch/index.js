@@ -11,10 +11,7 @@ import usePatientByName from '../../state/patientSearch/hooks/usePatientSearchBy
 import { getAppointmentByPatientId } from '../../state/appointment/queries';
 import { responsiveArray } from 'antd/lib/_util/responsiveObserve';
 import { getAllPatients } from '../../state/patientSearch/queries';
-<<<<<<< HEAD
 import { SERVER_ERROR } from '../../utils/constantMessages';
-=======
->>>>>>> 8a45b1b (added eception)
 
 const { Search } = Input;
 const { Option } = Select;
@@ -22,13 +19,8 @@ const PatientSearch = ({ history }) => {
     const [isPatientRecordModalVisible, setIsPatientRecordModalVisible] = useState(false);
     const [name, setName] = useState([]);
     const [showPatient, setShowPatient] = useState("all");
-<<<<<<< HEAD
-    const [patients, setAllPatients] = useState([]);
-=======
     const [allPatients, setAllPatients] = useState([]);
     const [dateFilteredPatient, setDateFilteredPatient] = useState([]);
-    const [patients, isLoading, setRequest] = usePatientSearch();
->>>>>>> 8a45b1b (added eception)
     const [patientDetails, isLoading1, setPatientSearchbyId] = usePatientById();
     const [currentPatientDetails, setCurrentPatientDetails] = useState({});
     const [currentPatientAppointments, setCurrentPatientAppointments] = useState({});
@@ -37,18 +29,21 @@ const PatientSearch = ({ history }) => {
 
     useEffect(() => {
         if (showPatient === "all") {
-<<<<<<< HEAD
-            getAllPatientsList();
-=======
-            setRequest();
             setAllPatientList();
->>>>>>> 8a45b1b (added eception)
         }
     }, [showPatient]);
 
     function setAllPatientList() {
         getAllPatients().then(data => {
-            setAllPatients(data);
+            if (data) {
+                setAllPatients(data);
+            } else {
+                notification["error"]({
+                    message: 'Error',
+                    description: SERVER_ERROR,
+                    duration: 3
+                });
+            }
         }).catch(err => {
 
         });
@@ -102,12 +97,10 @@ const PatientSearch = ({ history }) => {
             };
         });
     }
-    if (showPatient === "all" && patients.length > 0) {
-        data = patients.map((patient, index) => {
+    if (showPatient === "all" && allPatients.length > 0) {
+        data = allPatients.map((patient, index) => {
             return {
                 ...patient,
-<<<<<<< HEAD
-=======
                 key: patient.patientId,
                 status: ['registered']
             };
@@ -117,7 +110,6 @@ const PatientSearch = ({ history }) => {
         data = dateFilteredPatient.map((patient, index) => {
             return {
                 ...patient,
->>>>>>> 8a45b1b (added eception)
                 key: patient.patientId,
                 status: ['registered']
             };
@@ -244,18 +236,7 @@ const PatientSearch = ({ history }) => {
     ];
     return (
         <>
-<<<<<<< HEAD
-            <Input.Group compact>
-                <Select defaultValue={filterValue} onSelect={setfilterValue}>
-                    <Option value="patientName">Patient Name</Option>
-                    <Option value="patientId">Patient Id</Option>
-                </Select>
-                <Input.Search onSearch={onPatientSearch} style={{ width: '70%' }} placeholder="Search by" />
-            </Input.Group>
-=======
-            <Spinner show={isLoading} />
             <PatientSearchComp onSearch={onPatientSearch} />
->>>>>>> 8a45b1b (added eception)
             <br /><br />
             <Table columns={columns} dataSource={data} />
             <Modal title="Patient Records" visible={isPatientRecordModalVisible} footer={null} width={800} onCancel={() => setIsPatientRecordModalVisible(false)} >

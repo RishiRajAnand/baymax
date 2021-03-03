@@ -126,16 +126,6 @@ const Registration = ({ location, history }) => {
                         <Option value="us">US</Option>
                     </Select>
                 </Form.Item>
-<<<<<<< HEAD
-                <Form.Item name={['user', 'visit']} label="Visit Type" >
-                    <Select placeholder="Select Visit type">
-                        <Option value="IPD">IPD</Option>
-                        <Option value="OPD">OPD</Option>
-                        <Option value="OPD to IPD">OPD to IPD</Option>
-                    </Select>
-                </Form.Item>
-=======
->>>>>>> 8a45b1b (added eception)
                 <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
                     <Button type="primary" size='large' htmlType="submit">
                         Submit
