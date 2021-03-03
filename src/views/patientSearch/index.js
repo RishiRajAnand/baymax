@@ -1,24 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Tag, Input, Space, Button, Modal, Select, notification } from 'antd';
+import moment from 'moment';
 import usePatientSearch from '../../state/patientSearch/hooks/usePatientSearch';
 import ViewPatientRecords from './components/viewPatientRecords';
 import Spinner from '../../components/spinner';
+import PatientSearchComp from './components/patientSearchComponent';
 import usePatientById from '../../state/patientSearch/hooks/usePatientSearchbyId';
 import PatientDetails from '../patientDetails';
 import usePatientByName from '../../state/patientSearch/hooks/usePatientSearchByName';
 import { getAppointmentByPatientId } from '../../state/appointment/queries';
 import { responsiveArray } from 'antd/lib/_util/responsiveObserve';
 import { getAllPatients } from '../../state/patientSearch/queries';
+<<<<<<< HEAD
 import { SERVER_ERROR } from '../../utils/constantMessages';
+=======
+>>>>>>> 8a45b1b (added eception)
 
 const { Search } = Input;
 const { Option } = Select;
 const PatientSearch = ({ history }) => {
-    const [filterValue, setfilterValue] = useState("patientName");
     const [isPatientRecordModalVisible, setIsPatientRecordModalVisible] = useState(false);
     const [name, setName] = useState([]);
     const [showPatient, setShowPatient] = useState("all");
+<<<<<<< HEAD
     const [patients, setAllPatients] = useState([]);
+=======
+    const [allPatients, setAllPatients] = useState([]);
+    const [dateFilteredPatient, setDateFilteredPatient] = useState([]);
+    const [patients, isLoading, setRequest] = usePatientSearch();
+>>>>>>> 8a45b1b (added eception)
     const [patientDetails, isLoading1, setPatientSearchbyId] = usePatientById();
     const [currentPatientDetails, setCurrentPatientDetails] = useState({});
     const [currentPatientAppointments, setCurrentPatientAppointments] = useState({});
@@ -27,22 +37,46 @@ const PatientSearch = ({ history }) => {
 
     useEffect(() => {
         if (showPatient === "all") {
+<<<<<<< HEAD
             getAllPatientsList();
+=======
+            setRequest();
+            setAllPatientList();
+>>>>>>> 8a45b1b (added eception)
         }
     }, [showPatient]);
 
-    function onPatientSearch(searchValue) {
+    function setAllPatientList() {
+        getAllPatients().then(data => {
+            setAllPatients(data);
+        }).catch(err => {
+
+        });
+    }
+    function onPatientSearch(searchValue, searchFilter) {
         console.log(searchValue);
 
         if (searchValue == '') {
             getAllPatientsList();
             setShowPatient("all");
-        } else if (filterValue == "patientId") {
+        } else if (searchFilter == "patientId") {
             setPatientSearchbyId(searchValue);
             setShowPatient("patientId");
-        } else if (filterValue == "patientName") {
+        } else if (searchFilter == "patientName") {
             setPatientSearchbyName(searchValue);
             setShowPatient("patientName");
+        } else if (searchFilter == "dateRange") {
+            console.log(searchValue);
+            data = allPatients.filter(data => {
+                if (data.createdAt < searchValue[1] && data.createdAt > searchValue[0]) {
+                    console.log('aaya');
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            setShowPatient(searchFilter);
+            setDateFilteredPatient(data);
         }
 
     }
@@ -72,6 +106,18 @@ const PatientSearch = ({ history }) => {
         data = patients.map((patient, index) => {
             return {
                 ...patient,
+<<<<<<< HEAD
+=======
+                key: patient.patientId,
+                status: ['registered']
+            };
+        });
+    }
+    if (showPatient === "dateRange" && dateFilteredPatient.length > 0) {
+        data = dateFilteredPatient.map((patient, index) => {
+            return {
+                ...patient,
+>>>>>>> 8a45b1b (added eception)
                 key: patient.patientId,
                 status: ['registered']
             };
@@ -120,6 +166,26 @@ const PatientSearch = ({ history }) => {
             title: 'Phone',
             dataIndex: 'contactNum',
             key: 'contactNum',
+        },
+        {
+            title: 'Visit Type',
+            dataIndex: 'visitType',
+            key: 'visitType',
+            filters: [
+                {
+                    text: 'OPD',
+                    value: 'OPD',
+                },
+                {
+                    text: 'IPD',
+                    value: 'IPD',
+                },
+                {
+                    text: 'OPD to IPD',
+                    value: 'OPD to IPD',
+                },
+            ],
+            onFilter: (value, record) => record.visitType == value,
         },
         {
             title: 'Status',
@@ -178,6 +244,7 @@ const PatientSearch = ({ history }) => {
     ];
     return (
         <>
+<<<<<<< HEAD
             <Input.Group compact>
                 <Select defaultValue={filterValue} onSelect={setfilterValue}>
                     <Option value="patientName">Patient Name</Option>
@@ -185,6 +252,10 @@ const PatientSearch = ({ history }) => {
                 </Select>
                 <Input.Search onSearch={onPatientSearch} style={{ width: '70%' }} placeholder="Search by" />
             </Input.Group>
+=======
+            <Spinner show={isLoading} />
+            <PatientSearchComp onSearch={onPatientSearch} />
+>>>>>>> 8a45b1b (added eception)
             <br /><br />
             <Table columns={columns} dataSource={data} />
             <Modal title="Patient Records" visible={isPatientRecordModalVisible} footer={null} width={800} onCancel={() => setIsPatientRecordModalVisible(false)} >

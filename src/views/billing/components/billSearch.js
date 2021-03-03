@@ -13,7 +13,17 @@ const BillSearchComp = (props) => {
     }
     
     function onDateRangeSelect(values) {
-      props.onSearch(values, filterValue);
+        var actualDates = convertToActualDate(values);
+        props.onSearch(actualDates, filterValue);
+    }
+
+    function convertToActualDate(values) {
+        var date = moment(values[0]).toDate();
+        date.setHours(0);
+
+        var date2 = moment(values[1]).toDate();
+        date2.setHours(24);
+        return [date.getTime(), date2.getTime()];
     }
     function disabledDate(current) {
         // Can not select days before today and today

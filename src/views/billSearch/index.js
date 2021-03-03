@@ -1,4 +1,4 @@
-import { Space, Table, Button, Row, Col,Tag, notification } from 'antd';
+import { Space, Table, Button, Row, Col, Tag, notification } from 'antd';
 import React, { useEffect, useState, useRef } from 'react';
 import moment from 'moment';
 import { getPatientById } from '../../state/patientSearch/queries';
@@ -48,7 +48,7 @@ const BillSearch = ({ history }) => {
             ],
             onFilter: (value, record) => record.paymentStatus == value,
             render: text => (text == 'paid' ? <Tag color='green' key={text}>{text.toUpperCase()}</Tag> : <Tag color='red' key={text}>{text.toUpperCase()}</Tag>)
-            
+
         },
         {
             title: 'Action',
@@ -129,7 +129,7 @@ const BillSearch = ({ history }) => {
                 });
             });
         } else {
-            getBillListByDateRange(moment(searchValue[1]).toDate().getTime(), moment(searchValue[0]).toDate().getTime(), 'PHARMACY').then(data => {
+            getBillListByDateRange(searchValue[1], searchValue[0], 'PHARMACY').then(data => {
                 console.log(data);
                 if (data) {
                     const temp = data.map((item, index) => {

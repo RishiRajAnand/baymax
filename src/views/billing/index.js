@@ -201,7 +201,11 @@ const Billing = ({ location, history }) => {
     totalGST: 0
   };
 
+<<<<<<< HEAD
   const printBillButton = <Col className="gutter-row" span={6}>
+=======
+  const printBillButton = <Col className="gutter-row"  span={6}>
+>>>>>>> 8a45b1b (added eception)
     <Button style={{ width: '90%' }} type="primary" onClick={handlePrint}>Print</Button>
   </Col>;
   let generateBillButton = <Col className="gutter-row" span={6}>
@@ -546,7 +550,7 @@ const Billing = ({ location, history }) => {
       {/* New Patient <Switch onChange={onNewPatientSwitchChange} /> <br /> <br /> */}
       {patientInfo}
       <div style={{ display: 'none' }}>
-        <BillPrint ref={componentRef} itemList={data} paymentMode={paymentMode} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} patientId={queryParams.patientId} />
+        <BillPrint ref={componentRef} itemList={data} paymentMode={paymentMode} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} patientId={patientDetails.patientId} />
       </div>
       <Divider>Bill Details</Divider>
       <Descriptions>
@@ -589,9 +593,15 @@ const Billing = ({ location, history }) => {
         </Col> */}
         {printButton}
 
+<<<<<<< HEAD
         {/* <Col className="gutter-row" span={3}>
           <Button style={{ width: '90%' }} type="primary" onClick={() => history.push({ pathname: '/home/appointment', search: '?patientId='.concat(queryParams.patientId) })}>Go To Appointment</Button>
         </Col> */}
+=======
+        <Col className="gutter-row" span={6}>
+          <Button style={{ width: '100%' }} type="primary" onClick={() => history.push({ pathname: '/home/appointment', search: '?patientId='.concat(queryParams.patientId) })}>Go To Appointment</Button>
+        </Col>
+>>>>>>> 8a45b1b (added eception)
       </Row>
     </>
   );
