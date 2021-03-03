@@ -28,8 +28,11 @@ export class BillPrint extends React.Component {
             <>
                 <div id="wrapper" style={{ marginTop: '30px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                     <div>
-                        <img style={{ width: "400px", margin: "0 auto" }} src={logo} />
-                        <div style={{ marginLeft: '20px', fontSize: '12px', fontWeight: 'bold' }}>
+                        {/* <img style={{ width: "400px", margin: "0 auto" }} src={logo} /> */}
+                        <div>
+                            <h2>{hospitalDetails.name}</h2>
+                        </div>
+                        <div style={{ fontSize: '12px', fontWeight: 'bold' }}>
                             <p>{hospitalDetails.address}</p>
                             <p>Contact: {hospitalDetails.contact}</p>
                         </div>
@@ -40,22 +43,18 @@ export class BillPrint extends React.Component {
                             <tr>
                                 <th>Name</th>
                                 <th>{patientDetails.patientName}</th>
-                                <td>Age</td>
-                                <td>{patientDetails.age}</td>
+                                <td>BillId</td>
+                                <td>{billId}</td>
                             </tr>
-                            <tr>
+                            {/* <tr>
                                 <td>PatientId</td>
                                 <td>{patientId}</td>
                                 <td>BillId</td>
                                 <td>{billId}</td>
-                            </tr>
+                            </tr> */}
                             <tr>
                                 <td>Date</td>
                                 <td>{todaysDate}</td>
-                                <td>Visit type</td>
-                                <td>{patientDetails.visitType}</td>
-                            </tr>
-                            <tr>
                                 <td>Payment mode</td>
                                 <td>{paymentMode}</td>
                             </tr>

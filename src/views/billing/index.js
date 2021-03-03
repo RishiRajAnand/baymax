@@ -120,6 +120,7 @@ const Billing = ({ location, history }) => {
     {
       title: 'Amount',
       dataIndex: 'amount',
+      editable: "true",
       sorter: {
         compare: (a, b) => a.amount - b.amount,
         multiple: 3,
@@ -212,7 +213,7 @@ const Billing = ({ location, history }) => {
   const [paymentMode, setPaymentMode] = useState("Cash");
   // const [billResponse, isLoading, setBillSearch] = useBillSearch();
   const [patientDetails, setPatientDetails] = useState({});
-  const [newPatientSwitch, setNewPatientSwitch] = useState(false);
+  const [newPatientSwitch, setNewPatientSwitch] = useState(true);
   const [generateBillStatus, setGenerateBillStatus] = useSaveGenerateBill();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isReturnModalVisible, setIsReturnModalVisible] = useState(false);
@@ -296,20 +297,20 @@ const Billing = ({ location, history }) => {
   }
   if (newPatientSwitch) {
     patientInfo = <div>
-      <Divider>Patient Details</Divider>
+      <Divider>Customer Details</Divider>
       <Form layout="inline" form={newPatientForm}>
         <Form.Item name="patientName" label="Name">
           <Input placeholder="name" />
         </Form.Item>
-        <Form.Item name="age" label="Age">
+        {/* <Form.Item name="age" label="Age">
           <InputNumber placeholder="age" />
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item name="contact" label="Contact">
           <Input placeholder="phone number" />
         </Form.Item>
-        <Form.Item name="referal doctor" label="Referal doctor">
+        {/* <Form.Item name="referal doctor" label="Referal doctor">
           <Input placeholder="doctor name" />
-        </Form.Item>
+        </Form.Item> */}
       </Form>
     </div>;
   }
@@ -542,7 +543,7 @@ const Billing = ({ location, history }) => {
       <Modal title="Return Item" visible={isReturnModalVisible} footer={null} onOk={submitReturn} onCancel={cancelReturnModal}>
         <ReturnItem rowsData={data} patientDetails={patientDetails} onItemAdded={onItemAdded} onItemsReturned={onItemsReturned} isModalVisible={setIsReturnModalVisible} />
       </Modal>
-      New Patient <Switch onChange={onNewPatientSwitchChange} /> <br /> <br />
+      {/* New Patient <Switch onChange={onNewPatientSwitchChange} /> <br /> <br /> */}
       {patientInfo}
       <div style={{ display: 'none' }}>
         <BillPrint ref={componentRef} itemList={data} paymentMode={paymentMode} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} patientId={queryParams.patientId} />
@@ -588,9 +589,9 @@ const Billing = ({ location, history }) => {
         </Col> */}
         {printButton}
 
-        <Col className="gutter-row" span={3}>
+        {/* <Col className="gutter-row" span={3}>
           <Button style={{ width: '90%' }} type="primary" onClick={() => history.push({ pathname: '/home/appointment', search: '?patientId='.concat(queryParams.patientId) })}>Go To Appointment</Button>
-        </Col>
+        </Col> */}
       </Row>
     </>
   );

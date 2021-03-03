@@ -25,7 +25,7 @@ const BillSearchComp = (props) => {
     return (
         <Input.Group compact>
             <Select defaultValue={defaultSearch} onSelect={setfilterValue}>
-                <Option key="patientId" value="patientId">Patient Id</Option>
+                {/* <Option key="patientId" value="patientId">Patient Id</Option> */}
                 <Option key="billId" value="billId">Bill Id</Option>
                 <Option key="dateRange" value="dateRange">Date Range</Option>
             </Select>

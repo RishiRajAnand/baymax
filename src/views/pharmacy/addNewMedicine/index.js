@@ -90,14 +90,14 @@ const AddNewMedicine = ({ location, history }) => {
         savePharmacyMedicine(body).then(data => {
             notification["success"]({
                 message: 'SUCCESS',
-                description: `Medicine ${form.medicineName} ${queryParams.mode == 'edit' ? 'edited' : 'added'} successfully`,
+                description: `Item ${form.medicineName} ${queryParams.mode == 'edit' ? 'edited' : 'added'} successfully`,
                 duration: 3
             });
             clearForm();
         }).catch(err => {
             notification["error"]({
                 message: 'ERROR',
-                description: `Error while saving Medicine`,
+                description: `Error while saving Item`,
                 duration: 3
             });
         });
@@ -135,8 +135,8 @@ const AddNewMedicine = ({ location, history }) => {
             }} type="dashed" icon={<PlusOutlined />}>Add Supplier</Button>
             <Button type="dashed" onClick={() => {
                 history.push({ pathname: '/home/manageMedicines' });
-            }} style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Manage Medicine</Button>
-            <Button type="dashed" style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Import Medicine</Button>
+            }} style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Manage Inventory</Button>
+            <Button type="dashed" style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Import Bulk Items</Button>
             <br /><br /><br />
             <Form form={form} {...layout} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
                 <Row gutter={24}>
@@ -159,20 +159,20 @@ const AddNewMedicine = ({ location, history }) => {
                 </Row>
                 <Row gutter={24}>
                     <Col span={12}>
-                        <Form.Item name={['user', 'medicineName']} label="Medicine Name" rules={[{ required: true }]}>
+                        <Form.Item name={['user', 'medicineName']} label="Item Name" rules={[{ required: true }]}>
                             <Input />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item name={['user', 'genericName']} label="Generic Name">
+                        <Form.Item name={['user', 'genericName']} label="Local Name">
                             <Input />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    {/* <Col span={12}>
                         <Form.Item name={['user', 'boxSize']} label="Box Size" rules={[{ type: 'number', min: 0, max: 5000 }]}>
                             <InputNumber style={{ width: '100%' }} />
                         </Form.Item>
-                    </Col>
+                    </Col> */}
                     {/* <Col span={12}>
                         <Form.Item name={['user', 'expiryDate']} label="Expiry Date">
                             <DatePicker style={{ width: '100%' }} />

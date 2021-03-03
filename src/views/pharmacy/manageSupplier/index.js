@@ -1,49 +1,56 @@
 import { UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, notification, Table, Space } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Spinner from '../../../components/spinner';
 import useAddMedicine from '../../../state/addMedicine/hooks/useAddMedicine';
 import useMedicineSearch from '../../../state/addMedicine/hooks/useSearchMedicine';
 import useAddSupplier from '../../../state/pharmacy/hooks/useAddSupplier';
 import useGetAllSuppliers from '../../../state/pharmacy/hooks/useGetAllSupplier';
+import { saveSupplier } from '../../../state/pharmacy/queries';
+import { SERVER_ERROR } from '../../../utils/constantMessages';
 
 const ManageSupplier = () => {
     const data = [];
     const [form] = Form.useForm();
-    // const [, forceUpdate] = useState();
-    const [status, isLoading, setRequest] = useAddSupplier();
-    const [suppliers, isLoadings, setMedicineSearch] = useGetAllSuppliers();
+    const [selectedRowId, setSelectedRowId] = useState("");
+    const [suppliers, isLoadings, setSupplierSearch] = useGetAllSuppliers();
     // To disable submit button at the beginning.
     useEffect(() => {
-        if (status) {
-            notification["success"]({
-                message: 'SUCCESS',
-                description: 'Supplier added successfully',
-                duration: 3
-            });
-            setMedicineSearch();
-        }
-        if (suppliers.length === 0) {
-            setMedicineSearch();
-        }
-        // forceUpdate({});
-    }, [status]);
+        setSupplierSearch();
+    }, []);
     const onFinish = formData => {
         const body = {
+            "supplierId": selectedRowId,
             "supplierName": formData.name,
             "email": formData.email,
             "phoneNumber": formData.phone,
             "address": formData.address,
         };
-        setRequest(body);
+        saveSupplier(body).then(data => {
+            notification["success"]({
+                message: 'SUCCESS',
+                description: 'Supplier added successfully',
+                duration: 3
+            });
+            setSupplierSearch();
+            clearForm();
+        }).catch(err => {
+            notification["error"]({
+                message: 'ERROR',
+                description: SERVER_ERROR,
+                duration: 3
+            });
+        });
+    };
+    function clearForm() {
+        setSelectedRowId(null);
         form.setFieldsValue({
             "name": "",
             "email": "",
             "phone": "",
             "address": "",
         });
-        
-    };
+    }
     const columns = [
         {
             title: 'Name',
@@ -68,7 +75,7 @@ const ManageSupplier = () => {
             key: 'action',
             render: (text, record) => (
                 <Space size="middle">
-                    <a onClick={()=> editSupplier(record)}>Edit</a>
+                    <a onClick={() => editSupplier(record)}>Edit</a>
                     <a>Delete</a>
                 </Space>
             ),
@@ -76,6 +83,7 @@ const ManageSupplier = () => {
     ];
 
     function editSupplier(record) {
+        setSelectedRowId(record.supplierId);
         form.setFieldsValue({
             "name": record.supplierName,
             "email": record.email,
@@ -102,7 +110,6 @@ const ManageSupplier = () => {
     }
     return (
         <>
-            <Spinner show={isLoading} />
             <Form form={form} name="horizontal_login" layout="inline" onFinish={onFinish}>
                 <Form.Item
                     name="name"
@@ -141,6 +148,9 @@ const ManageSupplier = () => {
                             Add Supplier
                         </Button>
                     )}
+                </Form.Item>
+                <Form.Item>
+                    <Button type="primary" onClick={clearForm}> Clear form </Button>
                 </Form.Item>
             </Form>
             <br /><br /><br />

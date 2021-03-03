@@ -60,7 +60,7 @@ const ManageMedicines = ({ location, history }) => {
             key: 'category',
             filters: [
                 {
-                    text: 'Tablet',
+                    text: 'Daily use',
                     value: 'Tablet',
                 },
                 {
@@ -83,7 +83,7 @@ const ManageMedicines = ({ location, history }) => {
             key: 'salePrice',
         },
         {
-            title: 'Generic name',
+            title: 'Common Name',
             dataIndex: 'genericName',
             key: 'genericName',
         },
@@ -168,7 +168,7 @@ const ManageMedicines = ({ location, history }) => {
             getAllMedicines();
             notification["success"]({
                 message: 'Success',
-                description: 'Medicine deleted successfully',
+                description: 'Item deleted successfully',
                 duration: 3
             });
         }).catch(err => {
@@ -195,8 +195,8 @@ const ManageMedicines = ({ location, history }) => {
         <>
             <Input.Group compact>
                 <Select defaultValue={filterValue} onSelect={setfilterValue}>
-                    <Option value="medicineName">Medicine Name</Option>
-                    <Option value="genericName">Generic Name</Option>
+                    <Option value="medicineName">Item Name</Option>
+                    <Option value="genericName">Common Name</Option>
                 </Select>
                 <Input.Search onSearch={onMedicineSearch} style={{ width: '70%' }} placeholder="Search by" />
             </Input.Group>

@@ -119,9 +119,9 @@ const Registration = ({ location, history }) => {
                 </Form.Item>
                 <Form.Item name={['user', 'visit']} label="Visit Type" >
                     <Select placeholder="Select Visit type">
-                        <Option value="general">General</Option>
-                        <Option value="emergency">Emergency</Option>
-                        <Option value="referral">Referral</Option>
+                        <Option value="IPD">IPD</Option>
+                        <Option value="OPD">OPD</Option>
+                        <Option value="OPD to IPD">OPD to IPD</Option>
                     </Select>
                 </Form.Item>
                 <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>

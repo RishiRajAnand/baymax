@@ -7,6 +7,8 @@ import useGetAllSuppliers from '../../../state/pharmacy/hooks/useGetAllSupplier'
 import useGetAllPharmacyMedicines from '../../../state/pharmacy/hooks/useGetAllPharmacyMedicines';
 import useSavePurchaseOrder from '../../../state/pharmacy/hooks/useSavePurchaseOrder';
 import useGetPurchaseOrderDetails from '../../../state/pharmacy/hooks/useGetPurchaseOrderDetails';
+import { savePurchaseOrder } from '../../../state/pharmacy/queries';
+import { SERVER_ERROR } from '../../../utils/constantMessages';
 const { Option } = Select;
 const { TextArea } = Input;
 const layout = {
@@ -40,29 +42,19 @@ const NewPurchaseOrder = ({ location, history }) => {
     const [purchaseDetailsForm] = Form.useForm();
     const [productListForm] = Form.useForm();
     const [name, setName] = useState("");
-    const [submitted, setSubmitted] = useState(false);
     const [items, setItems] = useState(['ABC pharma', 'Medimex store']);
     const [suppliers, isLoadings, setSupplierSearch] = useGetAllSuppliers();
     const queryParams = queryString.parse(location.search);
     const [medicines, isLoading, setMedicineSearch] = useGetAllPharmacyMedicines();
-    const [status, setSavePurchaseOrder] = useSavePurchaseOrder();
     const [orderDetail, setGetPurchaseOrderDetails] = useGetPurchaseOrderDetails();
     // const [purchaseOrderList, isLoading1, setPurchaseOrderListFetch] = UseGetAllPurchaseOrder();
     useEffect(() => {
         setMedicineSearch();
         setSupplierSearch();
-        if (status && submitted) {
-            notification["success"]({
-                message: 'SUCCESS',
-                description: 'Purchase order created successfully',
-                duration: 3
-            });
-            setSubmitted(false);
-        }
-        if (queryParams.mode == "edit" && queryParams.purchaseOrderId != null && submitted == false && status == false) {
+        if (queryParams.mode == "edit" && queryParams.purchaseOrderId != null) {
             setGetPurchaseOrderDetails(queryParams.purchaseOrderId);
         }
-    }, [status, submitted]);
+    }, []);
 
 
     if (orderDetail != null) {
@@ -168,8 +160,19 @@ const NewPurchaseOrder = ({ location, history }) => {
                 });
             });
         }
-        setSubmitted(true);
-        setSavePurchaseOrder(body);
+        savePurchaseOrder(body).then(data => {
+            notification["success"]({
+                message: 'SUCCESS',
+                description: 'Purchase order created successfully',
+                duration: 3
+            });
+        }).catch(err => {
+            notification["error"]({
+                message: 'Error',
+                description: SERVER_ERROR,
+                duration: 3
+            });
+        });
     };
     function onNameChange(event) {
         // console.log("sas", event.target.value);
@@ -195,15 +198,15 @@ const NewPurchaseOrder = ({ location, history }) => {
             }} type="dashed" style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Purchase list</Button>
             <Button onClick={() => {
                 history.push({ pathname: '/home/manageMedicines' });
-            }} type="dashed" style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Medicine list</Button>
+            }} type="dashed" style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Item list</Button>
             <br /><br /><br />
             <Form form={purchaseDetailsForm}  {...layout} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
                 <Row gutter={24}>
-                    <Col span={12}>
+                    {/* <Col span={12}>
                         <Form.Item name={['user', 'rol']} label="ROL">
                             <Switch />
                         </Form.Item>
-                    </Col>
+                    </Col> */}
                     <Col span={12}>
                         <Form.Item name={['user', 'status']} label="Status">
                             <Select

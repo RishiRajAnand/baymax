@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { Carousel } from 'antd';
-import corousal1 from '../../../assets/images/corousal1.jpg';
-import corousal2 from '../../../assets/images/corousal2.jpg';
-import corousal3 from '../../../assets/images/corousal3.jpg';
-import corousal4 from '../../../assets/images/corousal4.jpg';
+import corousal1 from '../../../assets/images/corousal11.jpg';
+import corousal2 from '../../../assets/images/corousal22.jpg';
+import corousal3 from '../../../assets/images/corousal33.jpg';
+import corousal4 from '../../../assets/images/corousal44.jpg';
 import '../homescreen/homescreen.css';
 const contentStyle = {
     height: '700px',
@@ -21,22 +21,22 @@ const HomeScreen = () => {
         <Carousel autoplay>
             <div>
                 <div class="backgroundImageDiv" style={{ backgroundImage: `url(${corousal1})` }}>
-                    Welcome to Baymax Healthcare
+                    Welcome to Baymax Inventories
                 </div>
             </div>
             <div>
-                <div class="backgroundImageDiv" style={{ backgroundImage: `url(${corousal2})` }}>
-                    Manage everything from central place
+                <div class="backgroundImageDiv" style={{ backgroundImage: `url(${corousal2})` , color: 'white'}}>
+                    Inventories made simple
                 </div>
             </div>
             <div>
                 <div class="backgroundImageDiv" style={{ backgroundImage: `url(${corousal3})` }}>
-                    Secure and reliable
+                   Keep track of timelines
                 </div>
             </div>
             <div>
                 <div class="backgroundImageDiv" style={{ backgroundImage: `url(${corousal4})` }}>
-                    Access records from anywhere
+                    No more paperwork
                 </div>
             </div>
         </Carousel>

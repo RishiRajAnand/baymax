@@ -15,7 +15,7 @@ const AddItem = (props) => {
         labelCol: { span: 8 },
         wrapperCol: { span: 16 },
     };
-    const [selected, setSelected] = useState("medicine");
+    const [selected, setSelected] = useState("inventory");
     const [selectedValue, setSelectedValue] = useState("");
     const [medicines, isLoading, setMedicineSearch] = useGetPharmacyMedicines();
     const [tests, isLoading1, setTestSearch] = useTestSearch();
@@ -29,7 +29,7 @@ const AddItem = (props) => {
             testMap.set(test.testName, test);
             return { value: test.testName, label: test.testName };
         })];
-    } else if (selected == "medicine") {
+    } else if (selected == "inventory") {
         if (medicines.length > 0) {
 
             medicines.forEach(medicine => {
@@ -54,7 +54,7 @@ const AddItem = (props) => {
             itemType: selected,
             amount: amount
         }
-        if (selected == "medicine") {
+        if (selected == "inventory") {
             const medicinedetail = medicineMap.get(value.user.name);
             obj["amount"] = medicinedetail.salePrice;
             obj["itemId"] = medicinedetail.medicineId;
@@ -95,9 +95,9 @@ const AddItem = (props) => {
             </Form.Item>
             <Form.Item name={['user', 'itemType']} label="Item type" >
                 <Select onSelect={onItemTypeSelect} defaultValue={selected} placeholder="Item type">
-                    <Option value="medicine">Medicine</Option>
-                    <Option value="test">Test</Option>
-                    <Option value="consulation">Consulation</Option>
+                    <Option value="inventory">Inventory</Option>
+                    {/* <Option value="test">Test</Option>
+                    <Option value="consulation">Consulation</Option> */}
                 </Select>
             </Form.Item>
             <Form.Item>
