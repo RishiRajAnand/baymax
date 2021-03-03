@@ -5,6 +5,7 @@ import useTestSearch from '../../../state/addMedicine/hooks/useSearchTest';
 const { Option } = Select;
 
 const AddItem = (props) => {
+    const [form] = Form.useForm();
     const medicineMap = new Map();
     const testMap = new Map();
     let options = [
@@ -16,14 +17,23 @@ const AddItem = (props) => {
         wrapperCol: { span: 16 },
     };
     const [selected, setSelected] = useState("others");
-    const [selectedValue, setSelectedValue] = useState("");
     const [medicines, isLoading, setMedicineSearch] = useGetPharmacyMedicines();
     const [tests, isLoading1, setTestSearch] = useTestSearch();
     // const [options, isLoading, setMedicineSearch] = useGetPharmacyMedicines();
     useEffect(() => {
         setMedicineSearch();
+        setFormdefaultValue();
     }, []);
 
+
+    function setFormdefaultValue() {
+        form.setFieldsValue({
+            user: {
+                quantity: 1,
+                amount: 0,
+            }
+        });
+    }
     if (selected == "test") {
         options = [...tests.map(test => {
             testMap.set(test.testName, test);
@@ -47,13 +57,12 @@ const AddItem = (props) => {
 
     function onFinish(value) {
         console.log("arakadra", value.user.name);
-        let amount = 0;
         const obj = {
             itemId: null,
             name: value.user.name,
             quantity: value.user.quantity,
             itemType: selected,
-            amount: amount
+            amount: value.user.amount
         }
         if (selected == "medicine") {
             const medicinedetail = medicineMap.get(value.user.name);
@@ -75,23 +84,44 @@ const AddItem = (props) => {
         }
     }
     function onSelect(data) {
-        setSelectedValue(data);
+        if (selected == "medicine") {
+            const medicinedetail = medicineMap.get(data);
+            console.log(medicinedetail.salePrice);
+            form.setFieldsValue({
+                user: {
+                    amount: medicinedetail.salePrice,
+                }
+            });
+
+        } else if (selected == "test") {
+            const testdetail = testMap.get(data);
+            form.setFieldsValue({
+                user: {
+                    amount: testdetail.salePrice,
+                }
+            });
+        }
     }
     return (
-        <Form {...layout} name="nest-messages" onFinish={onFinish} >
+        <Form form={form} {...layout} name="nest-messages" onFinish={onFinish} >
             <Form.Item name={['user', 'name']} label="Item name">
                 <AutoComplete
                     dropdownClassName="certain-category-search-dropdown"
+                    autoFocus={true}
+                    allowClear={true}
                     dropdownMatchSelectWidth={200}
                     style={{ width: '100%' }}
                     options={options}
-                    onSelect={onSelect}
+                    onChange={onSelect}
                     filterOption={(inputValue, option) => option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
                 >
                     <Input.Search size="default" placeholder="Item name" />
                 </AutoComplete>
             </Form.Item>
             <Form.Item name={['user', 'quantity']} label="Quantity" rules={[{ type: 'number' }]}>
+                <InputNumber />
+            </Form.Item>
+            <Form.Item name={['user', 'amount']} label="Amount" rules={[{ type: 'number' }]}>
                 <InputNumber />
             </Form.Item>
             <Form.Item name={['user', 'itemType']} label="Item type" >
