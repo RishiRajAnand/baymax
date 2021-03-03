@@ -1,5 +1,6 @@
-import { Button, Col, Descriptions, Divider, Form, InputNumber, Switch, Input, notification, Radio, Row, Table, Popconfirm, Modal } from 'antd';
+import { Button, Col, Descriptions, Divider, Form, InputNumber, Switch, DatePicker, Input, notification, Radio, Row, Table, Popconfirm, Modal } from 'antd';
 import queryString from 'query-string';
+import moment from 'moment';
 import React, { useRef, useState, useEffect, useContext, useLayoutEffect } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import PatientDetails from '../patientDetails';
@@ -110,6 +111,7 @@ const Billing = ({ location, history }) => {
     {
       title: 'Item Name',
       dataIndex: 'name',
+      editable: "true"
     },
     {
       title: 'Quantity',
@@ -200,8 +202,13 @@ const Billing = ({ location, history }) => {
     totalDiscount: 0,
     totalGST: 0
   };
+<<<<<<< HEAD
   const printBillButton = <Col className="gutter-row"  span={6}>
 
+=======
+
+  const printBillButton = <Col className="gutter-row" span={6}>
+>>>>>>> 13bac11 (deploying reception)
     <Button style={{ width: '90%' }} type="primary" onClick={handlePrint}>Print</Button>
   </Col>;
   let generateBillButton = <Col className="gutter-row" span={6}>
@@ -218,6 +225,8 @@ const Billing = ({ location, history }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isReturnModalVisible, setIsReturnModalVisible] = useState(false);
   const [billDetails, setBillDetails] = useState(defaultbillDetails);
+  const [billDate, setBillDate] = useState(moment(new Date()));
+  
   const [finalCharges, setFinalCharges] = useState(defaultFinalCharges);
   const [data, setData] = useState([]);;
 
@@ -344,6 +353,7 @@ const Billing = ({ location, history }) => {
           billId: billDetails.billId,
           createdAt: (new Date(billDetails.createdAt)).toDateString()
         });
+        setBillDate(moment(new Date(billDetails.createdAt)));
         setPaymentMode(billDetails.paymentMode);
         if (billDetails["patientId"]) {
           patientSearch(billDetails.patientId);
@@ -443,7 +453,7 @@ const Billing = ({ location, history }) => {
     const body = {
       billId: (billDetails.billId),
       billType: "PHARMACY",
-      createdAt: new Date(),
+      createdAt: (new Date(billDetails.createdAt)),
       paymentStatus: (paymentMode == "Due" ? "dues" : "paid"),
       paymentMode: paymentMode,
       patientId: patientDetails.patientId,
@@ -492,7 +502,7 @@ const Billing = ({ location, history }) => {
         });
         setBillDetails({
           billId: generateBillStatus.billId,
-          createdAt: (new Date()).toDateString()
+          createdAt: (new Date(billDetails.createdAt)).toDateString()
         });
         setState("billGenerated");
 
@@ -535,6 +545,13 @@ const Billing = ({ location, history }) => {
     setData(tempData);
     calculateTotalCharges(tempData);
   }
+  function onBillDateChange(momentDate, dateString) {
+    let date= new Date(dateString);
+    setBillDetails({
+      createdAt: (date).toDateString()
+    });
+    setBillDate(moment(date));
+  }
   return (
     <>
       <Modal title="Add Item" visible={isModalVisible} footer={null} onOk={handleOk} onCancel={handleCancel}>
@@ -546,14 +563,23 @@ const Billing = ({ location, history }) => {
       {/* New Patient <Switch onChange={onNewPatientSwitchChange} /> <br /> <br /> */}
       {patientInfo}
       <div style={{ display: 'none' }}>
-        <BillPrint ref={componentRef} itemList={data} paymentMode={paymentMode} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} patientId={patientDetails.patientId} />
+        <BillPrint ref={componentRef} itemList={data} paymentMode={paymentMode} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} billDate={billDetails.createdAt} patientId={patientDetails.patientId} />
       </div>
       <Divider>Bill Details</Divider>
-      <Descriptions>
-        <Descriptions.Item label="Bill Id">{billDetails.billId}</Descriptions.Item>
-        {/* <Descriptions.Item label="Receipt Id">{queryParams.receiptId}</Descriptions.Item> */}
-        <Descriptions.Item label="Date and time">{billDetails.createdAt}</Descriptions.Item>
-      </Descriptions>
+      <Row gutter={24}>
+        <Col span={4}>
+          <Descriptions>
+            <Descriptions.Item label="Bill Id">{billDetails.billId}</Descriptions.Item>
+            {/* <Descriptions.Item label="Receipt Id">{queryParams.receiptId}</Descriptions.Item> */}
+            {/* <Descriptions.Item label="Date and time">{billDetails.createdAt}</Descriptions.Item> */}
+          </Descriptions>
+        </Col>
+        <Col span={6}>
+          <DatePicker onChange={onBillDateChange} value={billDate}/>
+        </Col>
+      </Row>
+
+
       <Button
         onClick={showModal}
         type="primary"

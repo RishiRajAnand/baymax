@@ -11,8 +11,9 @@ export class BillPrint extends React.Component {
         const patientId = this.props.patientId;
         const patientDetails = this.props.patientDetails;
         const finalCharges = this.props.finalCharges;
-        const todaysDate = (new Date()).toDateString() + + ' ' + (new Date()).toLocaleTimeString();
-        const itemArray = itemList.map((item, index) => {
+
+        const todaysDate =  new Date(this.props.billDate).toDateString();
+        const itemArray = itemList.map(item, index=> {
             return (
                 <tr>
                     <td>{index + 1} .</td>
