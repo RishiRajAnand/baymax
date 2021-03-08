@@ -1,11 +1,12 @@
-import { ADMIN, DOCTOR, PHARMACY, RECEPTION, UPCOMING } from "../utils/roles";
-import { adminRoutes, doctorRoutes, pharmacyRoutes, receptionRoutes, upcomingRoutes } from "./allRoutesData";
+import { ADMIN, DOCTOR, INVENTORY, PHARMACY, RECEPTION, UPCOMING } from "../utils/roles";
+import { adminRoutes, doctorRoutes, inventoryRoutes, pharmacyRoutes, receptionRoutes, upcomingRoutes } from "./allRoutesData";
 
 const map = new Map();
 
 map.set(ADMIN, adminRoutes);
 map.set(DOCTOR, doctorRoutes);
 map.set(PHARMACY, pharmacyRoutes);
+map.set(INVENTORY, inventoryRoutes);
 map.set(RECEPTION, receptionRoutes);
 map.set(UPCOMING, upcomingRoutes);
 

@@ -201,10 +201,10 @@ const Billing = ({ location, history }) => {
     totalGST: 0
   };
 
-  const printBillButton = <Col className="gutter-row" span={3}>
+  const printBillButton = <Col className="gutter-row" span={6}>
     <Button style={{ width: '90%' }} type="primary" onClick={handlePrint}>Print</Button>
   </Col>;
-  let generateBillButton = <Col className="gutter-row" span={3}>
+  let generateBillButton = <Col className="gutter-row" span={6}>
     <Button style={{ width: '90%' }} type="primary" onClick={generateBill}>Generate {queryParams.context == "edit" ? "new " : ""}bill</Button>
   </Col>;
   let printButton = "";

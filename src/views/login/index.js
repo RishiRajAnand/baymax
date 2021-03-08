@@ -6,9 +6,9 @@ import Container from './containers/container';
 import Form from './containers/form';
 import Spinner from '../../components/spinner';
 import { notification } from 'antd';
-import { ADMIN, DOCTOR, PHARMACY, RECEPTION, UPCOMING } from '../../utils/roles';
+import { ADMIN, DOCTOR, INVENTORY, PHARMACY, RECEPTION, UPCOMING } from '../../utils/roles';
 
-const allowedRoles = [DOCTOR, PHARMACY, RECEPTION, UPCOMING, ADMIN]
+const allowedRoles = [DOCTOR, PHARMACY, RECEPTION, UPCOMING, ADMIN, INVENTORY]
 const Login = ({ location, history }) => {
   const { from } = location.state || { from: { pathname: '/home' } };
   const [auth, setLogin, isLoading] = useLogin();
