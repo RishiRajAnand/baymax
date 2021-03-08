@@ -6,7 +6,7 @@ import queryString from 'query-string';
 import useSavePharmacyMedicine from '../../../state/pharmacy/hooks/useSavePharmacyMedicine';
 import useGetPharmacyMedicineDetail from '../../../state/pharmacy/hooks/useGetMedicinedetail';
 import { setNestedObjectValues } from 'formik';
-import { savePharmacyMedicine } from '../../../state/pharmacy/queries';
+import { saveItemCategory, getCategoriesList, savePharmacyMedicine } from '../../../state/pharmacy/queries';
 const { Option } = Select;
 const { TextArea } = Input;
 const layout = {
@@ -34,13 +34,14 @@ const AddNewMedicine = ({ location, history }) => {
     let index = 0;
     const [form] = Form.useForm();
     const [name, setName] = useState("");
-    const [items, setItems] = useState(['Aspirin', 'Tablets', 'Syrup']);
+    const [items, setItems] = useState([]);
     const [medicineDetail, setRequest1] = useGetPharmacyMedicineDetail();
     const queryParams = queryString.parse(location.search);
     useEffect(() => {
         if (queryParams.mode == "edit" && queryParams.medicineId != null) {
             setRequest1(queryParams.medicineId);
         }
+        intialiseCategories();
     }, []);
 
     if (medicineDetail != null && queryParams.mode == "edit") {
@@ -63,6 +64,14 @@ const AddNewMedicine = ({ location, history }) => {
                 supplierName: medicineDetail.supplierName,
                 availability: medicineDetail.availability,
                 stockQuantity: medicineDetail.stockQuantity,
+            }
+        });
+    }
+
+    function intialiseCategories() {
+        getCategoriesList().then(data => {
+            if(data) {
+                setItems(data);
             }
         });
     }
@@ -107,8 +116,25 @@ const AddNewMedicine = ({ location, history }) => {
         setName(event.target.value);
     };
     function addItem() {
-        setName('');
-        setItems([...items, name || `New item ${index++}`]);
+        // setName('');
+        const body = {
+            categoryId: null,
+            categoryName: name
+        };
+        saveItemCategory(body).then(data => {
+            setItems([...items, {categoryId: null, categoryName: name} || `New item ${index++}`]);
+            notification["success"]({
+                message: 'SUCCESS',
+                description: `Category ${name} added successfully`,
+                duration: 3
+            });
+        }).catch(err => {
+            notification["error"]({
+                message: 'ERROR',
+                description: `Error while creating category`,
+                duration: 3
+            });
+        });
     }
     function clearForm() {
         form.setFieldsValue({
@@ -210,7 +236,7 @@ const AddNewMedicine = ({ location, history }) => {
                                 )}
                             >
                                 {items.map(item => (
-                                    <Option key={item}>{item}</Option>
+                                    <Option key={item.categoryName}>{item.categoryName}</Option>
                                 ))}
                             </Select>
                         </Form.Item>

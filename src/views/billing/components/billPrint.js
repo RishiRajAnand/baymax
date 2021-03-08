@@ -6,19 +6,22 @@ import hospitalDetails from '../../../utils/constants';
 export class BillPrint extends React.Component {
     render() {
         const itemList = this.props.itemList;
+        const isGSTIncluded = this.props.isGSTIncluded;
         const billId = this.props.billId;
         const paymentMode = this.props.paymentMode;
         const patientId = this.props.patientId;
         const patientDetails = this.props.patientDetails;
         const finalCharges = this.props.finalCharges;
-        const todaysDate =  new Date(this.props.billDate).toDateString();
-        const itemArray = itemList.map(item => {
+        const todaysDate = new Date(this.props.billDate).toDateString();
+
+        const itemArray = itemList.map((item, index) => {
             return (
                 <tr>
+                    <td>{index + 1} .</td>
                     <td>{item.name}</td>
                     <td>{item.quantity}</td>
                     <td>{item.amount}</td>
-                    <td>{item.gst}</td>
+                    <td style={{ display: (isGSTIncluded ? "table-cell" : "none") }}>{item.gst}</td>
                     <td>{item.discount}</td>
                     <td>{item.total}</td>
                 </tr>)
@@ -26,7 +29,13 @@ export class BillPrint extends React.Component {
 
         return (
             <>
-                <div id="wrapper" style={{ marginTop: '30px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <div id="wrapper" style={{ padding: '20px', marginTop: '30px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ width: "100%" }}>
+                        <p style={{ float: 'right', marginLeft: '20px' }}>
+                            Reg No.- {hospitalDetails.regNo}
+                        </p>
+
+                    </div>
                     <div>
                         <img style={{ width: "400px", margin: "0 auto" }} src={logo} />
                         <div style={{ marginLeft: '20px', fontSize: '12px', fontWeight: 'bold' }}>
@@ -66,28 +75,29 @@ export class BillPrint extends React.Component {
                     <table id="customers">
                         <tbody>
                             <tr>
+                                <th>S.No</th>
                                 <th>Item Name</th>
                                 <th>Quantity</th>
                                 <th>Amount</th>
-                                <th>GST(CGST + SGST)</th>
+                                <th style={{ display: (isGSTIncluded ? "table-cell" : "none") }} >GST(CGST + SGST)</th>
                                 <th>Discount(%)</th>
                                 <th>Total</th>
                             </tr>
                             {itemArray}
                             <tr>
-                                <td colSpan="4"></td>
+                                <td colSpan={(isGSTIncluded ? "5" : "4")} ></td>
                                 <td>Total</td>
                                 <td>{finalCharges.totalAmount}</td>
                             </tr>
                             <tr>
-                                <td colSpan="4"></td>
+                                <td colSpan={(isGSTIncluded ? "5" : "4")}></td>
                                 <td>Discount(%)</td>
                                 <td>{finalCharges.totalDiscount}</td>
                             </tr>
                             <tr>
-                                <td colSpan="4"></td>
-                                <td>Tax</td>
-                                <td>{finalCharges.totalGST}</td>
+                                <td style={{ display: (isGSTIncluded ? "table-cell" : "none") }} colSpan="5"></td>
+                                <td style={{ display: (isGSTIncluded ? "table-cell" : "none") }}>Tax</td>
+                                <td style={{ display: (isGSTIncluded ? "table-cell" : "none") }}>{finalCharges.totalGST}</td>
                             </tr>
                         </tbody>
 
