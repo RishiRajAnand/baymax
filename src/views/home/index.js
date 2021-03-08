@@ -34,6 +34,7 @@ import { getRoutes } from '../../routes/routeResolver';
 import { ADMIN, DOCTOR, PHARMACY, RECEPTION, UPCOMING } from '../../utils/roles';
 import BillSearch from '../billSearch';
 import ViewDoctors from '../admin/viewDoctors';
+import Reports from '../reports';
 
 const { Header, Sider, Content, Footer } = Layout;
 const { SubMenu } = Menu;
@@ -132,6 +133,7 @@ const Home = ({ location, history, match }) => {
           <Route path={`${path}/inProgress`} component={InProgress} />
           <Route path={`${path}/viewPrescription`} component={ViewPrescription} />
           <Route path={`${path}/viewDoctors`} component={ViewDoctors} />
+          <Route path={`${path}/reports`} component={Reports} />
           
         </Content>
         <Footer style={{ textAlign: 'center' }}>BayMax ©2021</Footer>

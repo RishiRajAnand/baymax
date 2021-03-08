@@ -87,7 +87,7 @@ const AddItem = (props) => {
         }
     }
     function onSelect(data) {
-        if (selected == "medicine") {
+        if (selected == "inventory") {
             const medicinedetail = medicineMap.get(data);
             if (medicinedetail) {
                 form.setFieldsValue({

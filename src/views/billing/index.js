@@ -1,4 +1,4 @@
-import { Button, Col, Descriptions, Divider, Form, InputNumber, Switch, DatePicker, Input, notification, Radio, Row, Table, Popconfirm, Modal } from 'antd';
+import { Button, Col, Descriptions, Divider, Checkbox, Form, InputNumber, Switch, DatePicker, Input, notification, Radio, Row, Table, Popconfirm, Modal } from 'antd';
 import queryString from 'query-string';
 import moment from 'moment';
 import React, { useRef, useState, useEffect, useContext, useLayoutEffect } from 'react';
@@ -81,16 +81,16 @@ const EditableCell = ({
         <Input ref={inputRef} onPressEnter={save} onBlur={save} />
       </Form.Item>
     ) : (
-        <div
-          className="editable-cell-value-wrap"
-          style={{
-            paddingRight: 24,
-          }}
-          onClick={toggleEdit}
-        >
-          {children}
-        </div>
-      );
+      <div
+        className="editable-cell-value-wrap"
+        style={{
+          paddingRight: 24,
+        }}
+        onClick={toggleEdit}
+      >
+        {children}
+      </div>
+    );
   }
 
   return <td {...restProps}>{childNode}</td>;
@@ -107,80 +107,6 @@ const Billing = ({ location, history }) => {
       cell: EditableCell,
     },
   };
-  let columns = [
-    {
-      title: 'Item Name',
-      dataIndex: 'name',
-      editable: "true"
-    },
-    {
-      title: 'Quantity',
-      dataIndex: 'quantity',
-      editable: "true",
-      width: '10%',
-    },
-    {
-      title: 'Amount',
-      dataIndex: 'amount',
-      editable: "true",
-      sorter: {
-        compare: (a, b) => a.amount - b.amount,
-        multiple: 3,
-      },
-    },
-    {
-      title: 'GST(CGST+SGST)',
-      dataIndex: 'gst',
-      editable: "true",
-      width: '10%',
-      sorter: {
-        compare: (a, b) => a.gst - b.gst,
-        multiple: 3,
-      },
-    },
-    {
-      title: 'Discount(%)',
-      dataIndex: 'discount',
-      editable: "true",
-      width: '10%',
-      sorter: {
-        compare: (a, b) => a.discount - b.discount,
-        multiple: 2,
-      },
-    },
-    {
-      title: 'Total',
-      dataIndex: 'total',
-      sorter: {
-        compare: (a, b) => a.total - b.total,
-        multiple: 1,
-      },
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      render: (text, record) =>
-        <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-          <a> {queryParams.context != "edit" ? "Delete" : ""} </a>
-        </Popconfirm>
-    }
-  ];
-  columns = columns.map((col) => {
-    if (col.editable == "false") {
-      return col;
-    }
-
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        editable: col.editable,
-        dataIndex: col.dataIndex,
-        title: col.title,
-        handleSave: handleSave,
-      }),
-    };
-  });
   function handleSave(row) {
     const newData = [...data];
     const index = newData.findIndex((item) => row.key === item.key);
@@ -212,6 +138,7 @@ const Billing = ({ location, history }) => {
   const [newPatientForm] = Form.useForm();
   const [state, setState] = useState("initial");
   const [paymentMode, setPaymentMode] = useState("Cash");
+  const [isGSTIncluded, setIsGSTIncluded] = useState(true);
   // const [billResponse, isLoading, setBillSearch] = useBillSearch();
   const [patientDetails, setPatientDetails] = useState({});
   const [newPatientSwitch, setNewPatientSwitch] = useState(true);
@@ -220,7 +147,7 @@ const Billing = ({ location, history }) => {
   const [isReturnModalVisible, setIsReturnModalVisible] = useState(false);
   const [billDetails, setBillDetails] = useState(defaultbillDetails);
   const [billDate, setBillDate] = useState(moment(new Date()));
-  
+
   const [finalCharges, setFinalCharges] = useState(defaultFinalCharges);
   const [data, setData] = useState([]);;
 
@@ -540,12 +467,96 @@ const Billing = ({ location, history }) => {
     calculateTotalCharges(tempData);
   }
   function onBillDateChange(momentDate, dateString) {
-    let date= new Date(dateString);
+    let date = new Date(dateString);
     setBillDetails({
       createdAt: (date).toDateString()
     });
     setBillDate(moment(date));
   }
+
+  function onGSTIncludedChange(e) {
+    setIsGSTIncluded(e.target.checked);
+  }
+
+
+  let columns = [
+    {
+      title: 'Item Name',
+      dataIndex: 'name',
+      editable: "true"
+    },
+    {
+      title: 'Quantity',
+      dataIndex: 'quantity',
+      editable: "true",
+      width: '10%',
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+      editable: "true",
+      sorter: {
+        compare: (a, b) => a.amount - b.amount,
+        multiple: 3,
+      },
+    },
+    {
+      title: 'Discount(%)',
+      dataIndex: 'discount',
+      editable: "true",
+      width: '10%',
+      sorter: {
+        compare: (a, b) => a.discount - b.discount,
+        multiple: 2,
+      },
+    },
+    {
+      title: 'Total',
+      dataIndex: 'total',
+      sorter: {
+        compare: (a, b) => a.total - b.total,
+        multiple: 1,
+      },
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (text, record) =>
+        <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+          <a> {queryParams.context != "edit" ? "Delete" : ""} </a>
+        </Popconfirm>
+    }
+  ];
+  if (isGSTIncluded) {
+    columns.splice(3, 0, {
+      title: 'GST(CGST+SGST)',
+      dataIndex: 'gst',
+      editable: "true",
+      width: '10%',
+      sorter: {
+        compare: (a, b) => a.gst - b.gst,
+        multiple: 3,
+      },
+    });
+  }
+
+  columns = columns.map((col) => {
+    if (col.editable == "false") {
+      return col;
+    }
+
+    return {
+      ...col,
+      onCell: (record) => ({
+        record,
+        editable: col.editable,
+        dataIndex: col.dataIndex,
+        title: col.title,
+        handleSave: handleSave,
+      }),
+    };
+  });
+
   return (
     <>
       <Modal title="Add Item" visible={isModalVisible} footer={null} onOk={handleOk} onCancel={handleCancel}>
@@ -557,7 +568,7 @@ const Billing = ({ location, history }) => {
       {/* New Patient <Switch onChange={onNewPatientSwitchChange} /> <br /> <br /> */}
       {patientInfo}
       <div style={{ display: 'none' }}>
-        <BillPrint ref={componentRef} itemList={data} paymentMode={paymentMode} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} billDate={billDetails.createdAt} patientId={patientDetails.patientId} />
+        <BillPrint ref={componentRef} itemList={data} paymentMode={paymentMode} isGSTIncluded={isGSTIncluded} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} billDate={billDetails.createdAt} patientId={patientDetails.patientId} />
       </div>
       <Divider>Bill Details</Divider>
       <Row gutter={24}>
@@ -568,8 +579,11 @@ const Billing = ({ location, history }) => {
             {/* <Descriptions.Item label="Date and time">{billDetails.createdAt}</Descriptions.Item> */}
           </Descriptions>
         </Col>
-        <Col span={6}>
-          <DatePicker onChange={onBillDateChange} value={billDate}/>
+        <Col span={16}>
+          <DatePicker onChange={onBillDateChange} value={billDate} />
+        </Col>
+        <Col span={4}>
+          <Checkbox checked={isGSTIncluded} onChange={onGSTIncludedChange}>Include GST</Checkbox>
         </Col>
       </Row>
 

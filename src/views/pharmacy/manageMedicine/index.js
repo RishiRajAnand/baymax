@@ -7,45 +7,8 @@ const { Text } = Typography;
 const { Search } = Input;
 const { Option } = Select;
 
-// const data = [
-//     {
-//         key: '1',
-//         name: 'Paraceta',
-//         category: '',
-//         purchasePrice: '',
-//         sellingPrice: '',
-//         genericName: '',
-//         expiryDate: '',
-//         medicineId: '217',
-//         stock: 100
-//     },
-//     {
-//         key: '2',
-//         name: '',
-//         category: '',
-//         purchasePrice: '',
-//         sellingPrice: '',
-//         genericName: '',
-//         expiryDate: '',
-//         medicineId: '217'
-
-//     },
-//     {
-//         key: '3',
-//         name: '',
-//         category: '',
-//         purchasePrice: '',
-//         sellingPrice: '',
-//         genericName: '',
-//         expiryDate: '',
-//         medicineId: '217'
-
-//     },
-// ];
-
 const ManageMedicines = ({ location, history }) => {
     let data = [];
-
     const [medicineData, setMedicineData] = useState([]);
     const [itemCategories, setItemCategories] = useState([]);
     const [medicines, isLoading, setMedicineSearch] = useGetAllPharmacyMedicines();
