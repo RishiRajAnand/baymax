@@ -1,7 +1,7 @@
 import { Space, Table, Input, Select, Typography, notification, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
 import useGetAllPharmacyMedicines from '../../../state/pharmacy/hooks/useGetAllPharmacyMedicines';
-import { getPharmacyMedicineList, getPharmacyMedicineListByName, deleteMedicine } from '../../../state/pharmacy/queries';
+import { getPharmacyMedicineList, getPharmacyMedicineListByName, deleteMedicine, getCategoriesList } from '../../../state/pharmacy/queries';
 import { SERVER_ERROR } from '../../../utils/constantMessages';
 const { Text } = Typography;
 const { Search } = Input;
@@ -45,89 +45,24 @@ const { Option } = Select;
 
 const ManageMedicines = ({ location, history }) => {
     let data = [];
-    const columns = [
-        {
-            title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
-            render: (text, record) => (
-                <Text type={record.stockQuantity - record.triggerValue > 0 ? 'success' : 'danger'}>{text}</Text>
-            ),
-        },
-        {
-            title: 'Category',
-            dataIndex: 'category',
-            key: 'category',
-            filters: [
-                {
-                    text: 'Daily use',
-                    value: 'Tablet',
-                },
-                {
-                    text: 'Syrup',
-                    value: 'Syrup',
-                }
-            ],
-            onFilter: (value, record) => record.category == value,
-            sorter: (a, b) => a.category - b.category,
-            sortDirections: ['descend'],
-        },
-        {
-            title: 'Purchase Price',
-            dataIndex: 'supplierPrice',
-            key: 'supplierPrice',
-        },
-        {
-            title: 'Selling Price',
-            dataIndex: 'salePrice',
-            key: 'salePrice',
-        },
-        {
-            title: 'Common Name',
-            dataIndex: 'genericName',
-            key: 'genericName',
-        },
-        {
-            title: 'Expiry date',
-            dataIndex: 'expDate',
-            key: 'expDate',
-        },
-        {
-            title: 'Stock',
-            dataIndex: 'availability',
-            key: 'availability',
-            render: text => (text == 'In stock' ? <Tag color='green' key={text}>{text.toUpperCase()}</Tag> : <Tag color='red' key={text}>{text.toUpperCase()}</Tag>)
-        },
-        {
-            title: 'Stock Quantity',
-            dataIndex: 'stockQuantity',
-            key: 'stockQuantity',
-        },
-        {
-            title: 'Action',
-            key: 'action',
-            render: (text, record) => (
-                <Space size="middle">
-                    <a onClick={() => {
-                        history.push({ pathname: '/home/newPurchaseOrder', search: '?mode=prefetch' + '&medicineName=' + record.name });
-                    }}>Place Order</a>
-                    {/* <a>Stock</a> */}
-                    <a onClick={() => {
-                        history.push({ pathname: '/home/addNewMedicine', search: '?mode=edit' + '&medicineId=' + record.medicineId });
-                    }}>Edit</a>
-                    <a onClick={() => {
-                        deleteMedicineRecord(record.medicineId);
-                    }}>Delete</a>
-                </Space>
-            ),
-        },
-    ];
+
     const [medicineData, setMedicineData] = useState([]);
+    const [itemCategories, setItemCategories] = useState([]);
     const [medicines, isLoading, setMedicineSearch] = useGetAllPharmacyMedicines();
     const [filterValue, setfilterValue] = useState("medicineName");
+
     useEffect(() => {
         getAllMedicines();
+        intialiseCategories();
     }, []);
+
+    function intialiseCategories() {
+        getCategoriesList().then(data => {
+            if (data) {
+                setItemCategories(data);
+            }
+        });
+    }
 
     if (medicineData.length > 0) {
         const tempData = [];
@@ -191,6 +126,74 @@ const ManageMedicines = ({ location, history }) => {
             });
         });
     }
+    const columns = [
+        {
+            title: 'Name',
+            dataIndex: 'name',
+            key: 'name',
+            render: (text, record) => (
+                <Text type={record.stockQuantity - record.triggerValue > 0 ? 'success' : 'danger'}>{text}</Text>
+            ),
+        },
+        {
+            title: 'Category',
+            dataIndex: 'category',
+            key: 'category',
+            filters: itemCategories.map(data => { return { text: data.categoryName, value: data.categoryName } }),
+            onFilter: (value, record) => record.category == value,
+            sorter: (a, b) => a.category - b.category,
+            sortDirections: ['descend'],
+        },
+        {
+            title: 'Purchase Price',
+            dataIndex: 'supplierPrice',
+            key: 'supplierPrice',
+        },
+        {
+            title: 'Selling Price',
+            dataIndex: 'salePrice',
+            key: 'salePrice',
+        },
+        {
+            title: 'Common Name',
+            dataIndex: 'genericName',
+            key: 'genericName',
+        },
+        {
+            title: 'Expiry date',
+            dataIndex: 'expDate',
+            key: 'expDate',
+        },
+        {
+            title: 'Stock',
+            dataIndex: 'availability',
+            key: 'availability',
+            render: text => (text == 'In stock' ? <Tag color='green' key={text}>{text.toUpperCase()}</Tag> : <Tag color='red' key={text}>{text.toUpperCase()}</Tag>)
+        },
+        {
+            title: 'Stock Quantity',
+            dataIndex: 'stockQuantity',
+            key: 'stockQuantity',
+        },
+        {
+            title: 'Action',
+            key: 'action',
+            render: (text, record) => (
+                <Space size="middle">
+                    <a onClick={() => {
+                        history.push({ pathname: '/home/newPurchaseOrder', search: '?mode=prefetch' + '&medicineName=' + record.name });
+                    }}>Place Order</a>
+                    {/* <a>Stock</a> */}
+                    <a onClick={() => {
+                        history.push({ pathname: '/home/addNewMedicine', search: '?mode=edit' + '&medicineId=' + record.medicineId });
+                    }}>Edit</a>
+                    <a onClick={() => {
+                        deleteMedicineRecord(record.medicineId);
+                    }}>Delete</a>
+                </Space>
+            ),
+        },
+    ];
     return (
         <>
             <Input.Group compact>

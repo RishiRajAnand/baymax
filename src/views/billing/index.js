@@ -202,13 +202,7 @@ const Billing = ({ location, history }) => {
     totalDiscount: 0,
     totalGST: 0
   };
-<<<<<<< HEAD
   const printBillButton = <Col className="gutter-row"  span={6}>
-
-=======
-
-  const printBillButton = <Col className="gutter-row" span={6}>
->>>>>>> 13bac11 (deploying reception)
     <Button style={{ width: '90%' }} type="primary" onClick={handlePrint}>Print</Button>
   </Col>;
   let generateBillButton = <Col className="gutter-row" span={6}>

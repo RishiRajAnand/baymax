@@ -18,11 +18,6 @@ const BillSearch = ({ history }) => {
             render: text => <a>{text}</a>,
         },
         {
-            title: 'Patient Id',
-            dataIndex: 'patientId',
-            key: 'patientId'
-        },
-        {
             title: 'Bill Date',
             dataIndex: 'createdAt',
             key: 'createdAt',

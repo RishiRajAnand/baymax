@@ -19,6 +19,24 @@ export const saveSupplier = (body) => {
         });
 };
 
+export const saveItemCategory = (body) => {
+    return axios
+        .post(`${api.url}/pharmacyController/saveItemCategory`, body)
+        .then(res => res.data)
+        .catch(err => {
+            return err;
+        });
+};
+
+export const getCategoriesList = () => {
+    return axios
+        .get(`${api.url}/pharmacyController/getAllItemCategories`)
+        .then(res => res.data)
+        .catch(err => {
+            return err;
+        });
+};
+
 export const savePurchaseOrder = (body) => {
     return axios
         .post(`${api.url}/pharmacyController/saveOrUpdatePurchaseOrder`, body)

@@ -13,7 +13,7 @@ export class BillPrint extends React.Component {
         const finalCharges = this.props.finalCharges;
 
         const todaysDate =  new Date(this.props.billDate).toDateString();
-        const itemArray = itemList.map(item, index=> {
+        const itemArray = itemList.map((item, index) => {
             return (
                 <tr>
                     <td>{index + 1} .</td>

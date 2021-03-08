@@ -16,13 +16,10 @@ const AddItem = (props) => {
         labelCol: { span: 8 },
         wrapperCol: { span: 16 },
     };
-<<<<<<< HEAD
 
     const [selected, setSelected] = useState("inventory");
     const [selectedValue, setSelectedValue] = useState("");
-=======
-    const [selected, setSelected] = useState("others");
->>>>>>> 13bac11 (deploying reception)
+
     const [medicines, isLoading, setMedicineSearch] = useGetPharmacyMedicines();
     const [tests, isLoading1, setTestSearch] = useTestSearch();
     // const [options, isLoading, setMedicineSearch] = useGetPharmacyMedicines();
@@ -90,7 +87,7 @@ const AddItem = (props) => {
         }
     }
     function onSelect(data) {
-        if (selected == "medicine") {
+        if (selected == "inventory") {
             const medicinedetail = medicineMap.get(data);
             console.log(medicinedetail.salePrice);
             form.setFieldsValue({
