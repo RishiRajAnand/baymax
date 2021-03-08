@@ -13,7 +13,7 @@ const layout = {
   wrapperCol: { span: 16 },
 };
 const tailLayout = {
-  wrapperCol: {span: 24 },
+  wrapperCol: { span: 24 },
 };
 
 const LoginForm = (props) => {
@@ -29,7 +29,7 @@ const LoginForm = (props) => {
   return (
     <>
       {/* <img style={{ width: "300px", marginBottom: '20px' }} src={logo} /> */}
-      <h1 style={{ width: "300px", height: '50px', marginBottom: '20px' , textAlign: 'center', backgroundColor: '#001529', color: "white", fontSize: '32px'}}>Baymax Inventory</h1>
+      <h1 style={{ width: "100%", fontFamily: 'Georgia, sans-serif', padding: "20px", marginBottom: '20px', textAlign: 'center', backgroundColor: '#001529', color: "white", fontSize: '32px' }}>Green Mart Inventory</h1>
       <Form
         {...layout}
         name="basic"
@@ -55,7 +55,7 @@ const LoginForm = (props) => {
           <Input.Password />
         </Form.Item>
         <Form.Item {...tailLayout}>
-          <Button type="primary" style={{ width: '100%'}}  htmlType="submit">
+          <Button type="primary" style={{ width: '100%' }} htmlType="submit">
             Submit
         </Button>
         </Form.Item>

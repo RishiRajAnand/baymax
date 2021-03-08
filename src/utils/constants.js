@@ -1,7 +1,7 @@
 const hospitalDetails = {
-    name: 'Apna Supermarket',
-    address: 'Apna Supermarket, Buxar',
-    contact: '9872187218',
+    name: 'GreenMart',
+    address: 'Buxar Baazar',
+    contact: '+91-8142638458',
 };
 
 export default hospitalDetails;

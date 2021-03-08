@@ -12,9 +12,10 @@ export class BillPrint extends React.Component {
         const patientDetails = this.props.patientDetails;
         const finalCharges = this.props.finalCharges;
         const todaysDate = (new Date()).toDateString() + + ' ' + (new Date()).toLocaleTimeString();
-        const itemArray = itemList.map(item => {
+        const itemArray = itemList.map((item, index) => {
             return (
                 <tr>
+                    <td>{index + 1} .</td>
                     <td>{item.name}</td>
                     <td>{item.quantity}</td>
                     <td>{item.amount}</td>
@@ -30,7 +31,7 @@ export class BillPrint extends React.Component {
                     <div>
                         {/* <img style={{ width: "400px", margin: "0 auto" }} src={logo} /> */}
                         <div>
-                            <h2>{hospitalDetails.name}</h2>
+                            <h2 style={{ fontSize: '2em', fontWeight: 'bold' }}>{hospitalDetails.name}</h2>
                         </div>
                         <div style={{ fontSize: '12px', fontWeight: 'bold' }}>
                             <p>{hospitalDetails.address}</p>
@@ -65,6 +66,7 @@ export class BillPrint extends React.Component {
                     <table id="customers">
                         <tbody>
                             <tr>
+                                <th>S.No</th>
                                 <th>Item Name</th>
                                 <th>Quantity</th>
                                 <th>Amount</th>

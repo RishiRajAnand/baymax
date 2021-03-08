@@ -8,6 +8,8 @@ import PatientDetails from '../patientDetails';
 import usePatientByName from '../../state/patientSearch/hooks/usePatientSearchByName';
 import { getAppointmentByPatientId } from '../../state/appointment/queries';
 import { responsiveArray } from 'antd/lib/_util/responsiveObserve';
+import { getAllPatients } from '../../state/patientSearch/queries';
+import { SERVER_ERROR } from '../../utils/constantMessages';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -16,7 +18,7 @@ const PatientSearch = ({ history }) => {
     const [isPatientRecordModalVisible, setIsPatientRecordModalVisible] = useState(false);
     const [name, setName] = useState([]);
     const [showPatient, setShowPatient] = useState("all");
-    const [patients, isLoading, setRequest] = usePatientSearch();
+    const [patients, setAllPatients] = useState([]);
     const [patientDetails, isLoading1, setPatientSearchbyId] = usePatientById();
     const [currentPatientDetails, setCurrentPatientDetails] = useState({});
     const [currentPatientAppointments, setCurrentPatientAppointments] = useState({});
@@ -25,7 +27,7 @@ const PatientSearch = ({ history }) => {
 
     useEffect(() => {
         if (showPatient === "all") {
-            setRequest();
+            getAllPatientsList();
         }
     }, [showPatient]);
 
@@ -33,7 +35,7 @@ const PatientSearch = ({ history }) => {
         console.log(searchValue);
 
         if (searchValue == '') {
-            setRequest();
+            getAllPatientsList();
             setShowPatient("all");
         } else if (filterValue == "patientId") {
             setPatientSearchbyId(searchValue);
@@ -60,7 +62,7 @@ const PatientSearch = ({ history }) => {
     if (showPatient == "patientName" && patientDetailsByName != null) {
         data = patientDetailsByName.map((patient, index) => {
             return {
-                ...patient, 
+                ...patient,
                 key: patient.patientId,
                 status: ['registered']
             };
@@ -69,10 +71,30 @@ const PatientSearch = ({ history }) => {
     if (showPatient === "all" && patients.length > 0) {
         data = patients.map((patient, index) => {
             return {
-                ...patient, 
+                ...patient,
                 key: patient.patientId,
                 status: ['registered']
             };
+        });
+    }
+    function getAllPatientsList() {
+        getAllPatients().then(data => {
+            if (data) {
+                setAllPatients(data);
+            } else {
+                notification["error"]({
+                    message: 'Error',
+                    description: SERVER_ERROR,
+                    duration: 3
+                });
+            }
+        }).catch(err => {
+            setAllPatients([]);
+            notification["error"]({
+                message: 'Error',
+                description: SERVER_ERROR,
+                duration: 3
+            });
         });
     }
     const columns = [
@@ -156,7 +178,6 @@ const PatientSearch = ({ history }) => {
     ];
     return (
         <>
-            <Spinner show={isLoading} />
             <Input.Group compact>
                 <Select defaultValue={filterValue} onSelect={setfilterValue}>
                     <Option value="patientName">Patient Name</Option>
