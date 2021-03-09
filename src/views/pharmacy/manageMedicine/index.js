@@ -58,7 +58,7 @@ const ManageMedicines = ({ location, history }) => {
 
     function intialiseCategories() {
         getCategoriesList().then(data => {
-            if (data) {
+            if (Array.isArray(data)) {
                 setItemCategories(data);
             }
         });

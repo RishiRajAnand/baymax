@@ -70,7 +70,7 @@ const AddNewMedicine = ({ location, history }) => {
 
     function intialiseCategories() {
         getCategoriesList().then(data => {
-            if(data) {
+            if(Array.isArray(data)) {
                 setItems(data);
             }
         });
