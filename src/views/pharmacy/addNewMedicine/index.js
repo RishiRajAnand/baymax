@@ -6,7 +6,7 @@ import queryString from 'query-string';
 import useSavePharmacyMedicine from '../../../state/pharmacy/hooks/useSavePharmacyMedicine';
 import useGetPharmacyMedicineDetail from '../../../state/pharmacy/hooks/useGetMedicinedetail';
 import { setNestedObjectValues } from 'formik';
-import { saveItemCategory, getCategoriesList, savePharmacyMedicine } from '../../../state/pharmacy/queries';
+import { saveItemCategory, getCategoriesList, savePharmacyMedicine, getItemUnitsList, saveItemUnit } from '../../../state/pharmacy/queries';
 const { Option } = Select;
 const { TextArea } = Input;
 const layout = {
@@ -29,12 +29,14 @@ const validateMessages = {
     },
 };
 
-const medicineUnits = medicineDistributionUnits.map(medicineDistributionUnit => <Option key={medicineDistributionUnit}>{medicineDistributionUnit}</Option>);
+// const medicineUnits = medicineDistributionUnits.map(medicineDistributionUnit => <Option key={medicineDistributionUnit}>{medicineDistributionUnit}</Option>);
 const AddNewMedicine = ({ location, history }) => {
     let index = 0;
     const [form] = Form.useForm();
     const [name, setName] = useState("");
+    const [newItemUnit, setNewItemUnit] = useState("");
     const [items, setItems] = useState([]);
+    const [itemUnits, setItemUnits] = useState([]);
     const [medicineDetail, setRequest1] = useGetPharmacyMedicineDetail();
     const queryParams = queryString.parse(location.search);
     useEffect(() => {
@@ -42,6 +44,7 @@ const AddNewMedicine = ({ location, history }) => {
             setRequest1(queryParams.medicineId);
         }
         intialiseCategories();
+        intialiseItemUnits();
     }, []);
 
     if (medicineDetail != null && queryParams.mode == "edit") {
@@ -70,8 +73,15 @@ const AddNewMedicine = ({ location, history }) => {
 
     function intialiseCategories() {
         getCategoriesList().then(data => {
-            if(Array.isArray(data)) {
+            if (Array.isArray(data)) {
                 setItems(data);
+            }
+        });
+    }
+    function intialiseItemUnits() {
+        getItemUnitsList().then(data => {
+            if (Array.isArray(data)) {
+                setItemUnits(data);
             }
         });
     }
@@ -115,14 +125,18 @@ const AddNewMedicine = ({ location, history }) => {
         // console.log("sas", event.target.value);
         setName(event.target.value);
     };
-    function addItem() {
+
+    function onItemUnitNameChange(event) {
+        setNewItemUnit(event.target.value);
+    };
+    function addItemCategory() {
         // setName('');
         const body = {
             categoryId: null,
             categoryName: name
         };
         saveItemCategory(body).then(data => {
-            setItems([...items, {categoryId: null, categoryName: name} || `New item ${index++}`]);
+            setItems([...items, { categoryId: null, categoryName: name } || `New item ${index++}`]);
             notification["success"]({
                 message: 'SUCCESS',
                 description: `Category ${name} added successfully`,
@@ -136,6 +150,28 @@ const AddNewMedicine = ({ location, history }) => {
             });
         });
     }
+
+    function addItemUnit() {
+        const body = {
+            id: null,
+            unitName: newItemUnit
+        };
+        saveItemUnit(body).then(data => {
+            setItemUnits([...itemUnits, { id: null, unitName: newItemUnit } || `New item ${index++}`]);
+            notification["success"]({
+                message: 'SUCCESS',
+                description: `Item Unit ${newItemUnit} added successfully`,
+                duration: 3
+            });
+        }).catch(err => {
+            notification["error"]({
+                message: 'ERROR',
+                description: `Error while creating category`,
+                duration: 3
+            });
+        });
+    }
+
     function clearForm() {
         form.setFieldsValue({
             user: {
@@ -175,11 +211,6 @@ const AddNewMedicine = ({ location, history }) => {
                                 <Option value="In stock">In Stock</Option>
                                 <Option value="Out of stock">Out Of Stock</Option>
                             </Select>
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item name={['user', 'stockQuantity']} label="Stock Quantity">
-                            <InputNumber style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -227,7 +258,7 @@ const AddNewMedicine = ({ location, history }) => {
                                             <Input style={{ flex: 'auto' }} value={name} onChange={onNameChange} />
                                             <a
                                                 style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }}
-                                                onClick={addItem}
+                                                onClick={addItemCategory}
                                             >
                                                 <PlusOutlined /> Add item
                                     </a>
@@ -242,23 +273,42 @@ const AddNewMedicine = ({ location, history }) => {
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item name={['user', 'unit']} label="Unit">
-                            <Select
-                                showSearch
-                                placeholder="Select Distribution Unit" style={{ width: '100%' }}
-                                optionFilterProp="children"
-                                filterOption={(input, option) =>
-                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                }>
-                                {medicineUnits}
-                            </Select>
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
                         <Form.Item name={['user', 'image']} label="Image">
                             <Upload name="logo" action="/upload.do" listType="picture">
                                 <Button icon={<UploadOutlined />}>Click to upload</Button>
                             </Upload>
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name={['user', 'stockQuantity']} label="Stock Quantity">
+                            <InputNumber style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name={['user', 'unit']} label="Unit">
+                            <Select
+                                style={{ width: '100%' }}
+                                placeholder="Select Item Unit"
+                                dropdownRender={menu => (
+                                    <div>
+                                        {menu}
+                                        <Divider style={{ margin: '4px 0' }} />
+                                        <div style={{ display: 'flex', flexWrap: 'nowrap', padding: 8 }}>
+                                            <Input style={{ flex: 'auto' }} value={newItemUnit} onChange={onItemUnitNameChange} />
+                                            <a
+                                                style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }}
+                                                onClick={addItemUnit}
+                                            >
+                                                <PlusOutlined /> Add item
+                                    </a>
+                                        </div>
+                                    </div>
+                                )}
+                            >
+                                {itemUnits.map(item => (
+                                    <Option key={item.unitName}>{item.unitName}</Option>
+                                ))}
+                            </Select>
                         </Form.Item>
                     </Col>
                     <Col span={12}>
@@ -274,7 +324,7 @@ const AddNewMedicine = ({ location, history }) => {
                 </Row>
                 <Row>
                     <Col span={24} style={{ textAlign: 'right' }}>
-                        <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+                        <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 10 }}>
                             <Button type="primary" htmlType="submit">
                                 Save and Add another
                             </Button>

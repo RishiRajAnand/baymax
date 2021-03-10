@@ -28,9 +28,26 @@ export const saveItemCategory = (body) => {
         });
 };
 
+export const saveItemUnit = (body) => {
+    return axios
+        .post(`${api.url}/pharmacyController/saveItemUnit`, body)
+        .then(res => res.data)
+        .catch(err => {
+            return err;
+        });
+};
+
 export const getCategoriesList = () => {
     return axios
         .get(`${api.url}/pharmacyController/getAllItemCategories`)
+        .then(res => res.data)
+        .catch(err => {
+            return err;
+        });
+};
+export const getItemUnitsList = () => {
+    return axios
+        .get(`${api.url}/pharmacyController/getAllItemUnits`)
         .then(res => res.data)
         .catch(err => {
             return err;

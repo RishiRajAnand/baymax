@@ -17,7 +17,7 @@ const AddItem = (props) => {
         wrapperCol: { span: 16 },
     };
 
-    const [selected, setSelected] = useState("inventory");
+    const [selected, setSelected] = useState("medicine");
     const [selectedValue, setSelectedValue] = useState("");
 
     const [medicines, isLoading, setMedicineSearch] = useGetPharmacyMedicines();
@@ -42,7 +42,7 @@ const AddItem = (props) => {
             testMap.set(test.testName, test);
             return { value: test.testName, label: test.testName };
         })];
-    } else if (selected == "inventory") {
+    } else if (selected == "medicine") {
         if (medicines.length > 0) {
 
             medicines.forEach(medicine => {
@@ -67,7 +67,7 @@ const AddItem = (props) => {
             itemType: selected,
             amount: value.user.amount
         }
-        if (selected == "inventory") {
+        if (selected == "medicine") {
             const medicinedetail = medicineMap.get(value.user.name);
             obj["amount"] = medicinedetail.salePrice;
             obj["itemId"] = medicinedetail.medicineId;
@@ -87,22 +87,25 @@ const AddItem = (props) => {
         }
     }
     function onSelect(data) {
-        if (selected == "inventory") {
+        if (selected == "medicine") {
             const medicinedetail = medicineMap.get(data);
-            console.log(medicinedetail.salePrice);
-            form.setFieldsValue({
-                user: {
-                    amount: medicinedetail.salePrice,
-                }
-            });
+            if (medicinedetail) {
+                form.setFieldsValue({
+                    user: {
+                        amount: medicinedetail.salePrice,
+                    }
+                });
+            }
 
         } else if (selected == "test") {
             const testdetail = testMap.get(data);
-            form.setFieldsValue({
-                user: {
-                    amount: testdetail.salePrice,
-                }
-            });
+            if (testdetail) {
+                form.setFieldsValue({
+                    user: {
+                        amount: testdetail.salePrice,
+                    }
+                });
+            }
         }
     }
     return (
@@ -129,7 +132,7 @@ const AddItem = (props) => {
             </Form.Item>
             <Form.Item name={['user', 'itemType']} label="Item type" >
                 <Select onSelect={onItemTypeSelect} defaultValue={selected} placeholder="Item type">
-                    <Option value="inventory">Inventory</Option>
+                    <Option value="medicine">Inventory</Option>
                     <Option value="consulation">Others</Option>
                 </Select>
             </Form.Item>
