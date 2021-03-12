@@ -1,10 +1,10 @@
-import { allRoles } from '../../utils/roles';
+import { allRoles, INVENTORY } from '../../utils/roles';
 import { LOGIN, LOGOUT } from './actions';
 
 export const INITIAL_STATE = {
   logged: false,
   username: "",
-  roles: allRoles
+  roles: [INVENTORY]
 };
 
 export default (state = INITIAL_STATE, action) => {

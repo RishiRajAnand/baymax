@@ -20,22 +20,22 @@ const HomeScreen = () => {
     return (
         <Carousel autoplay>
             <div>
-                <div class="backgroundImageDiv" style={{ backgroundImage: `url(${corousal1})`, fontSize: '4em' }}>
+                <div className="backgroundImageDiv" style={{ backgroundImage: `url(${corousal1})`, fontSize: '4em' }}>
                     Welcome to Baymax Inventories
                 </div>
             </div>
             <div>
-                <div class="backgroundImageDiv" style={{ backgroundImage: `url(${corousal2})` , fontSize: '4em' , color: 'white'}}>
+                <div className="backgroundImageDiv" style={{ backgroundImage: `url(${corousal2})` , fontSize: '4em' , color: 'white'}}>
                     Inventories made simple
                 </div>
             </div>
             <div>
-                <div class="backgroundImageDiv" style={{ backgroundImage: `url(${corousal3})`, fontSize: '4em'  }}>
+                <div className="backgroundImageDiv" style={{ backgroundImage: `url(${corousal3})`, fontSize: '4em'  }}>
                    Keep track of timelines
                 </div>
             </div>
             <div>
-                <div class="backgroundImageDiv" style={{ backgroundImage: `url(${corousal4})` , fontSize: '4em' }}>
+                <div className="backgroundImageDiv" style={{ backgroundImage: `url(${corousal4})` , fontSize: '4em' }}>
                     No more paperwork
                 </div>
             </div>

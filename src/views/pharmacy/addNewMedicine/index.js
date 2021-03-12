@@ -272,13 +272,13 @@ const AddNewMedicine = ({ location, history }) => {
                             </Select>
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    {/* <Col span={12}>
                         <Form.Item name={['user', 'image']} label="Image">
                             <Upload name="logo" action="/upload.do" listType="picture">
                                 <Button icon={<UploadOutlined />}>Click to upload</Button>
                             </Upload>
                         </Form.Item>
-                    </Col>
+                    </Col> */}
                     <Col span={12}>
                         <Form.Item name={['user', 'stockQuantity']} label="Stock Quantity">
                             <InputNumber style={{ width: '100%' }} />
