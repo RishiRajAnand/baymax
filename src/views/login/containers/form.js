@@ -29,7 +29,7 @@ const LoginForm = (props) => {
   return (
     <>
       {/* <img style={{ width: "300px", marginBottom: '20px' }} src={logo} /> */}
-      <h1 style={{ width: "100%", fontFamily: 'Georgia, sans-serif', padding: "20px", marginBottom: '20px', textAlign: 'center', backgroundColor: '#001529', color: "white", fontSize: '32px' }}>Green Mart Inventory</h1>
+      <h1 style={{ width: "100%", fontFamily: 'Georgia, sans-serif', padding: "20px", marginBottom: '20px', textAlign: 'center', backgroundColor: '#001529', color: "white", fontSize: '32px' }}>Baymax Inventory</h1>
       <Form
         {...layout}
         name="basic"
