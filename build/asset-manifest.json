@@ -1,5 +1,6 @@
 {
   "files": {
+<<<<<<< HEAD
     "main.css": "/static/css/main.ef7b746f.chunk.css",
     "main.js": "/static/js/main.0938e7f1.chunk.js",
     "main.js.map": "/static/js/main.0938e7f1.chunk.js.map",
@@ -18,13 +19,39 @@
     "static/media/corousal2.jpg": "/static/media/corousal2.79453c34.jpg",
     "static/media/corousal3.jpg": "/static/media/corousal3.f5b70fd5.jpg",
     "static/media/corousal4.jpg": "/static/media/corousal4.7e7b53cf.jpg",
+=======
+    "main.css": "/static/css/main.ee82e8eb.chunk.css",
+    "main.js": "/static/js/main.32e50eaf.chunk.js",
+    "main.js.map": "/static/js/main.32e50eaf.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.8be7c7f3.js",
+    "runtime-main.js.map": "/static/js/runtime-main.8be7c7f3.js.map",
+    "static/css/2.471b51ca.chunk.css": "/static/css/2.471b51ca.chunk.css",
+    "static/js/2.ef6a1773.chunk.js": "/static/js/2.ef6a1773.chunk.js",
+    "static/js/2.ef6a1773.chunk.js.map": "/static/js/2.ef6a1773.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.864106f7dbc97d2bed898941b62c1a62.js": "/precache-manifest.864106f7dbc97d2bed898941b62c1a62.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/2.471b51ca.chunk.css.map": "/static/css/2.471b51ca.chunk.css.map",
+    "static/css/main.ee82e8eb.chunk.css.map": "/static/css/main.ee82e8eb.chunk.css.map",
+    "static/js/2.ef6a1773.chunk.js.LICENSE.txt": "/static/js/2.ef6a1773.chunk.js.LICENSE.txt",
+    "static/media/corousal11.jpg": "/static/media/corousal11.05e570b3.jpg",
+    "static/media/corousal22.jpg": "/static/media/corousal22.44b12027.jpg",
+    "static/media/corousal33.jpg": "/static/media/corousal33.c1868764.jpg",
+    "static/media/corousal44.jpg": "/static/media/corousal44.2328ea2a.jpg",
+>>>>>>> 148a22d (added branding in inventory)
     "static/media/logo.jpg": "/static/media/logo.e8f986ac.jpg"
   },
   "entrypoints": [
     "static/js/runtime-main.8be7c7f3.js",
     "static/css/2.471b51ca.chunk.css",
+<<<<<<< HEAD
     "static/js/2.b5b9e6f7.chunk.js",
     "static/css/main.ef7b746f.chunk.css",
     "static/js/main.0938e7f1.chunk.js"
+=======
+    "static/js/2.ef6a1773.chunk.js",
+    "static/css/main.ee82e8eb.chunk.css",
+    "static/js/main.32e50eaf.chunk.js"
+>>>>>>> 148a22d (added branding in inventory)
   ]
 }

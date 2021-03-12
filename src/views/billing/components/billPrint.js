@@ -7,6 +7,7 @@ export class BillPrint extends React.Component {
     render() {
         const itemList = this.props.itemList;
         const isGSTIncluded = this.props.isGSTIncluded;
+        const branddetails = this.props.branddetails;
         const billId = this.props.billId;
         const paymentMode = this.props.paymentMode;
         const patientId = this.props.patientId;
@@ -31,17 +32,20 @@ export class BillPrint extends React.Component {
             <>
                 <div id="wrapper" style={{ padding: '20px', marginTop: '30px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                     <div style={{ width: "100%" }}>
-                        <p style={{ float: 'right', marginLeft: '20px' }}>
-                            Reg No.- {hospitalDetails.regNo}
+                        <p style={{ float: 'right', marginLeft: '20px', display: (branddetails.contact ? "table-cell" : "none") }}>
+                            Reg No.- {branddetails.regNo}
                         </p>
 
                     </div>
                     <div>
                         <img style={{ width: "400px", margin: "0 auto" }} src={logo} />
-                        <div style={{ marginLeft: '20px', fontSize: '12px', fontWeight: 'bold' }}>
-                            <p>{hospitalDetails.address}</p>
-                            <p style={{ textAlign: 'center'}}>Contact: {hospitalDetails.contact}</p>
-                            <p style={{ textAlign: 'center'}}>GSTIN: {hospitalDetails.gstin}</p>
+                        {/* <div>
+                            <h2 style={{ fontSize: '2em', fontWeight: 'bold' }}>{branddetails.companyName}</h2>
+                        </div> */}
+                        <div style={{ fontSize: '12px', fontWeight: 'bold' }}>
+                            <p>{branddetails.companyAddress}</p>
+                            <p style={{ display: (branddetails.contact ? "block" : "none") }}>Contact: {branddetails.contact}</p>
+                            <p style={{ display: (branddetails.gstin ? "block" : "none") }} >GSTIN: {branddetails.gstin}</p>
                         </div>
                     </div>
                     <div style={{ width: '100%', height: '2px', background: 'grey', margin: '10px 0px' }}></div>

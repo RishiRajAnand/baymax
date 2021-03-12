@@ -13,6 +13,8 @@ import { getBillDetails } from './services';
 import ReturnItem from './components/returnItemModal';
 import { saveGenerateBill } from '../../state/billing/queries';
 import { SERVER_ERROR } from '../../utils/constantMessages';
+import { getBrandDetails } from '../../state/registration/queries';
+import hospitalDetails from '../../utils/constants';
 
 const EditableContext = React.createContext();
 const { Search } = Input;
@@ -129,7 +131,6 @@ const Billing = ({ location, history }) => {
     totalGST: 0
   };
   const printBillButton = <Col className="gutter-row" span={6}>
-
     <Button style={{ width: '90%' }} type="primary" onClick={handlePrint}>Print</Button>
   </Col>;
   let generateBillButton = <Col className="gutter-row" span={6}>
@@ -151,7 +152,7 @@ const Billing = ({ location, history }) => {
 
   const [finalCharges, setFinalCharges] = useState(defaultFinalCharges);
   const [data, setData] = useState([]);;
-
+  const [branddetails, setBrandDetails] = useState(hospitalDetails);
   let patientInfo = <div>
     <Search placeholder="Search by Patient Id" allowClear onSearch={patientSearch} style={{ width: '30%' }} />
     <PatientDetails searchType="patientId" patientDetails={patientDetails} />
@@ -217,7 +218,16 @@ const Billing = ({ location, history }) => {
     } else if (queryParams.context == 'edit') {
       onBillSearch(queryParams.billId, "billId");
     }
+    updateBrandDetails();
   }, []);
+
+  function updateBrandDetails() {
+    getBrandDetails().then(data => {
+      if (data && Array.isArray(data) && data.length > 0) {
+          setBrandDetails(data[0]);
+      }
+  });
+  }
   if (state == "billGenerated") {
     generateBillButton = "";
     printButton = printBillButton;
@@ -569,7 +579,7 @@ const Billing = ({ location, history }) => {
       New Patient <Switch onChange={onNewPatientSwitchChange} /> <br /> <br />
       {patientInfo}
       <div style={{ display: 'none' }}>
-        <BillPrint ref={componentRef} itemList={data} paymentMode={paymentMode} isGSTIncluded={isGSTIncluded} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} billDate={billDetails.createdAt} patientId={patientDetails.patientId} />
+        <BillPrint ref={componentRef} branddetails={branddetails} itemList={data} paymentMode={paymentMode} isGSTIncluded={isGSTIncluded} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} billDate={billDetails.createdAt} patientId={patientDetails.patientId} />
       </div>
       <Divider>Bill Details</Divider>
       <Row gutter={24}>

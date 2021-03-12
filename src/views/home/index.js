@@ -49,6 +49,7 @@ const Home = ({ location, history, match }) => {
 
   useEffect(() => {
     // setRoutes(getRoutes([RECEPTION, DOCTOR, ADMIN, PHARMACY, UPCOMING]));
+    console.log("saaaare roles", auth.roles);
     setRoutes(getRoutes([...auth.roles]));
   }, []);
 

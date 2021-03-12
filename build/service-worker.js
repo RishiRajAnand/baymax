@@ -14,7 +14,11 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
+<<<<<<< HEAD
   "/precache-manifest.e177c7aa01f6c2c53fa770e0de4be3eb.js"
+=======
+  "/precache-manifest.864106f7dbc97d2bed898941b62c1a62.js"
+>>>>>>> 148a22d (added branding in inventory)
 );
 
 self.addEventListener('message', (event) => {
