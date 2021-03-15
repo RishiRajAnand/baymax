@@ -59,7 +59,7 @@ const AddNewMedicine = ({ location, history }) => {
                 triggerValue: Number.parseFloat(medicineDetail.triggerValue),
                 image: medicineDetail.image,
                 salePrice: Number.parseFloat(medicineDetail.salePrice),
-                supplierPrice: medicineDetail.suppliersPrice,
+                supplierPrice: medicineDetail.supplierPrice,
                 tax: medicineDetail.tax,
                 supplierName: medicineDetail.supplierName,
                 availability: medicineDetail.availability,
@@ -88,6 +88,7 @@ const AddNewMedicine = ({ location, history }) => {
             triggerValue: form.triggerValue,
             image: form.image,
             salePrice: form.salePrice,
+            supplierPrice: form.supplierPrice,
             availability: form.availability,
             stockQuantity: form.stockQuantity
         };
@@ -149,6 +150,7 @@ const AddNewMedicine = ({ location, history }) => {
                 triggerValue: 0,
                 image: null,
                 salePrice: 0,
+                supplierPrice: 0,
                 availability: "In stock",
                 stockQuantity: 0
             }
@@ -242,6 +244,18 @@ const AddNewMedicine = ({ location, history }) => {
                         </Form.Item>
                     </Col>
                     <Col span={12}>
+                        <Form.Item name={['user', 'image']} label="Image">
+                            <Upload name="logo" listType="picture">
+                                <Button icon={<UploadOutlined />}>Click to upload</Button>
+                            </Upload>
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name={['user', 'stockQuantity']} label="Stock Quantity">
+                            <InputNumber style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
                         <Form.Item name={['user', 'unit']} label="Unit">
                             <Select
                                 showSearch
@@ -268,6 +282,11 @@ const AddNewMedicine = ({ location, history }) => {
                     </Col>
                     <Col span={12}>
                         <Form.Item name={['user', 'salePrice']} label="Sale price per unit" rules={[{ required: true }]}>
+                            <InputNumber style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name={['user', 'supplierPrice']} label="MRP per unit">
                             <InputNumber style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>

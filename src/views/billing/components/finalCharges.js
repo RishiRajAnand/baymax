@@ -16,7 +16,7 @@ const FinalCharges = (props) => {
     <Form name="final_charges" form={form}>
       <Row gutter={24}>
         <Col span={8} key={1}>
-          <Form.Item label="Total Amount">
+          <Form.Item label="Total Amount (&#x20B9;)">
             <span className="ant-form-text">{props.finalCharges.totalAmount}</span>
           </Form.Item>
         </Col>
@@ -33,7 +33,7 @@ const FinalCharges = (props) => {
           </Form.Item>
         </Col>
         <Col span={8} key={3}>
-          <Form.Item label="Total GST">
+          <Form.Item label="Total GST (&#x20B9;)">
             <span className="ant-form-text">{props.finalCharges.totalGST}</span>
           </Form.Item>
         </Col>

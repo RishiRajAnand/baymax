@@ -30,9 +30,9 @@ export class BillPrint extends React.Component {
 
         return (
             <>
-                <div id="wrapper" style={{ padding: '20px', marginTop: '30px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <div id="wrapper" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                     <div style={{ width: "100%" }}>
-                        <p style={{ float: 'right', marginLeft: '20px', display: (branddetails.contact ? "table-cell" : "none") }}>
+                        <p style={{ float: 'right', marginLeft: '20px', display: (branddetails.contact ? "block" : "none") }}>
                             Reg No.- {branddetails.regNo}
                         </p>
 
@@ -45,6 +45,8 @@ export class BillPrint extends React.Component {
                         <div style={{ fontSize: '12px', fontWeight: 'bold' }}>
                             <p>{branddetails.companyAddress}</p>
                             <p style={{ display: (branddetails.contact ? "block" : "none") }}>Contact: {branddetails.contact}</p>
+                            <p style={{ display: (branddetails.website ? "block" : "none") }}>Website: {branddetails.website}</p>
+                            <p style={{ display: (branddetails.email ? "block" : "none") }}>Email: {branddetails.email}</p>
                             <p style={{ display: (branddetails.gstin ? "block" : "none") }} >GSTIN: {branddetails.gstin}</p>
                         </div>
                     </div>
@@ -83,15 +85,15 @@ export class BillPrint extends React.Component {
                                 <th>S.No</th>
                                 <th>Item Name</th>
                                 <th>Quantity</th>
-                                <th>Amount</th>
-                                <th style={{ display: (isGSTIncluded ? "table-cell" : "none") }} >GST(CGST + SGST)</th>
+                                <th>Amount (&#x20B9;)</th>
+                                <th style={{ display: (isGSTIncluded ? "table-cell" : "none") }} >GST(CGST + SGST) (&#x20B9;)</th>
                                 <th>Discount(%)</th>
-                                <th>Total</th>
+                                <th>Total (&#x20B9;)</th>
                             </tr>
                             {itemArray}
                             <tr>
                                 <td colSpan={(isGSTIncluded ? "5" : "4")} ></td>
-                                <td>Total</td>
+                                <td>Total (&#x20B9;)</td>
                                 <td>{finalCharges.totalAmount}</td>
                             </tr>
                             <tr>
@@ -101,7 +103,7 @@ export class BillPrint extends React.Component {
                             </tr>
                             <tr>
                                 <td style={{ display: (isGSTIncluded ? "table-cell" : "none") }} colSpan="5"></td>
-                                <td style={{ display: (isGSTIncluded ? "table-cell" : "none") }}>Tax</td>
+                                <td style={{ display: (isGSTIncluded ? "table-cell" : "none") }}>Tax (&#x20B9;)</td>
                                 <td style={{ display: (isGSTIncluded ? "table-cell" : "none") }}>{finalCharges.totalGST}</td>
                             </tr>
                         </tbody>

@@ -75,7 +75,7 @@ const BillSearch = ({ history }) => {
         content: () => componentRef.current,
     });
     useEffect(() => {
-        // 
+        onBillSearch('', 'patientId')
     }, []);
 
     if (searchCriteria.searchFilter == "patientId") {
