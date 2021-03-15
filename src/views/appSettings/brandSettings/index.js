@@ -34,6 +34,8 @@ const BrandSettings = (props) => {
             email: values.email,
             gstin: values.gstin,
             regNo: values.regNo,
+            email: values.email,
+            website: values.website,
             contact: values.contactNo,
         };
 
@@ -63,6 +65,12 @@ const BrandSettings = (props) => {
                 </Form.Item>
                 <Form.Item name="companyaddress" label="Company's address">
                     <Input placeholder="Company's address" />
+                </Form.Item>
+                <Form.Item name="email" label="Company's email">
+                    <Input placeholder="Company's email" />
+                </Form.Item>
+                <Form.Item name="website" label="Company's website">
+                    <Input placeholder="Company's website" />
                 </Form.Item>
                 <Form.Item name="gstin" label="Company's GSTIN">
                     <Input placeholder="Company's GSTIN" />
