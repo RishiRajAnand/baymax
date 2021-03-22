@@ -65,12 +65,14 @@ const AddItem = (props) => {
             name: value.user.name,
             quantity: value.user.quantity,
             itemType: selected,
-            amount: value.user.amount
+            amount: value.user.amount,
+            barcodeNum: ''
         }
         if (selected == "medicine") {
             const medicinedetail = medicineMap.get(value.user.name);
             obj["amount"] = medicinedetail.salePrice;
             obj["itemId"] = medicinedetail.medicineId;
+            obj.barcodeNum = medicinedetail.barcodeNum;
 
         } else if (selected == "test") {
             const testdetail = testMap.get(value.user.name);

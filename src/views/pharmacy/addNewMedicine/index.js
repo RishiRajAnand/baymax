@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { PlusOutlined, OrderedListOutlined, UploadOutlined } from '@ant-design/icons';
-import { Form, Input, Row, Col, Divider, InputNumber, Button, Upload, Select, notification, DatePicker } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
+import { PlusOutlined, OrderedListOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';
+import { useReactToPrint } from 'react-to-print';
+import { Form, Input, Row, Col, Divider, InputNumber, Modal, Button, Card, Upload, Select, notification, DatePicker } from 'antd';
 import { medicineDistributionUnits } from './utils';
 import queryString from 'query-string';
 import useSavePharmacyMedicine from '../../../state/pharmacy/hooks/useSavePharmacyMedicine';
 import useGetPharmacyMedicineDetail from '../../../state/pharmacy/hooks/useGetMedicinedetail';
 import { setNestedObjectValues } from 'formik';
-import { saveItemCategory, getCategoriesList, savePharmacyMedicine, getItemUnitsList, saveItemUnit } from '../../../state/pharmacy/queries';
+import { saveItemCategory, getCategoriesList, savePharmacyMedicine, getItemUnitsList, saveItemUnit, getPharmacyMedicineDetail } from '../../../state/pharmacy/queries';
+import { BarcodePrint } from './components/barcodePrint';
+import BarcodeCustomize from './components/barcodeCustomize';
 const { Option } = Select;
 const { TextArea } = Input;
 const layout = {
@@ -32,43 +35,69 @@ const validateMessages = {
 // const medicineUnits = medicineDistributionUnits.map(medicineDistributionUnit => <Option key={medicineDistributionUnit}>{medicineDistributionUnit}</Option>);
 const AddNewMedicine = ({ location, history }) => {
     let index = 0;
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+    });
     const [form] = Form.useForm();
+    const [isBarcodeModalVisible, setIsBarcodeModalVisible] = useState(false);
     const [name, setName] = useState("");
+    const [mode, setMode] = useState("");
     const [newItemUnit, setNewItemUnit] = useState("");
     const [items, setItems] = useState([]);
     const [itemUnits, setItemUnits] = useState([]);
     const [medicineDetail, setRequest1] = useGetPharmacyMedicineDetail();
+    const [barcodeDetails, setBarcodeDetails] = useState({});
     const queryParams = queryString.parse(location.search);
     useEffect(() => {
-        if (queryParams.mode == "edit" && queryParams.medicineId != null) {
-            setRequest1(queryParams.medicineId);
+        if (queryParams.mode == "preview" && queryParams.medicineId != null) {
+            // setRequest1(queryParams.medicineId);
+            setMedicineDetails(queryParams.medicineId);
+            setMode("preview");
         }
         intialiseCategories();
         intialiseItemUnits();
     }, []);
 
-    if (medicineDetail != null && queryParams.mode == "edit") {
-        form.setFieldsValue({
-            user: {
-                medicineId: medicineDetail.medicineId,
-                medicineName: medicineDetail.medicineName,
-                genericName: medicineDetail.genericName,
-                boxSize: Number.parseInt(medicineDetail.boxSize),
-                expDate: medicineDetail.expiryDate,
-                medicineShelf: medicineDetail.medicineShelf,
-                details: medicineDetail.details,
-                category: medicineDetail.category,
-                unit: medicineDetail.unit,
-                triggerValue: Number.parseFloat(medicineDetail.triggerValue),
-                image: medicineDetail.image,
-                salePrice: Number.parseFloat(medicineDetail.salePrice),
-                supplierPrice: medicineDetail.supplierPrice,
-                tax: medicineDetail.tax,
-                supplierName: medicineDetail.supplierName,
-                availability: medicineDetail.availability,
-                stockQuantity: medicineDetail.stockQuantity,
+    function setMedicineDetails(medicineId) {
+        getPharmacyMedicineDetail(medicineId).then(medicineDetail => {
+            if (medicineDetail != null) {
+                form.setFieldsValue({
+                    user: {
+                        medicineId: medicineDetail.medicineId,
+                        medicineName: medicineDetail.medicineName,
+                        genericName: medicineDetail.genericName,
+                        boxSize: Number.parseInt(medicineDetail.boxSize),
+                        expDate: medicineDetail.expiryDate,
+                        medicineShelf: medicineDetail.medicineShelf,
+                        details: medicineDetail.details,
+                        category: medicineDetail.category,
+                        unit: medicineDetail.unit,
+                        triggerValue: Number.parseFloat(medicineDetail.triggerValue),
+                        image: medicineDetail.image,
+                        salePrice: Number.parseFloat(medicineDetail.salePrice),
+                        supplierPrice: medicineDetail.supplierPrice,
+                        tax: medicineDetail.tax,
+                        supplierName: medicineDetail.supplierName,
+                        availability: medicineDetail.availability,
+                        stockQuantity: medicineDetail.stockQuantity,
+                        barcodeNum: medicineDetail.barcodeNum
+                    }
+                });
+                setBarcodeDetails({
+                    barcode: medicineDetail.barcode,
+                    barcodeNum: medicineDetail.barcodeNum,
+                    productName: medicineDetail.medicineName,
+                    productPrice: Number.parseFloat(medicineDetail.salePrice),
+                });
             }
-        });
+        }).catch(err => {
+            notification["error"]({
+                message: 'Error',
+                description: `Error while fetching details`,
+                duration: 3
+            });
+        })
     }
 
     function intialiseCategories() {
@@ -98,12 +127,14 @@ const AddNewMedicine = ({ location, history }) => {
             triggerValue: form.triggerValue,
             image: form.image,
             salePrice: form.salePrice,
+            barcode: barcodeDetails.barcode,
+            barcodeNum: barcodeDetails.barcodeNum,
             supplierPrice: form.supplierPrice,
             availability: form.availability,
             stockQuantity: form.stockQuantity
         };
 
-        if (queryParams.mode == "edit" && queryParams.medicineId != null) {
+        if (mode == "edit" && queryParams.medicineId != null) {
             body["medicineId"] = queryParams.medicineId;
         }
 
@@ -113,7 +144,19 @@ const AddNewMedicine = ({ location, history }) => {
                 description: `Item ${form.medicineName} ${queryParams.mode == 'edit' ? 'edited' : 'added'} successfully`,
                 duration: 3
             });
-            clearForm();
+            setMode("preview");
+            form.setFieldsValue({
+                user: {
+                    barcodeNum: data.BarcodeNumber
+                }
+            });
+            setBarcodeDetails({
+                barcode: data.BarcodeImage,
+                barcodeNum: data.BarcodeNumber,
+                productName: form.medicineName,
+                productPrice: form.salePrice,
+            });
+            // clearForm();
         }).catch(err => {
             notification["error"]({
                 message: 'ERROR',
@@ -183,6 +226,7 @@ const AddNewMedicine = ({ location, history }) => {
                 details: "",
                 category: "",
                 unit: "",
+                barcodeNum: "",
                 triggerValue: 0,
                 image: null,
                 salePrice: 0,
@@ -192,15 +236,33 @@ const AddNewMedicine = ({ location, history }) => {
             }
         });
     }
+
+    const handleOk = () => {
+        setIsBarcodeModalVisible(false);
+    };
+
+    const handleCancel = () => {
+        setIsBarcodeModalVisible(false);
+    };
     return (
         <>
-            <Button onClick={() => {
-                history.push({ pathname: '/home/manageSuppliers' });
-            }} type="dashed" icon={<PlusOutlined />}>Add Supplier</Button>
-            <Button type="dashed" onClick={() => {
-                history.push({ pathname: '/home/manageMedicines' });
-            }} style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Manage Inventory</Button>
-            <Button type="dashed" style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Import Bulk Items</Button>
+            <Row gutter={24}>
+                <Col span={18}>
+                    <Button onClick={() => {
+                        history.push({ pathname: '/home/manageSuppliers' });
+                    }} type="dashed" icon={<PlusOutlined />}>Add Supplier</Button>
+                    <Button type="dashed" onClick={() => {
+                        history.push({ pathname: '/home/manageMedicines' });
+                    }} style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Manage Inventory</Button>
+                    <Button type="dashed" style={{ marginLeft: '15px' }} icon={<OrderedListOutlined />}>Import Bulk Items</Button>
+                </Col>
+                <Col span={4}>
+                    <Button onClick={() => {
+                        setMode("edit");
+                    }} type="dashed" icon={<EditOutlined />}>Edit</Button>
+                </Col>
+            </Row>
+
             <br /><br /><br />
             <Form form={form} {...layout} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
                 <Row gutter={24}>
@@ -209,22 +271,28 @@ const AddNewMedicine = ({ location, history }) => {
                             <Select
                                 placeholder="Status"
                                 allowClear
+                                disabled={mode == "preview"}
                             >
                                 <Option value="In stock">In Stock</Option>
                                 <Option value="Out of stock">Out Of Stock</Option>
                             </Select>
                         </Form.Item>
                     </Col>
+                    <Col span={12}>
+                        <Form.Item name={['user', 'barcodeNum']} label="Barcode No.">
+                            <Input disabled />
+                        </Form.Item>
+                    </Col>
                 </Row>
                 <Row gutter={24}>
                     <Col span={12}>
                         <Form.Item name={['user', 'medicineName']} label="Item Name" rules={[{ required: true }]}>
-                            <Input />
+                            <Input disabled={mode == "preview"} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
                         <Form.Item name={['user', 'genericName']} label="Local Name">
-                            <Input />
+                            <Input disabled={mode == "preview"} />
                         </Form.Item>
                     </Col>
                     {/* <Col span={12}>
@@ -244,7 +312,7 @@ const AddNewMedicine = ({ location, history }) => {
                     </Col> */}
                     <Col span={12}>
                         <Form.Item name={['user', 'details']} label="Details">
-                            <TextArea rows={2} />
+                            <TextArea rows={2} disabled={mode == "preview"} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
@@ -252,6 +320,7 @@ const AddNewMedicine = ({ location, history }) => {
                             <Select
                                 style={{ width: '100%' }}
                                 placeholder="Select category"
+                                disabled={mode == "preview"}
                                 dropdownRender={menu => (
                                     <div>
                                         {menu}
@@ -283,12 +352,13 @@ const AddNewMedicine = ({ location, history }) => {
                     </Col>
                     <Col span={12}>
                         <Form.Item name={['user', 'stockQuantity']} label="Stock Quantity">
-                            <InputNumber style={{ width: '100%' }} />
+                            <InputNumber style={{ width: '100%' }} disabled={mode == "preview"} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
                         <Form.Item name={['user', 'unit']} label="Unit">
                             <Select
+                                disabled={mode == "preview"}
                                 style={{ width: '100%' }}
                                 placeholder="Select Item Unit"
                                 dropdownRender={menu => (
@@ -315,30 +385,49 @@ const AddNewMedicine = ({ location, history }) => {
                     </Col>
                     <Col span={12}>
                         <Form.Item name={['user', 'triggerValue']} label="Reorder value" rules={[{ type: 'number', min: 0, max: 5000 }]}>
-                            <InputNumber style={{ width: '100%' }} />
+                            <InputNumber style={{ width: '100%' }} disabled={mode == "preview"} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
                         <Form.Item name={['user', 'salePrice']} label="Sale price per unit" rules={[{ required: true }]}>
-                            <InputNumber style={{ width: '100%' }} />
+                            <InputNumber style={{ width: '100%' }} disabled={mode == "preview"} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
                         <Form.Item name={['user', 'supplierPrice']} label="MRP per unit">
-                            <InputNumber style={{ width: '100%' }} />
+                            <InputNumber style={{ width: '100%' }} disabled={mode == "preview"} />
                         </Form.Item>
                     </Col>
                 </Row>
-                <Row>
-                    <Col span={24} style={{ textAlign: 'right' }}>
+                <Divider></Divider>
+                <Row gutter={24}>
+                    <Col span={4}>
+                    </Col>
+                    <Col span={8}>
+                        <Card style={{ display: (barcodeDetails.barcode != null ? "block" : "none") }}
+                            title="Barcode Image"
+                            extra={
+                                <span>
+                                    {/* <a onClick={() => { setIsBarcodeModalVisible(true); }} >Customize</a> | */}
+                                    <a onClick={handlePrint} >Print</a>
+                                </span>
+                            }>
+                            {/* <p>Card content</p> */}
+                            <BarcodePrint ref={componentRef} barcodeDetails={barcodeDetails} />
+                        </Card>
+                    </Col>
+                    <Col span={10}>
                         <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 10 }}>
-                            <Button type="primary" htmlType="submit">
-                                Save and Add another
+                            <Button type="primary" htmlType="submit" disabled={mode == "preview"}>
+                                Save
                             </Button>
                         </Form.Item>
                     </Col>
                 </Row>
             </Form>
+            <Modal title="Barcode Settings" visible={isBarcodeModalVisible}>
+                <BarcodeCustomize />
+            </Modal>
         </>
     );
 };

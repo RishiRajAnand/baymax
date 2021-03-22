@@ -11,10 +11,12 @@ import useSaveGenerateBill from '../../state/billing/hooks/useGenerateBill';
 import { getPatientById } from '../../state/patientSearch/queries';
 import { getBillDetails } from './services';
 import ReturnItem from './components/returnItemModal';
-import { saveGenerateBill } from '../../state/billing/queries';
+import { getItemDetailsByBarcode, saveGenerateBill } from '../../state/billing/queries';
 import { SERVER_ERROR } from '../../utils/constantMessages';
 import { getBrandDetails } from '../../state/registration/queries';
 import hospitalDetails from '../../utils/constants';
+import { BarcodeOutlined } from '@ant-design/icons';
+
 
 const EditableContext = React.createContext();
 const { Search } = Input;
@@ -146,10 +148,11 @@ const Billing = ({ location, history }) => {
   const [newPatientSwitch, setNewPatientSwitch] = useState(true);
   const [generateBillStatus, setGenerateBillStatus] = useSaveGenerateBill();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isBarcodeModalVisible, setIsBarcodeModalVisible] = useState(false);
   const [isReturnModalVisible, setIsReturnModalVisible] = useState(false);
   const [billDetails, setBillDetails] = useState(defaultbillDetails);
   const [billDate, setBillDate] = useState(moment(new Date()));
-
+  const [barcodeErrorMessage, setBarcodeErrorMessage] = useState("");
   const [finalCharges, setFinalCharges] = useState(defaultFinalCharges);
   const [data, setData] = useState([]);;
   const [branddetails, setBrandDetails] = useState(hospitalDetails);
@@ -224,9 +227,9 @@ const Billing = ({ location, history }) => {
   function updateBrandDetails() {
     getBrandDetails().then(data => {
       if (data && Array.isArray(data) && data.length > 0) {
-          setBrandDetails(data[0]);
+        setBrandDetails(data[0]);
       }
-  });
+    });
   }
   if (state == "billGenerated") {
     generateBillButton = "";
@@ -334,6 +337,7 @@ const Billing = ({ location, history }) => {
     const newData = {
       key: Math.random(),
       name: itemFormValue.name,
+      barcodeNum: itemFormValue.barcodeNum,
       itemId: itemFormValue.itemId,
       quantity: itemFormValue.quantity,
       amount: itemFormValue.amount,
@@ -497,6 +501,10 @@ const Billing = ({ location, history }) => {
       editable: "true"
     },
     {
+      title: 'Barcode No.',
+      dataIndex: 'barcodeNum'
+    },
+    {
       title: 'Quantity',
       dataIndex: 'quantity',
       editable: "true",
@@ -567,6 +575,44 @@ const Billing = ({ location, history }) => {
       }),
     };
   });
+  const suffix = (
+    <BarcodeOutlined
+      style={{
+        fontSize: 24,
+        color: '#1890ff',
+      }}
+    />
+  );
+
+  const onSearch = value => {
+    OnBarcodeInputChange({
+      target: {
+        value: value
+      }
+    })
+  };
+  const OnBarcodeInputChange = e => {
+    const barcodeNum = e.target.value;
+    if (barcodeNum.length >= 13) {
+      getItemDetailsByBarcode(barcodeNum).then(data => {
+        if (data) {
+          const itemData = {
+            name: data.medicineName,
+            itemId: data.medicineId,
+            barcodeNum: data.barcodeNum,
+            quantity: 1,
+            amount: data.salePrice,
+            itemType: "medicine"
+          };
+          onItemAdded(itemData);
+          setBarcodeErrorMessage("");
+        } else {
+          setBarcodeErrorMessage("Unable to fetch item details for barcode " + barcodeNum);
+        }
+
+      }).catch(err => { setBarcodeErrorMessage("Unable to fetch item details for barcode " + barcodeNum); })
+    }
+  };
 
   return (
     <>
@@ -575,6 +621,18 @@ const Billing = ({ location, history }) => {
       </Modal>
       <Modal title="Return Item" visible={isReturnModalVisible} footer={null} onOk={submitReturn} onCancel={cancelReturnModal}>
         <ReturnItem rowsData={data} patientDetails={patientDetails} onItemAdded={onItemAdded} onItemsReturned={onItemsReturned} isModalVisible={setIsReturnModalVisible} />
+      </Modal>
+      <Modal title="Add Barcode" visible={isBarcodeModalVisible} onCancel={() => { setIsBarcodeModalVisible(false); }} footer={null}>
+        <Search
+          placeholder="Enter or fetch by barcode"
+          enterButton="Search"
+          autoFocus={true}
+          size="large"
+          suffix={suffix}
+          onSearch={onSearch}
+          onChange={OnBarcodeInputChange}
+        />
+        <p style={{ color: 'red' }}>{barcodeErrorMessage}</p>
       </Modal>
       {/* New Patient <Switch onChange={onNewPatientSwitchChange} /> <br /> <br /> */}
       {patientInfo}
@@ -597,15 +655,24 @@ const Billing = ({ location, history }) => {
           <Checkbox checked={isGSTIncluded} onChange={onGSTIncludedChange}>Include GST</Checkbox>
         </Col>
       </Row>
-
+      <br />
 
       <Button
         onClick={showModal}
         type="primary"
         style={{
           marginBottom: 16,
+          marginRight: 20,
           display: (queryParams.context == "edit" ? "none" : "")
         }}>Add Item
+        </Button>
+      <Button
+        onClick={() => { setIsBarcodeModalVisible(true); }}
+        type="primary"
+        style={{
+          marginBottom: 16,
+          display: (queryParams.context == "edit" ? "none" : "")
+        }}>Add by barcode
         </Button>
       <Button
         onClick={showReturnItemModal}

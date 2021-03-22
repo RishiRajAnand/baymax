@@ -33,6 +33,7 @@ const ManageMedicines = ({ location, history }) => {
             tempData.push({
                 key: index,
                 name: medicine.medicineName,
+                barcodeNum: medicine.barcodeNum,
                 medicineId: medicine.medicineId,
                 category: medicine.category,
                 supplierPrice: medicine.supplierPrice,
@@ -99,6 +100,11 @@ const ManageMedicines = ({ location, history }) => {
             ),
         },
         {
+            title: 'Barcode No.',
+            dataIndex: 'barcodeNum',
+            key: 'barcodeNum'
+        },
+        {
             title: 'Category',
             dataIndex: 'category',
             key: 'category',
@@ -131,7 +137,7 @@ const ManageMedicines = ({ location, history }) => {
             title: 'Stock',
             dataIndex: 'availability',
             key: 'availability',
-            render: text => (text == 'In stock' ? <Tag color='green' key={text}>{text.toUpperCase()}</Tag> : <Tag color='red' key={text}>{text.toUpperCase()}</Tag>)
+            render: text => (text == 'In stock' ? <Tag color='green' key={text}>{(text ? text.toUpperCase(): null)}</Tag> : <Tag color='red' key={text}>{(text ? text.toUpperCase(): null)}</Tag>)
         },
         {
             title: 'Stock Quantity',
@@ -148,7 +154,7 @@ const ManageMedicines = ({ location, history }) => {
                     }}>Place Order</a>
                     {/* <a>Stock</a> */}
                     <a onClick={() => {
-                        history.push({ pathname: '/home/addNewMedicine', search: '?mode=edit' + '&medicineId=' + record.medicineId });
+                        history.push({ pathname: '/home/addNewMedicine', search: '?mode=preview' + '&medicineId=' + record.medicineId });
                     }}>Edit</a>
                     <a onClick={() => {
                         deleteMedicineRecord(record.medicineId);
