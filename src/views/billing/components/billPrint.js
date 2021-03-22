@@ -40,7 +40,8 @@ export class BillPrint extends React.Component {
                         <img style={{ width: "400px", margin: "0 auto" }} src={logo} />
                         <div style={{ marginLeft: '20px', fontSize: '12px', fontWeight: 'bold' }}>
                             <p>{hospitalDetails.address}</p>
-                            <p>Contact: {hospitalDetails.contact}</p>
+                            <p style={{ textAlign: 'center'}}>Contact: {hospitalDetails.contact}</p>
+                            <p style={{ textAlign: 'center'}}>GSTIN: {hospitalDetails.gstin}</p>
                         </div>
                     </div>
                     <div style={{ width: '100%', height: '2px', background: 'grey', margin: '10px 0px' }}></div>
