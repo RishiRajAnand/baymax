@@ -36,7 +36,7 @@ const BrandSettings = (props) => {
             regNo: values.regNo,
             email: values.email,
             website: values.website,
-            contact: values.contactNo, srAAAAA
+            contact: values.contactNo,
         };
 
         saveBrandDetails(body).then(data=> {
