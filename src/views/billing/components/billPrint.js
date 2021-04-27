@@ -42,7 +42,7 @@ export class BillPrint extends React.Component {
                         {/* <div>
                             <h2 style={{ fontSize: '2em', fontWeight: 'bold' }}>{branddetails.companyName}</h2>
                         </div> */}
-                        <div style={{ fontSize: '12px', fontWeight: 'bold' }}>
+                        <div style={{ fontSize: '12px', fontWeight: 'bold', textAlign: 'center' }}>
                             <p>{branddetails.companyAddress}</p>
                             <p style={{ display: (branddetails.contact ? "block" : "none") }}>Contact: {branddetails.contact}</p>
                             <p style={{ display: (branddetails.website ? "block" : "none") }}>Website: {branddetails.website}</p>
