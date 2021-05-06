@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, InputNumber, Radio, Divider, Descriptions, Select, Badge, Table, Row, Col, AutoComplete } from 'antd';
 import useGetPharmacyMedicines from '../../../state/pharmacy/hooks/useGetAllPharmacyMedicines';
 import useTestSearch from '../../../state/addMedicine/hooks/useSearchTest';
+import { getItemUnitsList } from '../../../state/pharmacy/queries';
 const { Option } = Select;
 
 const AddItem = (props) => {
@@ -22,12 +23,26 @@ const AddItem = (props) => {
 
     const [medicines, isLoading, setMedicineSearch] = useGetPharmacyMedicines();
     const [tests, isLoading1, setTestSearch] = useTestSearch();
+    const [itemUnits, setItemUnits] = useState([]);
     // const [options, isLoading, setMedicineSearch] = useGetPharmacyMedicines();
     useEffect(() => {
         setMedicineSearch();
         setFormdefaultValue();
+        intialiseItemUnits();
     }, []);
 
+    function intialiseItemUnits() {
+        getItemUnitsList().then(data => {
+            if (Array.isArray(data)) {
+                setItemUnits(data);
+                form.setFieldsValue({
+                    user: {
+                        unit: data[0].unitName
+                    }
+                });
+            }
+        });
+    }
 
     function setFormdefaultValue() {
         form.setFieldsValue({
@@ -64,6 +79,7 @@ const AddItem = (props) => {
             itemId: null,
             name: value.user.name,
             quantity: value.user.quantity,
+            unit: value.user.unit,
             itemType: selected,
             amount: value.user.amount,
             barcodeNum: ''
@@ -72,6 +88,7 @@ const AddItem = (props) => {
             const medicinedetail = medicineMap.get(value.user.name);
             obj["amount"] = medicinedetail.salePrice;
             obj["itemId"] = medicinedetail.medicineId;
+            obj["unit"] = medicinedetail.unit;
             obj.barcodeNum = medicinedetail.barcodeNum;
 
         } else if (selected == "test") {
@@ -95,6 +112,7 @@ const AddItem = (props) => {
                 form.setFieldsValue({
                     user: {
                         amount: medicinedetail.salePrice,
+                        unit: medicinedetail.unit
                     }
                 });
             }
@@ -128,6 +146,13 @@ const AddItem = (props) => {
             </Form.Item>
             <Form.Item name={['user', 'quantity']} label="Quantity" rules={[{ type: 'number' }]}>
                 <InputNumber />
+            </Form.Item>
+            <Form.Item name={['user', 'unit']} label="Unit" >
+                <Select placeholder="Unit">
+                    {itemUnits.map(item => (
+                        <Option key={item.unitName}>{item.unitName}</Option>
+                    ))}
+                </Select>
             </Form.Item>
             <Form.Item name={['user', 'amount']} label="Amount" rules={[{ type: 'number' }]}>
                 <InputNumber />

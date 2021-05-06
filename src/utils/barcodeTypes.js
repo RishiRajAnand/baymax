@@ -1,0 +1,4 @@
+export const FULL_BARCODE = "FULL_BARCODE";
+export const ONLY_QUANTITY = "ONLY_QUANTITY";
+export const NAME_AND_QUANTITY = "NAME_AND_QUANTITY";
+export const ONLY_NUMBER = "ONLY_NUMBER";

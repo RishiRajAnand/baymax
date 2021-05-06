@@ -170,7 +170,6 @@ const Billing = ({ location, history }) => {
     setIsReturnModalVisible(true);
   };
 
-
   const handleOk = () => {
     setIsModalVisible(false);
   };
@@ -303,6 +302,7 @@ const Billing = ({ location, history }) => {
               id: item.id,
               itemId: item.itemId,
               name: item.itemName,
+              unit: item.unit,
               type: item.purchaseType,
               billMapId: item.billMapId,
               quantity: item.quantity,
@@ -340,6 +340,7 @@ const Billing = ({ location, history }) => {
       barcodeNum: itemFormValue.barcodeNum,
       itemId: itemFormValue.itemId,
       quantity: itemFormValue.quantity,
+      unit: itemFormValue.unit,
       amount: itemFormValue.amount,
       type: itemFormValue.itemType,
       gst: 0,
@@ -411,6 +412,7 @@ const Billing = ({ location, history }) => {
         concessionPercentage: item.discount,
         gstPercentage: item.gst,
         mrp: item.amount,
+        unit: item.unit,
         concessionType: "discount",
         quantity: item.quantity,
         purchaseType: (item.type == "medicine" ? "pharmacy-purchase" : item.type)
@@ -509,6 +511,10 @@ const Billing = ({ location, history }) => {
       dataIndex: 'quantity',
       editable: "true",
       width: '10%',
+    },
+    {
+      title: 'Unit',
+      dataIndex: 'unit'
     },
     {
       title: 'Amount',

@@ -10,6 +10,7 @@ import { setNestedObjectValues } from 'formik';
 import { saveItemCategory, getCategoriesList, savePharmacyMedicine, getItemUnitsList, saveItemUnit, getPharmacyMedicineDetail } from '../../../state/pharmacy/queries';
 import { BarcodePrint } from './components/barcodePrint';
 import BarcodeCustomize from './components/barcodeCustomize';
+import { FULL_BARCODE } from '../../../utils/barcodeTypes';
 const { Option } = Select;
 const { TextArea } = Input;
 const layout = {
@@ -131,7 +132,8 @@ const AddNewMedicine = ({ location, history }) => {
             barcodeNum: barcodeDetails.barcodeNum,
             supplierPrice: form.supplierPrice,
             availability: form.availability,
-            stockQuantity: form.stockQuantity
+            stockQuantity: form.stockQuantity,
+            barcodeType: FULL_BARCODE
         };
 
         if (mode == "edit" && queryParams.medicineId != null) {
