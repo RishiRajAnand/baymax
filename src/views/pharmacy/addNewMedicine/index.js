@@ -133,13 +133,13 @@ const AddNewMedicine = ({ location, history }) => {
             supplierPrice: form.supplierPrice,
             availability: form.availability,
             stockQuantity: form.stockQuantity,
-            barcodeType: FULL_BARCODE
+            // barcodeType: FULL_BARCODE
         };
 
         if (mode == "edit" && queryParams.medicineId != null) {
             body["medicineId"] = queryParams.medicineId;
         }
-
+        console.log("bodyyyy", body);
         savePharmacyMedicine(body).then(data => {
             notification["success"]({
                 message: 'SUCCESS',
@@ -160,11 +160,11 @@ const AddNewMedicine = ({ location, history }) => {
             });
             // clearForm();
         }).catch(err => {
-            notification["error"]({
-                message: 'ERROR',
-                description: `Error while saving Item`,
-                duration: 3
-            });
+            // notification["error"]({
+            //     message: 'ERROR',
+            //     description: `Error while saving Item`,
+            //     duration: 3
+            // });
         });
     };
     function onNameChange(event) {

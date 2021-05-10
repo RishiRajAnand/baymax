@@ -38,7 +38,7 @@ export class BillPrint extends React.Component {
 
                     </div>
                     <div>
-                        {/* <img style={{ width: "400px", margin: "0 auto" }} src={logo} /> */}
+                        <img style={{ height: "50px", margin: "0 auto" }} src={branddetails.logo} />
                         <div>
                             <h2 style={{ fontSize: '2em', fontWeight: 'bold' }}>{branddetails.companyName}</h2>
                         </div>
@@ -81,7 +81,7 @@ export class BillPrint extends React.Component {
                                 <th>S.No</th>
                                 <th>Item Name</th>
                                 <th>Quantity</th>
-                                <th>Amount (&#x20B9;)</th>
+                                <th>Price/unit (&#x20B9;)</th>
                                 <th style={{ display: (isGSTIncluded ? "table-cell" : "none") }} >GST(CGST + SGST) (&#x20B9;)</th>
                                 <th>Discount(%)</th>
                                 <th>Total (&#x20B9;)</th>
@@ -109,6 +109,11 @@ export class BillPrint extends React.Component {
                         <div>Cashier Signature</div>
                         <div style={{ float: 'right' }}>Director Signature</div>
 
+                    </div>
+                    <div style={{ marginTop: '50px', width: '100%', padding: '20px' }}>
+                        <p style={{ textDecoration: "underline", fontWeight: "bold", marginBottom: "20px"}}>Terms and Conditions</p>
+                        <p>1. Goods once sold will not be returned or exchanged</p>
+                        <p>2. We are not responsible for any transit damage loss or leakage</p>
                     </div>
                 </div>
 

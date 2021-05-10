@@ -3,6 +3,7 @@ import { Form, Input, Button, InputNumber, Radio, Divider, Descriptions, Select,
 import useGetPharmacyMedicines from '../../../state/pharmacy/hooks/useGetAllPharmacyMedicines';
 import useTestSearch from '../../../state/addMedicine/hooks/useSearchTest';
 import { getItemUnitsList } from '../../../state/pharmacy/queries';
+import { convertUnit } from '../../../utils/unitConverter';
 const { Option } = Select;
 
 const AddItem = (props) => {
@@ -24,6 +25,8 @@ const AddItem = (props) => {
     const [medicines, isLoading, setMedicineSearch] = useGetPharmacyMedicines();
     const [tests, isLoading1, setTestSearch] = useTestSearch();
     const [itemUnits, setItemUnits] = useState([]);
+    const [amountLabel, setAmountLabel] = useState("Amount");
+
     // const [options, isLoading, setMedicineSearch] = useGetPharmacyMedicines();
     useEffect(() => {
         setMedicineSearch();
@@ -82,13 +85,23 @@ const AddItem = (props) => {
             unit: value.user.unit,
             itemType: selected,
             amount: value.user.amount,
-            barcodeNum: ''
+            barcodeNum: '',
+            actualUnit: ''
         }
         if (selected == "medicine") {
             const medicinedetail = medicineMap.get(value.user.name);
-            obj["amount"] = medicinedetail.salePrice;
+            const selectedUnit = value.user.unit;
+
+            if (medicinedetail.unit != selectedUnit) {
+                let convertedQuantity = convertUnit(selectedUnit, medicinedetail.unit);
+                console.log("converted quantity", convertedQuantity);
+                if (convertedQuantity != -100) {
+                    obj["amount"] = Number.parseFloat(convertedQuantity) *  medicinedetail.salePrice;
+                }
+            }
+            // obj["amount"] = medicinedetail.salePrice;
             obj["itemId"] = medicinedetail.medicineId;
-            obj["unit"] = medicinedetail.unit;
+            obj["actualUnit"] = medicinedetail.unit;
             obj.barcodeNum = medicinedetail.barcodeNum;
 
         } else if (selected == "test") {
@@ -115,6 +128,7 @@ const AddItem = (props) => {
                         unit: medicinedetail.unit
                     }
                 });
+                setAmountLabel("Amount per " + medicinedetail.unit);
             }
 
         } else if (selected == "test") {
@@ -154,8 +168,8 @@ const AddItem = (props) => {
                     ))}
                 </Select>
             </Form.Item>
-            <Form.Item name={['user', 'amount']} label="Amount" rules={[{ type: 'number' }]}>
-                <InputNumber />
+            <Form.Item name={['user', 'amount']} label={amountLabel} rules={[{ type: 'number' }]}>
+                <InputNumber disabled={(selected == "medicine")} />
             </Form.Item>
             <Form.Item name={['user', 'itemType']} label="Item type" >
                 <Select onSelect={onItemTypeSelect} defaultValue={selected} placeholder="Item type">

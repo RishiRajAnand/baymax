@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Menu } from 'antd';
-import { Form, Input, Button, Radio, InputNumber, notification } from 'antd';
+import { Form, Input, Upload, Button, Radio, InputNumber, notification } from 'antd';
 import { getBrandDetails, saveBrandDetails } from '../../../state/registration/queries';
+import { UploadOutlined } from '@ant-design/icons';
 const BrandSettings = (props) => {
     const [form] = Form.useForm();
     const [branddetails, setBrandDetails] = useState({});
+    const [logo, setLogo] = useState("");
     useEffect(() => {
         getBrandDetail();
     }, []);
@@ -19,14 +21,18 @@ const BrandSettings = (props) => {
                     regNo: data[0].regNo,
                     contactNo: data[0].contact,
                 });
+                if (data[0].logo) {
+                    setLogo(data[0].logo);
+                }
                 setBrandDetails(data[0]);
             }
         }).catch(err => {
 
         })
     }
-    const onFinish = (values) => {
+    async function onFinish(values) {
         console.log('Success:', values);
+        const image = await toBase64(values.logo.file.originFileObj);
         const body = {
             id: branddetails.id,
             companyName: values.companyname,
@@ -37,15 +43,16 @@ const BrandSettings = (props) => {
             email: values.email,
             website: values.website,
             contact: values.contactNo,
+            logo: image
         };
-
-        saveBrandDetails(body).then(data=> {
+        console.log("bhugat", await toBase64(values.logo.file.originFileObj));
+        saveBrandDetails(body).then(data => {
             notification["success"]({
                 message: 'SUCCESS',
                 description: `Brand details changed successfully`,
                 duration: 3
             });
-        }).catch(err=> {
+        }).catch(err => {
             notification["error"]({
                 message: 'ERROR',
                 description: `Error while saving Item`,
@@ -53,6 +60,12 @@ const BrandSettings = (props) => {
             });
         });
     };
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
     return (
         <>
             <Form
@@ -60,6 +73,15 @@ const BrandSettings = (props) => {
                 onFinish={onFinish}
                 form={form}
             >
+                <div style={{ width: '30%' }}>
+                    <img src={logo} style={{ width: '100%' }} />
+                </div>
+
+                <Form.Item name="logo" label="Logo">
+                    <Upload name="logo" listType="picture">
+                        <Button icon={<UploadOutlined />}>Click to upload</Button>
+                    </Upload>
+                </Form.Item>
                 <Form.Item name="companyname" label="Company's name">
                     <Input placeholder="Company's name to be printed in bills / receipts and certificates" />
                 </Form.Item>

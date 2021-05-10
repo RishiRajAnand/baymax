@@ -16,6 +16,7 @@ import { SERVER_ERROR } from '../../utils/constantMessages';
 import { getBrandDetails } from '../../state/registration/queries';
 import hospitalDetails from '../../utils/constants';
 import { BarcodeOutlined } from '@ant-design/icons';
+import { convertUnit } from '../../utils/unitConverter';
 
 
 const EditableContext = React.createContext();
@@ -266,12 +267,12 @@ const Billing = ({ location, history }) => {
     }
 
     dataList.forEach(data => {
-      const amount = Number.parseInt(data.amount) * Number.parseInt(data.quantity);
-      const discountedAmount = Number.parseInt(amount) - ((Number.parseInt(data.discount) / 100) * Number.parseInt(amount));
-      finalCharges.totalAmount += Number.parseInt(amount);
-      finalCharges.totalDiscount += Number.parseInt(data.discount);
+      const amount = Number.parseFloat(data.amount) * Number.parseFloat(data.quantity);
+      const discountedAmount = Number.parseFloat(amount) - ((Number.parseFloat(data.discount) / 100) * Number.parseFloat(amount));
+      finalCharges.totalAmount += Number.parseFloat(amount);
+      finalCharges.totalDiscount += Number.parseFloat(data.discount);
       finalCharges.discountedAmount += discountedAmount;
-      finalCharges.totalGST += Number.parseInt(data.gst);
+      finalCharges.totalGST += Number.parseFloat(data.gst);
     });
     return finalCharges;
   }
@@ -341,6 +342,7 @@ const Billing = ({ location, history }) => {
       itemId: itemFormValue.itemId,
       quantity: itemFormValue.quantity,
       unit: itemFormValue.unit,
+      actualUnit: itemFormValue.actualUnit,
       amount: itemFormValue.amount,
       type: itemFormValue.itemType,
       gst: 0,
@@ -403,6 +405,16 @@ const Billing = ({ location, history }) => {
       billDetailList: []
     };
     data.forEach(item => {
+
+      console.log("input", item.unit);
+      console.log("output", item.actualUnit);
+      let actualQuantity = item.quantity;
+      if (item.unit != item.actualUnit) {
+        let factor = convertUnit(item.unit, item.actualUnit);
+        if (factor != -100) {
+            actualQuantity = Number.parseFloat(factor) *  item.quantity;
+        }
+    }
       const billItem = {
         id: null,
         itemName: item.name,
@@ -413,6 +425,7 @@ const Billing = ({ location, history }) => {
         gstPercentage: item.gst,
         mrp: item.amount,
         unit: item.unit,
+        actualQuantity: actualQuantity,
         concessionType: "discount",
         quantity: item.quantity,
         purchaseType: (item.type == "medicine" ? "pharmacy-purchase" : item.type)
@@ -517,7 +530,7 @@ const Billing = ({ location, history }) => {
       dataIndex: 'unit'
     },
     {
-      title: 'Amount',
+      title: 'Price(per unit)',
       dataIndex: 'amount',
       editable: "true",
       sorter: {

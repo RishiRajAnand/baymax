@@ -1,4 +1,5 @@
 const hospitalDetails = {
+    logo: '',
     companyName: 'GreenMart',
     companyAddress: 'Buxar Baazar',
     contact: '+91-9798421824',
