@@ -298,6 +298,11 @@ const Billing = ({ location, history }) => {
         if (billDetails["billDetailList"]) {
 
           const tempData = billDetails["billDetailList"].map((item, index) => {
+            let pricePerActualUnit = item.mrp;
+            if (item.unit != item.actualUnit) {
+             const conversionfactor = convertUnit(item.actualUnit, item.unit);
+             pricePerActualUnit =  Number.parseFloat(conversionfactor)  * item.mrp;
+            }
             return {
               key: item.itemName + index,
               id: item.id,
@@ -308,9 +313,10 @@ const Billing = ({ location, history }) => {
               billMapId: item.billMapId,
               quantity: item.quantity,
               amount: item.mrp,
+              pricePerActualUnit : `${pricePerActualUnit} ${(item.actualUnit != '' ? 'per ' + item.actualUnit : '')}`,
               gst: 0,
               discount: item.concessionPercentage,
-              total: (Number(item.mrp) - ((Number(item.concessionPercentage) / 100) * Number(item.mrp))) * item.quantity,
+              total:((Number(item.mrp) - ((Number(item.concessionPercentage) / 100) * Number(item.mrp))) * item.quantity.toFixed(2))
             }
           });
 
@@ -335,6 +341,13 @@ const Billing = ({ location, history }) => {
   }
   function onItemAdded(itemFormValue) {
     console.log(itemFormValue);
+    let amount = itemFormValue.amount;
+    if (itemFormValue.actualUnit != itemFormValue.unit) {
+      let conversionfactor = convertUnit(itemFormValue.unit, itemFormValue.actualUnit);
+      if (conversionfactor != -100) {
+        amount = Number.parseFloat(conversionfactor) * itemFormValue.amount;
+      }
+    }
     const newData = {
       key: Math.random(),
       name: itemFormValue.name,
@@ -343,11 +356,12 @@ const Billing = ({ location, history }) => {
       quantity: itemFormValue.quantity,
       unit: itemFormValue.unit,
       actualUnit: itemFormValue.actualUnit,
-      amount: itemFormValue.amount,
+      amount: amount,
+      pricePerActualUnit: `${itemFormValue.amount} ${(itemFormValue.actualUnit != '' ? 'per ' + itemFormValue.actualUnit : '')}`,
       type: itemFormValue.itemType,
       gst: 0,
       discount: 0,
-      total: itemFormValue.quantity * itemFormValue.amount,
+      total: (itemFormValue.quantity * amount).toFixed(2),
     }
     const tempDataList = [...data, newData];
 
@@ -412,9 +426,9 @@ const Billing = ({ location, history }) => {
       if (item.unit != item.actualUnit) {
         let factor = convertUnit(item.unit, item.actualUnit);
         if (factor != -100) {
-            actualQuantity = Number.parseFloat(factor) *  item.quantity;
+          actualQuantity = Number.parseFloat(factor) * item.quantity;
         }
-    }
+      }
       const billItem = {
         id: null,
         itemName: item.name,
@@ -426,6 +440,7 @@ const Billing = ({ location, history }) => {
         mrp: item.amount,
         unit: item.unit,
         actualQuantity: actualQuantity,
+        actualUnit: item.actualUnit,
         concessionType: "discount",
         quantity: item.quantity,
         purchaseType: (item.type == "medicine" ? "pharmacy-purchase" : item.type)
@@ -531,8 +546,7 @@ const Billing = ({ location, history }) => {
     },
     {
       title: 'Price(per unit)',
-      dataIndex: 'amount',
-      editable: "true",
+      dataIndex: 'pricePerActualUnit',
       sorter: {
         compare: (a, b) => a.amount - b.amount,
         multiple: 3,
@@ -566,7 +580,7 @@ const Billing = ({ location, history }) => {
     }
   ];
   if (isGSTIncluded) {
-    columns.splice(3, 0, {
+    columns.splice(5, 0, {
       title: 'GST(CGST+SGST)',
       dataIndex: 'gst',
       editable: "true",

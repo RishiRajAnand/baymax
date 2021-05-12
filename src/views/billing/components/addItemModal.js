@@ -31,20 +31,23 @@ const AddItem = (props) => {
     useEffect(() => {
         setMedicineSearch();
         setFormdefaultValue();
-        intialiseItemUnits();
+        intialiseItemUnits().then(data=> clearForm);
     }, []);
-
     function intialiseItemUnits() {
-        getItemUnitsList().then(data => {
-            if (Array.isArray(data)) {
-                setItemUnits(data);
-                form.setFieldsValue({
-                    user: {
-                        unit: data[0].unitName
-                    }
-                });
-            }
+        return new Promise((resolve, reject)=> {
+            getItemUnitsList().then(data => {
+                if (Array.isArray(data)) {
+                    setItemUnits(data);
+                    form.setFieldsValue({
+                        user: {
+                            unit: data[0].unitName
+                        }
+                    });
+                    resolve(data);
+                }
+            });
         });
+
     }
 
     function setFormdefaultValue() {
@@ -86,19 +89,19 @@ const AddItem = (props) => {
             itemType: selected,
             amount: value.user.amount,
             barcodeNum: '',
-            actualUnit: ''
+            actualUnit: value.user.unit
         }
         if (selected == "medicine") {
             const medicinedetail = medicineMap.get(value.user.name);
             const selectedUnit = value.user.unit;
 
-            if (medicinedetail.unit != selectedUnit) {
-                let convertedQuantity = convertUnit(selectedUnit, medicinedetail.unit);
-                console.log("converted quantity", convertedQuantity);
-                if (convertedQuantity != -100) {
-                    obj["amount"] = Number.parseFloat(convertedQuantity) *  medicinedetail.salePrice;
-                }
-            }
+            // if (medicinedetail.unit != selectedUnit) {
+            //     let convertedQuantity = convertUnit(selectedUnit, medicinedetail.unit);
+            //     console.log("converted quantity", convertedQuantity);
+            //     if (convertedQuantity != -100) {
+            //         obj["amount"] = Number.parseFloat(convertedQuantity) *  medicinedetail.salePrice;
+            //     }
+            // }
             // obj["amount"] = medicinedetail.salePrice;
             obj["itemId"] = medicinedetail.medicineId;
             obj["actualUnit"] = medicinedetail.unit;
@@ -114,6 +117,8 @@ const AddItem = (props) => {
     }
     function onItemTypeSelect(value) {
         setSelected(value);
+        setAmountLabel("Amount");
+        clearForm();
         if (value == "test") {
             setTestSearch();
         }
@@ -141,6 +146,17 @@ const AddItem = (props) => {
                 });
             }
         }
+    }
+
+    function clearForm() {
+        form.setFieldsValue({
+            user: {
+                name : '',
+                quantity : 0,
+                unit : itemUnits[0].unitName,
+                amount : 0,
+            }
+        });
     }
     return (
         <Form form={form} {...layout} name="nest-messages" onFinish={onFinish} >

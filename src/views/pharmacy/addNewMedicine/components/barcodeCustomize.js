@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Modal, Button, Select, Form, Row, Col } from 'antd';
 const { Option } = Select;
 
-const BarcodeCustomize = () => {
+const BarcodeCustomize = (props) => {
+    const [form] = Form.useForm();
+    const defaultValue = ['productName', 'productPrice'];
     const onFinish = formData => {
-        console.log(formData);
+        props.onSave(formData);
     };
 
 
@@ -17,15 +19,15 @@ const BarcodeCustomize = () => {
     };
     return (
         <>
-            <Form {...layout} name="nest-messages" onFinish={onFinish}>
+            <Form {...layout} form={form}  name="nest-messages" onFinish={onFinish}>
                 <Row gutter={24}>
-                    <Col span={12}>
+                    <Col span={24}>
                         <Form.Item name={'includes'} label="Includes">
                             <Select
                                 mode="multiple"
                                 style={{ width: '100%' }}
                                 placeholder="Select includes"
-                                defaultValue={['productName']}
+                                defaultValue={defaultValue}
                                 onChange={handleChange}
                                 optionLabelProp="label"
                             >

@@ -42,6 +42,8 @@ const AddNewMedicine = ({ location, history }) => {
     });
     const [form] = Form.useForm();
     const [isBarcodeModalVisible, setIsBarcodeModalVisible] = useState(false);
+    const [ barcodeIncludes, setbarcodeIncludes] = useState(['productName', 'productPrice']);
+    
     const [name, setName] = useState("");
     const [mode, setMode] = useState("");
     const [newItemUnit, setNewItemUnit] = useState("");
@@ -89,7 +91,7 @@ const AddNewMedicine = ({ location, history }) => {
                     barcode: medicineDetail.barcode,
                     barcodeNum: medicineDetail.barcodeNum,
                     productName: medicineDetail.medicineName,
-                    productPrice: Number.parseFloat(medicineDetail.salePrice),
+                    productPrice: `${Number.parseFloat(medicineDetail.salePrice)} per ${medicineDetail.unit}`,
                 });
             }
         }).catch(err => {
@@ -238,14 +240,15 @@ const AddNewMedicine = ({ location, history }) => {
             }
         });
     }
-
-    const handleOk = () => {
+    function onSaveBarcodeSetting(form) {
+        console.log("formaaya", form);
+        setbarcodeIncludes(form.includes);
         setIsBarcodeModalVisible(false);
-    };
 
-    const handleCancel = () => {
+    }
+    function handleCancelBarcodeModal() {
         setIsBarcodeModalVisible(false);
-    };
+    }
     return (
         <>
             <Row gutter={24}>
@@ -410,12 +413,12 @@ const AddNewMedicine = ({ location, history }) => {
                             title="Barcode Image"
                             extra={
                                 <span>
-                                    {/* <a onClick={() => { setIsBarcodeModalVisible(true); }} >Customize</a> | */}
+                                    <a onClick={() => { setIsBarcodeModalVisible(true); }} >Customize</a> |
                                     <a onClick={handlePrint} >Print</a>
                                 </span>
                             }>
                             {/* <p>Card content</p> */}
-                            <BarcodePrint ref={componentRef} barcodeDetails={barcodeDetails} />
+                            <BarcodePrint ref={componentRef} barcodeDetails={barcodeDetails} includes={barcodeIncludes}/>
                         </Card>
                     </Col>
                     <Col span={10}>
@@ -427,8 +430,8 @@ const AddNewMedicine = ({ location, history }) => {
                     </Col>
                 </Row>
             </Form>
-            <Modal title="Barcode Settings" visible={isBarcodeModalVisible}>
-                <BarcodeCustomize />
+            <Modal title="Barcode Settings" footer={null} visible={isBarcodeModalVisible} onCancel={handleCancelBarcodeModal}>
+                <BarcodeCustomize onSave={onSaveBarcodeSetting} />
             </Modal>
         </>
     );

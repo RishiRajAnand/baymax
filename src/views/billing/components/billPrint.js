@@ -21,7 +21,7 @@ export class BillPrint extends React.Component {
                     <td>{index + 1} .</td>
                     <td>{item.name}</td>
                     <td>{item.quantity} {item.unit}</td>
-                    <td>{item.amount}</td>
+                    <td>{item.pricePerActualUnit}</td>
                     <td style={{ display: (isGSTIncluded ? "table-cell" : "none") }}>{item.gst}</td>
                     <td>{item.discount}</td>
                     <td>{item.total}</td>
