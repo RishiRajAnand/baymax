@@ -14,15 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-<<<<<<< HEAD
-<<<<<<< HEAD
-  "/precache-manifest.e177c7aa01f6c2c53fa770e0de4be3eb.js"
-=======
-  "/precache-manifest.864106f7dbc97d2bed898941b62c1a62.js"
->>>>>>> 148a22d (added branding in inventory)
-=======
-  "/precache-manifest.05dfc7ae0a85a5d56cbc447606639b3b.js"
->>>>>>> 891432d (added website, ruppess in oinventory)
+  "/precache-manifest.e6ac92bdc0e298b87988fdf5bacba311.js"
 );
 
 self.addEventListener('message', (event) => {

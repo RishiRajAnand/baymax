@@ -122,7 +122,8 @@ const Billing = ({ location, history }) => {
 
   const defaultbillDetails = {
     billId: '',
-    createdAt: (new Date()).toDateString() + ' ' + (new Date()).toLocaleTimeString()
+    createdAt: (new Date()).toDateString() + ' ' + (new Date()).toLocaleTimeString(),
+    dischargeDate: (new Date()).toDateString() + ' ' + (new Date()).toLocaleTimeString(),
   };
 
   const defaultFinalCharges = {
@@ -141,6 +142,8 @@ const Billing = ({ location, history }) => {
   const [state, setState] = useState("initial");
   const [paymentMode, setPaymentMode] = useState("Cash");
   const [isGSTIncluded, setIsGSTIncluded] = useState(true);
+  const [isDischargeBill, setIsDischargeBill] = useState(false);
+
   // const [billResponse, isLoading, setBillSearch] = useBillSearch();
   const [patientDetails, setPatientDetails] = useState({});
   const [newPatientSwitch, setNewPatientSwitch] = useState(false);
@@ -149,6 +152,7 @@ const Billing = ({ location, history }) => {
   const [isReturnModalVisible, setIsReturnModalVisible] = useState(false);
   const [billDetails, setBillDetails] = useState(defaultbillDetails);
   const [billDate, setBillDate] = useState(moment(new Date()));
+  const [dischargeDate, setDischargeDate] = useState(moment(new Date()));
 
   const [finalCharges, setFinalCharges] = useState(defaultFinalCharges);
   const [data, setData] = useState([]);;
@@ -224,9 +228,9 @@ const Billing = ({ location, history }) => {
   function updateBrandDetails() {
     getBrandDetails().then(data => {
       if (data && Array.isArray(data) && data.length > 0) {
-          setBrandDetails(data[0]);
+        setBrandDetails(data[0]);
       }
-  });
+    });
   }
   if (state == "billGenerated") {
     generateBillButton = "";
@@ -283,7 +287,8 @@ const Billing = ({ location, history }) => {
         const billDetails = data[0];
         setBillDetails({
           billId: billDetails.billId,
-          createdAt: (new Date(billDetails.createdAt)).toDateString()
+          createdAt: (new Date(billDetails.createdAt)).toDateString(),
+          dischargeDate: (new Date()).toDateString()
         });
         setBillDate(moment(new Date(billDetails.createdAt)));
         setPaymentMode(billDetails.paymentMode);
@@ -480,15 +485,30 @@ const Billing = ({ location, history }) => {
   function onBillDateChange(momentDate, dateString) {
     let date = new Date(dateString);
     setBillDetails({
-      createdAt: (date).toDateString()
+      ...billDetails, ...{
+        createdAt: (date).toDateString()
+      }
     });
     setBillDate(moment(date));
+  }
+
+  function onDischargeDateChange(momentDate, dateString) {
+    let date = new Date(dateString);
+    setBillDetails({
+      ...billDetails, ...{
+        dischargeDate: (date).toDateString()
+      }
+    });
+    setDischargeDate(moment(date));
   }
 
   function onGSTIncludedChange(e) {
     setIsGSTIncluded(e.target.checked);
   }
 
+  function onDischargeBillChange(e) {
+    setIsDischargeBill(e.target.checked);
+  }
 
   let columns = [
     {
@@ -534,7 +554,9 @@ const Billing = ({ location, history }) => {
       key: 'action',
       render: (text, record) =>
         <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-          <a> {queryParams.context != "edit" ? "Delete" : ""} </a>
+          {/* <a> {queryParams.context != "edit" ? "Delete" : ""} </a> */}
+          <a>Delete </a>
+
         </Popconfirm>
     }
   ];
@@ -579,7 +601,7 @@ const Billing = ({ location, history }) => {
       New Patient <Switch onChange={onNewPatientSwitchChange} /> <br /> <br />
       {patientInfo}
       <div style={{ display: 'none' }}>
-        <BillPrint ref={componentRef} branddetails={branddetails} itemList={data} paymentMode={paymentMode} isGSTIncluded={isGSTIncluded} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} billDate={billDetails.createdAt} patientId={patientDetails.patientId} />
+        <BillPrint ref={componentRef} branddetails={branddetails} itemList={data} isDischargeBill={isDischargeBill} paymentMode={paymentMode} isGSTIncluded={isGSTIncluded} finalCharges={finalCharges} patientDetails={patientDetails} billId={billDetails.billId} billDate={billDetails.createdAt} dischargeDate={billDetails.dischargeDate} patientId={patientDetails.patientId} />
       </div>
       <Divider>Bill Details</Divider>
       <Row gutter={24}>
@@ -590,12 +612,21 @@ const Billing = ({ location, history }) => {
             {/* <Descriptions.Item label="Date and time">{billDetails.createdAt}</Descriptions.Item> */}
           </Descriptions>
         </Col>
-        <Col span={16}>
-          <DatePicker onChange={onBillDateChange} value={billDate} />
+        <Col span={4}>
+          Bill Date: <DatePicker onChange={onBillDateChange} value={billDate} />
+        </Col>
+        <Col span={6} style={{
+          display: (isDischargeBill ? "" : "none")
+        }}>
+          Discharge Date: <DatePicker onChange={onDischargeDateChange} value={dischargeDate} />
         </Col>
         <Col span={4}>
           <Checkbox checked={isGSTIncluded} onChange={onGSTIncludedChange}>Include GST</Checkbox>
         </Col>
+        <Col span={4}>
+          <Checkbox checked={isDischargeBill} onChange={onDischargeBillChange}>Is Discharge</Checkbox>
+        </Col>
+
       </Row>
 
 
@@ -604,7 +635,7 @@ const Billing = ({ location, history }) => {
         type="primary"
         style={{
           marginBottom: 16,
-          display: (queryParams.context == "edit" ? "none" : "")
+          // display: (queryParams.context == "edit" ? "none" : "")
         }}>Add Item
         </Button>
       <Button

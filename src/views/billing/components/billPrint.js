@@ -14,7 +14,8 @@ export class BillPrint extends React.Component {
         const patientDetails = this.props.patientDetails;
         const finalCharges = this.props.finalCharges;
         const todaysDate = new Date(this.props.billDate).toDateString();
-
+        const dischargeDate = new Date(this.props.dischargeDate).toDateString();
+        const registrationDate = new Date(patientDetails.createdAt).toDateString();
         const itemArray = itemList.map((item, index) => {
             return (
                 <tr>
@@ -60,20 +61,29 @@ export class BillPrint extends React.Component {
                                 <td>{patientDetails.age}</td>
                             </tr>
                             <tr>
-                                <td>PatientId</td>
+                                <td>Patient Id</td>
                                 <td>{patientId}</td>
-                                <td>BillId</td>
-                                <td>{billId}</td>
-                            </tr>
-                            <tr>
-                                <td>Date</td>
-                                <td>{todaysDate}</td>
                                 <td>Visit type</td>
                                 <td>{patientDetails.visitType}</td>
                             </tr>
                             <tr>
+                                <td>Bill No.</td>
+                                <td>{billId}</td>
+                                <td>Bill Date</td>
+                                <td>{todaysDate}</td>
+
+                            </tr>
+                            <tr>
+
+                                <td style={{ display: (registrationDate ? "table-cell" : "none") }}>Admission  Date</td>
+                                <td style={{ display: (registrationDate ? "table-cell" : "none") }}>{registrationDate}</td>
                                 <td>Payment mode</td>
                                 <td>{paymentMode}</td>
+                            </tr>
+                            <tr>
+                                <td style={{ display: (this.props.isDischargeBill ? "table-cell" : "none") }}>Discharge Date</td>
+                                <td style={{ display: (this.props.isDischargeBill ? "table-cell" : "none") }}>{dischargeDate}</td>
+
                             </tr>
                         </tbody>
 
