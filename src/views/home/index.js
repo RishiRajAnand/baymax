@@ -35,6 +35,9 @@ import { ADMIN, DOCTOR, PHARMACY, RECEPTION, UPCOMING } from '../../utils/roles'
 import BillSearch from '../billSearch';
 import ViewDoctors from '../admin/viewDoctors';
 import Reports from '../reports';
+import ManageCategories from '../manageLists/manageItemCategories';
+import { reports, manageItemCategories, manageSuppliers, manageItemUnits } from '../../routes/allRoutesData';
+import ManageUnits from '../manageLists/manageItemUnits';
 
 const { Header, Sider, Content, Footer } = Layout;
 const { SubMenu } = Menu;
@@ -72,9 +75,12 @@ const Home = ({ location, history, match }) => {
     } else {
       realRoutes = [...realRoutes, subRoutesByRole(childroutes, roleName)];
     }
-    // realRoutes = [...realRoutes, subRoutesByRole(childroutes, roleName)];
   }
   function generateRouteObject(routeObject) {
+    if (routeObject.hasChildRoutes != null && routeObject.hasChildRoutes == true) {
+      const childs = routeObject.childRoutes.map(childRoute => <Menu.Item key={childRoute.label}><Link to={`${path}${childRoute.link}`}>{childRoute.label}</Link></Menu.Item>);
+      return <SubMenu key={routeObject.label} title={routeObject.label}>{childs}</SubMenu>
+    }
     return <Menu.Item key={routeObject.label}><Link to={`${path}${routeObject.link}`}>{routeObject.label}</Link></Menu.Item>
   }
   function subRoutesByRole(routes, roleName) {
@@ -130,12 +136,14 @@ const Home = ({ location, history, match }) => {
           <Route path={`${path}/certificates`} component={Certificates} />
           <Route path={`${path}/package`} component={Package} />
           <Route path={`${path}/newPackage`} component={NewPackage} />
-          <Route path={`${path}/manageSuppliers`} component={ManageSupplier} />
+          <Route path={`${path}${manageSuppliers.link}`} component={ManageSupplier} />
+          <Route path={`${path}${manageItemCategories.link}`} component={ManageCategories} />
+          <Route path={`${path}${manageItemUnits.link}`} component={ManageUnits} />
           <Route path={`${path}/inProgress`} component={InProgress} />
           <Route path={`${path}/viewPrescription`} component={ViewPrescription} />
           <Route path={`${path}/viewDoctors`} component={ViewDoctors} />
-          <Route path={`${path}/reports`} component={Reports} />
-          
+          <Route path={`${path}${reports.link}`} component={Reports} />
+
         </Content>
         <Footer style={{ textAlign: 'center' }}>BayMax ©2021</Footer>
       </Layout>

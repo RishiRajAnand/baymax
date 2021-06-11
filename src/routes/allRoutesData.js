@@ -22,10 +22,16 @@ export const insurance = { label: "Insurance", link: "/inProgress" };
 export const certificateCreation = { label: "Certificate creation", link: "/inProgress" };
 export const referrals = { label: "Referrals", link: "/inProgress" };
 export const reports = { label: "Reports", link: "/reports" };
-
+export const manageItemCategories = { label: "Item Categories", link: "/manageItemCategories" };
+export const manageItemUnits = { label: "Item Units", link: "/manageItemUnits" };
+export const manageLists = {
+    label: "Manage Lists",
+    hasChildRoutes: true,
+    childRoutes: [manageItemCategories, manageItemUnits]
+}
 export const doctorRoutes = [doctorAppointment];
 export const pharmacyRoutes = [addNewMedicine, manageMedicines, purchaseOrderList, newPurchaseOrder, manageSuppliers, billing, billSearch];
-export const inventoryRoutes = [addNewMedicine, manageMedicines, purchaseOrderList, newPurchaseOrder, manageSuppliers, billing, billSearch, reports];
+export const inventoryRoutes = [addNewMedicine, manageMedicines, purchaseOrderList, newPurchaseOrder, manageSuppliers, billing, billSearch, reports, manageLists];
 export const receptionRoutes = [registration, patientSearch, appointment, billing, billSearch];
 export const upcomingRoutes = [reports, certificates, packageManagement, canteen, pharmacy, reimbursements, insurance, certificateCreation, referrals];
-export const adminRoutes = [addMedicine, addTest, addDoctor, serviceCatalogue]; 
+export const adminRoutes = [addMedicine, addTest, addDoctor, serviceCatalogue];

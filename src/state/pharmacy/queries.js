@@ -134,3 +134,20 @@ export const deleteMedicine = (medicineId) => {
             return err;
         });
 };
+
+export const deleteItemCategory = (categoryId) => {
+    return axios
+        .delete(`${api.url}/pharmacyController/deleteItemCategory/` + categoryId)
+        .then(res => res.data)
+        .catch(err => {
+            return err;
+        });
+};
+export const deleteItemUnit = (unitId) => {
+    return axios
+        .delete(`${api.url}/pharmacyController/deleteItemUnit/` + unitId)
+        .then(res => res.data)
+        .catch(err => {
+            return err;
+        });
+};
